@@ -1,0 +1,8 @@
+prefix=/home/pc/catkin_ws/install
+
+Name: outlier_removal_filter
+Description: Description of outlier_removal_filter
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/pc/catkin_ws/install/lib 
+Requires: 
