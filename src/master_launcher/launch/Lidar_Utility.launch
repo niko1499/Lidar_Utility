@@ -1,0 +1,16 @@
+<launch>
+
+  <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
+    <!--Add any default parameters here. There should be none unless you want it to launch with the parameter every single time.-->
+    <!--param name="subscriber" value="cloud_pcd"/-->
+    <!--param name="publisher" value="outliers_removed_pass1"/-->
+  </node>
+
+  <!--Launch other nodes-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_core.launch"/>
+
+  <!--Launch rviz with prepaired configuration-->
+
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
+
+</launch>
