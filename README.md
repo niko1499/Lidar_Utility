@@ -2,7 +2,7 @@
 #6/4/18
 #Nikolas Xarles Gamarra
 
-"lidar" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on ROS and PCL. 
+This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on ROS and PCL. 
 
 Here is an overview of the directories
 /build: ROS generated excutables

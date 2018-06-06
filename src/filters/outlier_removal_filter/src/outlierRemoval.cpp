@@ -43,8 +43,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 	pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
 	sor.setInputCloud (cloudPtr);
-	sor.setMeanK (50);
-	sor.setStddevMulThresh (1.0);
+	sor.setMeanK (50);//50 defaule
+	sor.setStddevMulThresh (1.0);//1.0 default
 	sor.filter (cloud_filtered);
 
 	//convert to ROS data type
