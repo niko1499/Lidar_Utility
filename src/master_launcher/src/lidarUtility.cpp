@@ -34,7 +34,7 @@ main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("Lidar_Utility_RAW_DATA");
+	const std::string defaultPublisher("lidar_utility_points");
 
 	std::string nodeName("Lidar_Utility");//temp name to initialize with
 
@@ -51,7 +51,7 @@ main (int argc, char** argv)
 	//Create constants for expected topics
 	const std::string potentialSubscription1("/cloud_pcd");
 	const std::string potentialSubscription2("/rslidar_points");
-	const std::string potentialSubscription3("/PANDA*");
+	const std::string potentialSubscription3("/pandar_points");
 
 
 	ROS_INFO("LIDAR UTILITY MASTER LAUNCHER RUNNING");
@@ -68,7 +68,6 @@ main (int argc, char** argv)
 		ROS_INFO("A param has been set **%s** \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
 	}else{
 		ROS_INFO("No param set. Searching advertised topics for appropriate subscribers...");
-		ROS_INFO("Priority: PCD>RSLIDAR>PANDALIDAR");
 		ros::master::V_TopicInfo master_topics;
 		ros::master::getTopics(master_topics);
 

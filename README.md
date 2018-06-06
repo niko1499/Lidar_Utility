@@ -38,7 +38,9 @@ RVIZ configuration files for a number of useful configurations. Named appropriat
 
 # To compile the project:
 $ cd ~/Lidar_Utility
+
 $ source devel/setup.bash	*(OR ADD IT TO YOUR BASHRC)
+
 $ catkin_make			*If you have trouble delete /build /devel and any CMake files
 
 # To Run the project
@@ -47,17 +49,21 @@ There are several ways to run different parts of the project
 **First select the source of your lidar data and launch it:**
 
 - rslidar
+
 $ roslaunch rslidar_pointcloud rs_lidar_16.launch
 
 - [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros)
+
 $ roslaunch hesai_lidar pandora_ros.launch
 
 - .pcd file
+
 $ rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/pcd/velodyne1/2826laser.pcd 1
 
 - OTHER
-	Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
-	data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
+
+Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
+data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
 
 **Second Launch the Lidar_Utility**	
 
