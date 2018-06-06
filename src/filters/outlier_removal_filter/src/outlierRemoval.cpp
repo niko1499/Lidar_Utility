@@ -16,7 +16,8 @@ ros::Publisher pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-	ROS_INFO("In Callback");
+	//Comment out as needed. Useful for debuging
+	ROS_INFO("Outlier Removal Filer: In Callback");
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
@@ -43,8 +44,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 	pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
 	sor.setInputCloud (cloudPtr);
-	sor.setMeanK (50);//50 defaule
-	sor.setStddevMulThresh (1.0);//1.0 default
+	sor.setMeanK (100);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet
+	sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default
 	sor.filter (cloud_filtered);
 
 	//convert to ROS data type
@@ -74,13 +75,19 @@ main (int argc, char** argv)
 
 	//std::string name= ros::this_node::getNamespace();
 	//ROS_INFO(name.c_str());
-	const std::string nodeName("outlier_removal_filter");
-	const std::string subscriberParamName(nodeName + "/subscriber");
-	const std::string publisherParamName(nodeName + "/publisher");
-	ROS_INFO("Outlier Removal Running");
+	std::string nodeName("outlier_removal_filter");//temp name to initialize with
+
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
+
+	nodeName = ros::this_node::getName();
+	const std::string subscriberParamName(nodeName + "/subscriber");
+	const std::string publisherParamName(nodeName + "/publisher");
+	std::string nodeParamName(nodeName + "/newName");
+	ROS_INFO("Outlier Removal Running");
+
+	ROS_INFO("Node Name: %s",nodeName.c_str());
 
 	//Create variables that control the topic names
 	std::string sTopic;
@@ -107,7 +114,7 @@ main (int argc, char** argv)
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-
+	nh.deleteParam(nodeParamName);
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 	ROS_INFO("Subscribing to %s",sTopic.c_str());
