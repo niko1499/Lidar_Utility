@@ -1,8 +1,8 @@
-prefix=/home/pc/catkin_ws/install
+prefix=/home/pc/Lidar_Utility/install
 
 Name: my_pcl_tutorial
 Description: Description of my_pcl_tutorial
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/pc/catkin_ws/install/lib 
+Libs: -L/home/pc/Lidar_Utility/install/lib 
 Requires: 

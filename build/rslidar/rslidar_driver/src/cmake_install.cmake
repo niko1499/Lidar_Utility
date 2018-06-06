@@ -1,8 +1,8 @@
-# Install script for directory: /home/pc/catkin_ws/src/rslidar/rslidar_driver/src
+# Install script for directory: /home/pc/Lidar_Utility/src/rslidar/rslidar_driver/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/pc/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/pc/Lidar_Utility/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

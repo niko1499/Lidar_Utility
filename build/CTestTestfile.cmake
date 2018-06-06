@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: /home/pc/catkin_ws/src
-# Build directory: /home/pc/catkin_ws/build
+# Source directory: /home/pc/Lidar_Utility/src
+# Build directory: /home/pc/Lidar_Utility/build
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

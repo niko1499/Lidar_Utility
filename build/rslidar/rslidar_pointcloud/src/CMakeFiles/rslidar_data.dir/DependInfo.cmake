@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/pc/catkin_ws/src/rslidar/rslidar_pointcloud/src/rawdata.cc" "/home/pc/catkin_ws/build/rslidar/rslidar_pointcloud/src/CMakeFiles/rslidar_data.dir/rawdata.cc.o"
+  "/home/pc/Lidar_Utility/src/rslidar/rslidar_pointcloud/src/rawdata.cc" "/home/pc/Lidar_Utility/build/rslidar/rslidar_pointcloud/src/CMakeFiles/rslidar_data.dir/rawdata.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -17,7 +17,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/pc/catkin_ws/devel/include"
+  "/home/pc/Lidar_Utility/devel/include"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   "/usr/include/pcl-1.7"

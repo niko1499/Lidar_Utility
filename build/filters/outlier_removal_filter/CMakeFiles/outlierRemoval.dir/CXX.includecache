@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/pc/catkin_ws/src/filters/outlier_removal_filter/src/outlierRemoval.cpp
+/home/pc/Lidar_Utility/src/filters/outlier_removal_filter/src/outlierRemoval.cpp
 ros/ros.h
 -
 iostream

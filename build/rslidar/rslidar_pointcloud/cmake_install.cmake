@@ -1,8 +1,8 @@
-# Install script for directory: /home/pc/catkin_ws/src/rslidar/rslidar_pointcloud
+# Install script for directory: /home/pc/Lidar_Utility/src/rslidar/rslidar_pointcloud
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/pc/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/pc/Lidar_Utility/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,24 +33,24 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/rslidar_pointcloud" TYPE FILE FILES "/home/pc/catkin_ws/devel/include/rslidar_pointcloud/CloudNodeConfig.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/rslidar_pointcloud" TYPE FILE FILES "/home/pc/Lidar_Utility/devel/include/rslidar_pointcloud/CloudNodeConfig.h")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_pointcloud" TYPE FILE FILES "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_pointcloud/__init__.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_pointcloud" TYPE FILE FILES "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_pointcloud/__init__.py")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_pointcloud/cfg")
+  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_pointcloud/cfg")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_pointcloud" TYPE DIRECTORY FILES "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_pointcloud/cfg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_pointcloud" TYPE DIRECTORY FILES "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_pointcloud/cfg")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/pc/catkin_ws/build/rslidar/rslidar_pointcloud/src/cmake_install.cmake")
+  include("/home/pc/Lidar_Utility/build/rslidar/rslidar_pointcloud/src/cmake_install.cmake")
 
 endif()
 

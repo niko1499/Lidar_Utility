@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/pc/catkin_ws/src/my_pcl_tutorial/src/example.cpp
+/home/pc/Lidar_Utility/src/my_pcl_tutorial/src/example.cpp
 ros/ros.h
 -
 sensor_msgs/PointCloud2.h

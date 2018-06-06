@@ -1,8 +1,8 @@
-# Install script for directory: /home/pc/catkin_ws/src/rslidar/rslidar_driver
+# Install script for directory: /home/pc/Lidar_Utility/src/rslidar/rslidar_driver
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/pc/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/pc/Lidar_Utility/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,39 +33,39 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/rslidar_driver" TYPE FILE FILES "/home/pc/catkin_ws/devel/include/rslidar_driver/rslidarNodeConfig.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/rslidar_driver" TYPE FILE FILES "/home/pc/Lidar_Utility/devel/include/rslidar_driver/rslidarNodeConfig.h")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_driver" TYPE FILE FILES "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_driver/__init__.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_driver" TYPE FILE FILES "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_driver/__init__.py")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_driver/cfg")
+  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_driver/cfg")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_driver" TYPE DIRECTORY FILES "/home/pc/catkin_ws/devel/lib/python2.7/dist-packages/rslidar_driver/cfg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rslidar_driver" TYPE DIRECTORY FILES "/home/pc/Lidar_Utility/devel/lib/python2.7/dist-packages/rslidar_driver/cfg")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/catkin_ws/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driver.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/Lidar_Utility/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driver.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rslidar_driver/cmake" TYPE FILE FILES
-    "/home/pc/catkin_ws/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driverConfig.cmake"
-    "/home/pc/catkin_ws/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driverConfig-version.cmake"
+    "/home/pc/Lidar_Utility/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driverConfig.cmake"
+    "/home/pc/Lidar_Utility/build/rslidar/rslidar_driver/catkin_generated/installspace/rslidar_driverConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rslidar_driver" TYPE FILE FILES "/home/pc/catkin_ws/src/rslidar/rslidar_driver/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rslidar_driver" TYPE FILE FILES "/home/pc/Lidar_Utility/src/rslidar/rslidar_driver/package.xml")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/pc/catkin_ws/build/rslidar/rslidar_driver/src/cmake_install.cmake")
+  include("/home/pc/Lidar_Utility/build/rslidar/rslidar_driver/src/cmake_install.cmake")
 
 endif()
 

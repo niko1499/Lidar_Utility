@@ -1,8 +1,8 @@
-# Install script for directory: /home/pc/catkin_ws/src/filters/outlier_removal_filter
+# Install script for directory: /home/pc/Lidar_Utility/src/filters/outlier_removal_filter
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/pc/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/pc/Lidar_Utility/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,32 +33,32 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filter.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filter.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter/cmake" TYPE FILE FILES
-    "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig.cmake"
-    "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig-version.cmake"
+    "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig.cmake"
+    "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter" TYPE FILE FILES "/home/pc/catkin_ws/src/filters/outlier_removal_filter/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter" TYPE FILE FILES "/home/pc/Lidar_Utility/src/filters/outlier_removal_filter/package.xml")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filter.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filter.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter/cmake" TYPE FILE FILES
-    "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig.cmake"
-    "/home/pc/catkin_ws/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig-version.cmake"
+    "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig.cmake"
+    "/home/pc/Lidar_Utility/build/filters/outlier_removal_filter/catkin_generated/installspace/outlier_removal_filterConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter" TYPE FILE FILES "/home/pc/catkin_ws/src/filters/outlier_removal_filter/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/outlier_removal_filter" TYPE FILE FILES "/home/pc/Lidar_Utility/src/filters/outlier_removal_filter/package.xml")
 endif()
 

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pc/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/pc/Lidar_Utility/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pc/catkin_ws/build
+CMAKE_BINARY_DIR = /home/pc/Lidar_Utility/build
 
 # Utility rule file for rslidar_msgs_geneus.
 
@@ -63,10 +63,10 @@ rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/build: rslidar_msgs_gene
 .PHONY : rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/build
 
 rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/clean:
-	cd /home/pc/catkin_ws/build/rslidar/rslidar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/rslidar_msgs_geneus.dir/cmake_clean.cmake
+	cd /home/pc/Lidar_Utility/build/rslidar/rslidar_msgs && $(CMAKE_COMMAND) -P CMakeFiles/rslidar_msgs_geneus.dir/cmake_clean.cmake
 .PHONY : rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/clean
 
 rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/depend:
-	cd /home/pc/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pc/catkin_ws/src /home/pc/catkin_ws/src/rslidar/rslidar_msgs /home/pc/catkin_ws/build /home/pc/catkin_ws/build/rslidar/rslidar_msgs /home/pc/catkin_ws/build/rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/pc/Lidar_Utility/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pc/Lidar_Utility/src /home/pc/Lidar_Utility/src/rslidar/rslidar_msgs /home/pc/Lidar_Utility/build /home/pc/Lidar_Utility/build/rslidar/rslidar_msgs /home/pc/Lidar_Utility/build/rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : rslidar/rslidar_msgs/CMakeFiles/rslidar_msgs_geneus.dir/depend
 

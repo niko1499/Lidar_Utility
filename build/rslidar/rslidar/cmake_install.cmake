@@ -1,8 +1,8 @@
-# Install script for directory: /home/pc/catkin_ws/src/rslidar/rslidar
+# Install script for directory: /home/pc/Lidar_Utility/src/rslidar/rslidar
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/pc/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/pc/Lidar_Utility/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,6 +33,6 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rslidar" TYPE FILE FILES "/home/pc/catkin_ws/src/rslidar/rslidar/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rslidar" TYPE FILE FILES "/home/pc/Lidar_Utility/src/rslidar/rslidar/package.xml")
 endif()
 
