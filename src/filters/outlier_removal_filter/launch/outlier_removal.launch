@@ -5,14 +5,12 @@
     <param name="publisher" value="outliers_removed_pass1"/>
   </node>
 
-
-
-
   <node name="outlierRemovalPass2" pkg="outlier_removal_filter" type="outlierRemoval" output="screen">
     <param name="subscriber" value="outliers_removed_pass1"/>
     <param name="publisher" value="outliers_removed_pass2"/>
   </node>
 
+<!--Launch rviz with prepaired configuration-->
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(find outlier_removal_filter)/rviz/filterComparison.rviz" />
 
 </launch>

@@ -1,8 +1,0 @@
-prefix=/home/pc/Lidar_Utility/devel
-
-Name: outlier_removal_filter
-Description: Description of outlier_removal_filter
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/pc/Lidar_Utility/devel/lib 
-Requires: 

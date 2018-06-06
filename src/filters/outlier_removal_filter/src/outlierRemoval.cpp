@@ -16,6 +16,7 @@ ros::Publisher pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
 	ROS_INFO("Outlier Removal Filer: In Callback");
 	// Create a container for the data and filtered data.
@@ -71,22 +72,21 @@ main (int argc, char** argv)
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("outliers_filtered");
-	//asdfasdfasdfasddf
 
-	//std::string name= ros::this_node::getNamespace();
-	//ROS_INFO(name.c_str());
 	std::string nodeName("outlier_removal_filter");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
 
-	nodeName = ros::this_node::getName();
+	nodeName = ros::this_node::getName();//Update name
+
+	//set parameters on new name
 	const std::string subscriberParamName(nodeName + "/subscriber");
 	const std::string publisherParamName(nodeName + "/publisher");
 	std::string nodeParamName(nodeName + "/newName");
+	
 	ROS_INFO("Outlier Removal Running");
-
 	ROS_INFO("Node Name: %s",nodeName.c_str());
 
 	//Create variables that control the topic names
@@ -114,7 +114,6 @@ main (int argc, char** argv)
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-	nh.deleteParam(nodeParamName);
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 	ROS_INFO("Subscribing to %s",sTopic.c_str());
