@@ -1,0 +1,8 @@
+<launch>
+
+  <node name="object_detective" pkg="object_detective" type="objectDetective" output="screen">
+    <param name="subscriber" value="object_points2"/>
+    <!--param name="publisher" value="tbd"/-->
+  </node>
+
+</launch>
