@@ -19,7 +19,7 @@ int mode =1;//fix this later
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
-ros::Publisher pub;
+ros::Publisher pc2_pub;
 
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
@@ -60,7 +60,7 @@ pass.setFilterFieldName ("y");
   pass.setFilterLimits (-50.0, 50.0);
 */
 pass.setFilterFieldName ("z");
-  pass.setFilterLimits (-1.5, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
+  pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
   pass.setFilterLimitsNegative (true);
   pass.filter (cloud_filtered);
 
@@ -77,7 +77,7 @@ pass.setFilterFieldName ("y");
   pass.setFilterLimits (-50.0, 50.0);
 */
 pass.setFilterFieldName ("z");
-  pass.setFilterLimits (-1.0,1.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
+  pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
   pass.setFilterLimitsNegative (false);
   pass.filter (cloud_filtered);
 
@@ -95,7 +95,7 @@ pass.setFilterFieldName ("z");
 
 
 	// Publish the data.
-	pub.publish (output);
+	pc2_pub.publish (output);
 }
 
 	int
@@ -179,7 +179,7 @@ nh.deleteParam(modeParamName);
 
 	ROS_INFO("Subscribing to %s",sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("Publishing to %s",pTopic.c_str());
 
 	// Spin
