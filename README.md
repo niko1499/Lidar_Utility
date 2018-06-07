@@ -36,6 +36,11 @@ Point Cloud Data collected various sensors for offline testing. To publish this 
 - /rviz: 
 RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory.
 
+
+# To download the project:
+
+git clone https://github.com/niko1499/Lidar_Utility.git
+
 # To compile the project:
 $ cd ~/Lidar_Utility
 
@@ -45,6 +50,7 @@ $ catkin_make			*If you have trouble delete /build /devel and any CMake files
 
 # To Run the project
 There are several ways to run different parts of the project
+
 
 **First select the source of your lidar data and launch it:**
 
