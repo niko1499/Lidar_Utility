@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(radial_outlier_removal_filter)
+project(pass_through_filter)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -23,8 +23,8 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package()
 
 #PCL - niko
-add_executable(radialOutlierRemoval src/radialOutlierRemoval.cpp)
-target_link_libraries(radialOutlierRemoval ${catkin_LIBRARIES})
+add_executable(passThrough src/passThrough.cpp)
+target_link_libraries(passThrough ${catkin_LIBRARIES})
 
 
 ## System dependencies are found with CMake's conventions

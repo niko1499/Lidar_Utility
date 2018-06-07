@@ -1,0 +1,14 @@
+<launch>
+
+  <node name="pass_through_filter_road" pkg="pass_through_filter" type="passThrough" output="screen">
+    <param name="subscriber" value="outliers_removed_pass1"/>
+    <param name="publisher" value="road_points1"/>
+  </node>
+
+  <node name="pass_through_filter_objects" pkg="pass_through_filter" type="passThrough" output="screen">
+    <param name="subscriber" value="outliers_removed_pass1"/>
+    <param name="publisher" value="object_points1"/>
+    <param name="mode" value="o"/>
+  </node>
+
+</launch>

@@ -1,0 +1,8 @@
+<launch>
+
+  <node name="pass_through_filter" pkg="pass_through_filter" type="passThrough" output="screen">
+    <param name="subscriber" value="outliers_removed_pass1"/>
+    <param name="publisher" value="road_points1"/>
+  </node>
+
+</launch>

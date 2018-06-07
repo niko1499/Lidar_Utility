@@ -11,6 +11,7 @@
 
   <!--Launch other nodes-->
   <include file="$(find outlier_removal_filter)/launch/outlier_removal_core.launch"/>
+  <include file="$(find pass_through_filter)/launch/pass_through_core.launch"/>
 
   <!--Launch rviz with prepaired configuration-->
 

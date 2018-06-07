@@ -10,6 +10,13 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 
+#define COLOR_RED "\033[1;31m"
+#define COLOR_GREEN "\033[1;32m"
+#define COLOR_YELLOW "\033[1;33m"
+#define COLOR_BLUE "\033[1;34m"
+#define COLOR_RST "\033[0m"
+#define BAR "--------------------------------------------------------------------------------------\n"
+
 ros::Publisher pub;
 
 	void 
@@ -53,8 +60,8 @@ main (int argc, char** argv)
 	const std::string potentialSubscription2("/rslidar_points");
 	const std::string potentialSubscription3("/pandar_points");
 
-
-	ROS_INFO("LIDAR UTILITY MASTER LAUNCHER RUNNING");
+	printf(COLOR_BLUE BAR COLOR_RST);
+	ROS_INFO("LIDAR UTILITY RUNNING");
 	ROS_INFO("Node Name: %s",nodeName.c_str());
 
 	//Create variables that control the topic names
@@ -65,8 +72,10 @@ main (int argc, char** argv)
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
+		printf(COLOR_GREEN BAR COLOR_RST);
 		ROS_INFO("A param has been set **%s** \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
 	}else{
+		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("No param set. Searching advertised topics for appropriate subscribers...");
 		ros::master::V_TopicInfo master_topics;
 		ros::master::getTopics(master_topics);
@@ -76,7 +85,8 @@ main (int argc, char** argv)
 		for(ros::master::V_TopicInfo::iterator it = master_topics.begin() ; it != master_topics.end(); it++){
 			const ros::master::TopicInfo& info= *it;
 			std::cout <<"topic_"<<it - master_topics.begin()<<": " <<info.name<<std::endl;
-			currentTopic=info.name;
+		
+	currentTopic=info.name;
 			if(currentTopic==potentialSubscription1)
 			{
 				ROS_INFO("Topic found! Subscribing to: %s",currentTopic.c_str());
@@ -104,16 +114,18 @@ main (int argc, char** argv)
 	//Check if the user specified a publishing topic
 	if(nh.hasParam(publisherParamName)){
 		nh.getParam(publisherParamName,pTopic);
+		printf(COLOR_GREEN BAR COLOR_RST);
 		ROS_INFO("A param has been set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
 	}else{
 		pTopic=defaultPublisher;//set to default if not specified
+		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("No param set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
 	}
 
 	//Clears the assigned parameters Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-
+	//nh.deleteParam(modeParamName);
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 	ROS_INFO("Subscribing to %s",sTopic.c_str());

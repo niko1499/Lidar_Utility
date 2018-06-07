@@ -1,16 +1,15 @@
+#include <ros/ros.h>
+// PCL specific includes
 #include <iostream>
-
-#include <stdio.h>
-
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/radius_outlier_removal.h>
-#include <pcl/filters/conditional_removal.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
@@ -20,12 +19,15 @@
 #define BAR "----------------------------------------------------------------------------\n"
 int mode =1;//fix this later
 
-//This node subscribes to a PointCloud2 topic, peforms a statistical outlier filter, and republishes the point cloud. 
+//This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
 ros::Publisher pub;
 
-void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+	void 
+cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+	
+
 
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
@@ -53,85 +55,91 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//OUTLIER REMOVAL
 	if(mode==1){
-		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-		pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
-		sor.setInputCloud (cloudPtr);
-		sor.setMeanK (75);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet
-		sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default
-		sor.filter (cloud_filtered);
+/*
+  std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
+  for (size_t i = 0; i < cloud->points.size (); ++i)
+    std::cerr << "    " << cloud->points[i].x << " "
+                        << cloud->points[i].y << " "
+                        << cloud->points[i].z << std::endl;
+*/
+
+//NEW CONVERSION https://stackoverflow.com/questions/36380217/pclpclpointcloud2-usage
+//or not
+/*
+
+fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, cl::PointCloud<PointT>& cloud);
+void toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg);
+
+*/
+/*
+
+pcl::
+pcl::fromPCLPointCloud2 (*cloud_msg, pcl_pc);
+
+
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  // Create the segmentation object
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  // Optional
+  seg.setOptimizeCoefficients (true);
+  // Mandatory
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.01);
+
+  seg.setInputCloud (cloudPtrXYX);
+  seg.segment (*inliers, *coefficients);
+
+  if (inliers->indices.size () == 0)
+  {
+    ROS_INFO("ERROR: Could not estimate a planar model for the given dataset.");
+  }
+
+  std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
+                                      << coefficients->values[1] << " "
+                                      << coefficients->values[2] << " " 
+                                      << coefficients->values[3] << std::endl;
+
+*/
+/*
+  std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
+  for (size_t i = 0; i < inliers->indices.size (); ++i)
+    std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
+                                               << cloud->points[inliers->indices[i]].y << " "
+                                               << cloud->points[inliers->indices[i]].z << std::endl;
+*/
 	}else if (mode==2){
-		//Convert PointCloud2 to PointXYZ
-ROS_INFO("MADE IT TO 1");
-		pcl::PCLPointCloud2 temp;
-		pcl_conversions::toPCL(*cloud_msg,temp);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ(new pcl::PointCloud<pcl::PointXYZ>);
-		pcl::fromPCLPointCloud2(temp,*cloudXYZ);
-ROS_INFO("MADE IT TO 2");
 
-		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-		// build the filter
-		outrem.setInputCloud(cloudXYZ);
-		outrem.setRadiusSearch(0.8);
-		outrem.setMinNeighborsInRadius (2);
-ROS_INFO("MADE IT TO 3");
+	}else if (mode==3){
 
-		//setup xyzholder
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
-
-ROS_INFO("MADE IT TO 4");
-
-		// apply filter
-		outrem.filter (*cloud_filteredXYZ);
-
-		//convert bask
-
-		
-
-//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
-//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
-
-	}else if (mode==3){/*
-		// build the condition
-		pcl::ConditionAnd<pcl::PCLPointCloud2>::Ptr range_cond (new
-		pcl::ConditionAnd<pcl::PCLPointCloud2> ());
-		range_cond->addComparison (pcl::FieldComparison<pcl::PCLPointCloud2>::ConstPtr (new
-		pcl::FieldComparison<pcl::PCLPointCloud2> ("z", pcl::ComparisonOps::GT, 0.0)));
-		range_cond->addComparison (pcl::FieldComparison<pcl::PCLPointCloud2>::ConstPtr (new
-		pcl::FieldComparison<pcl::PCLPointCloud2> ("z", pcl::ComparisonOps::LT, 0.8)));
-		// build the filter
-		pcl::ConditionalRemoval<pcl::PCLPointCloud2> condrem;
-		condrem.setCondition (range_cond);
-		condrem.setInputCloud (cloudPtr);
-		condrem.setKeepOrganized(true);
-		// apply filter
-		condrem.filter (cloud_filtered);
-			    */
 	}
-ROS_INFO("MADE IT TO 5");
 
+/*
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
-ROS_INFO("MADE IT TO 6");
 
 	pcl_conversions::fromPCL(cloud_filtered,output);
-ROS_INFO("MADE IT TO 7");
+
 
 	// Publish the data.
 	pub.publish (output);
-}
+*/
 
+
+
+}
 
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
-	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("outliers_filtered");
-	const std::string defaultMode("s");
+	const std::string defaultSubscriber("road_points1");
+	const std::string defaultPublisher("road");
+	const std::string defaultMode("r");
 
-	std::string nodeName("outlier_removal_filter");//temp name to initialize with
+	std::string nodeName("road_detective");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -145,7 +153,7 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",modeParamName.c_str());
+	ROS_INFO("Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -156,32 +164,32 @@ main (int argc, char** argv)
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("A param has been set **%s** \nSetting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s**  \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("No param set **%s**  \nSetting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
 	if(nh.hasParam(publisherParamName)){
 		printf(COLOR_GREEN BAR COLOR_RST);
 		nh.getParam(publisherParamName,pTopic);
-		ROS_INFO("A param has been set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("A param has been set **%s** \nSetting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
 	}else{printf(COLOR_RED BAR COLOR_RST);
 		pTopic=defaultPublisher;//set to default if not specified
-		ROS_INFO("No param set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("No param set **%s** \nSetting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
 	}
 
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
 		nh.getParam(modeParamName,myMode);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n               Setting mode to: %s",modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("A param has been set **%s** \nSetting mode to: %s",modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s** \n          Setting mode to: %s",modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("No param set **%s** \nSetting mode to: %s",modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",modeParamName.c_str());
 	}
 
@@ -191,11 +199,12 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 nh.deleteParam(modeParamName);
+
 	if(myMode=="r"||myMode=="R"){
 		mode=1;
-	}else if(myMode=="r"||myMode=="F"){
+	}else if(myMode=="f"||myMode=="F"){
 		mode=2;
-	}else if(myMode=="r"||myMode=="V"){
+	}else if(myMode=="c"||myMode=="C"){
 		mode=3;
 	}
 

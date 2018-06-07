@@ -1,13 +1,23 @@
 <launch>
 
+<!--Launch file to be used by the master launcher-->
+
   <node name="outlierRemovalPass1" pkg="outlier_removal_filter" type="outlierRemoval" output="screen">
     <param name="subscriber" value="lidar_utility_points"/>
     <param name="publisher" value="outliers_removed_pass1"/>
+    <param name="mode" value="s"/>
   </node>
 
   <node name="outlierRemovalPass2" pkg="outlier_removal_filter" type="outlierRemoval" output="screen">
     <param name="subscriber" value="outliers_removed_pass1"/>
     <param name="publisher" value="outliers_removed_pass2"/>
+    <param name="mode" value="s"/>
+  </node>
+
+  <node name="outlierRemovalPassObjects" pkg="outlier_removal_filter" type="outlierRemoval" output="screen">
+    <param name="subscriber" value="object_points1"/>
+    <param name="publisher" value="object_points2"/>
+    <param name="mode" value="s"/>
   </node>
 
 </launch>

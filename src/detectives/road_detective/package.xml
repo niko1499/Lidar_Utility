@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>radial_outlier_removal_filter</name>
+  <name>road_detective</name>
   <version>0.0.0</version>
-  <description>The radial outlier_removal_filter</description>
+  <description>Search for the road</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
