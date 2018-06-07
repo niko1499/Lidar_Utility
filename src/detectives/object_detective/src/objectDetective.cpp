@@ -110,10 +110,18 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	if(mode==1){
 
 
-visualization_msgs::Marker markerArray;
+int n=2;//number of objects currently detected
 
-markerArray=markerBuilder(0,5,0,1,1,1,3);
+visualization_msgs::MarkerArray markerArray;
+visualization_msgs::Marker marker;
 
+//add for loop through point clusters processing for centroid and extrapolating geometry and pose.
+
+
+marker=markerBuilder(0,5,0,1,1,1,3);
+markerArray.markers.push_back(marker);
+marker=markerBuilder(0,0,0,1,1,1,5);
+markerArray.markers.push_back(marker);
 vis_pub.publish( markerArray );
 
 
@@ -220,7 +228,7 @@ main (int argc, char** argv)
 	// Create a ROS publisher for the output point cloud
 
 
-	vis_pub = nh.advertise<visualization_msgs::Marker>( pTopic, 0 );
+	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic, 0 );
 
 //ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
