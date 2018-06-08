@@ -100,20 +100,21 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	// Create a container for the data and filtered data.
 	//-----------------------
 	//NEW CONVERSION
-
+/*
 	pcl::PCLPointCloud2 pcl_pc2;//create a PCL PointCloud2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert the ROS PC2 to PCL PC2
 	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create a PCL PointXYZ
 	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert the PCL PC2 to PCL XYZ
+*/
 
 
 
 
-
-
+/*
 	sensor_msgs::PointCloud2 output;//create output in ROS format
 	pcl_conversions::fromPCL(cloud_filtered,output);//convert result to ros output
 	pc2_pub.publish (output);//publish the output
+*/
 
 	//----------------------
 	int n=2;//number of objects currently detected
