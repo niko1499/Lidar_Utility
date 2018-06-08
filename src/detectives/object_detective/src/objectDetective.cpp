@@ -47,7 +47,7 @@ b=1.0;
 r=0.0;
 g=1.0;
 b=1.0;
-}else if(type==5){//type unknown
+}else{//type unknown
 r=1.0;
 g=1.0;
 b=1.0;
@@ -118,9 +118,11 @@ visualization_msgs::Marker marker;
 //add for loop through point clusters processing for centroid and extrapolating geometry and pose.
 
 
-marker=markerBuilder(0,5,0,1,1,1,3);
+marker=markerBuilder(-5,5,0,1,1,1,3);
 markerArray.markers.push_back(marker);
-marker=markerBuilder(0,0,0,1,1,1,5);
+marker=markerBuilder(0,0,0,1,1,1,9);
+markerArray.markers.push_back(marker);
+marker=markerBuilder(9,0,0,1,1,1,4);
 markerArray.markers.push_back(marker);
 vis_pub.publish( markerArray );
 

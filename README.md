@@ -31,22 +31,35 @@ Put slam here when implemented.
 Main launch file. Launches multiple other launch files. Also cpp code to listen for likely topics and republish on a topic that the rest of the program expects. 
 - /setIP: 
 A script and two .txt files that are usefult for configuring a static or dynamic IP address that are needed when connecting to the lidars. This is useful when connecting back and forth between internet and an ethernet connected lidar. For details on how to use it see the comments in the setIP.sh file.
-- /pcd:
-Point Cloud Data collected various sensors for offline testing. To publish this data to a ros topic you can use: **rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/pcd/velodyne1/2826laser.pcd 1**
+- /data:
+Recorded point cloud data for offline testing in multiple formats
+- /data/pcd:
+Point Cloud Data collected from various sensors for offline testing in the .pcd format. To publish this data see the publish data section below.
+- /data/rosbag:
+Point Cloud Data collected from various sensors in the rosbag format. To publish this data see the publish data section below. 
+rosbag
 - /rviz: 
 RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory.
 
 
 # To download the project:
-
+'''
 git clone https://github.com/niko1499/Lidar_Utility.git
-
+'''
 # To compile the project:
-$ cd ~/Lidar_Utility
+cd ~/Lidar_Utility
+'''
+source devel/setup.bash	*(OR ADD IT TO YOUR BASHRC)
+'''
 
-$ source devel/setup.bash	*(OR ADD IT TO YOUR BASHRC)
+'''
+catkin_make
+'''			*If you have trouble delete /build /devel and any CMake files
 
-$ catkin_make			*If you have trouble delete /build /devel and any CMake files
+**NOTE IF catkin_make fails run this instead or delete the pandalidar driver**
+'''
+catkin_make --cmake-args -DCamera_Enable=ON
+'''
 
 # To Run the project
 There are several ways to run different parts of the project
@@ -64,7 +77,7 @@ $ roslaunch hesai_lidar pandora_ros.launch
 
 - .pcd file
 
-$ rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/pcd/velodyne1/2826laser.pcd 1
+$ rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd 1
 
 - OTHER
 
