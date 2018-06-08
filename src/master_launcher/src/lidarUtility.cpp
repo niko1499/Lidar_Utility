@@ -85,8 +85,8 @@ main (int argc, char** argv)
 		for(ros::master::V_TopicInfo::iterator it = master_topics.begin() ; it != master_topics.end(); it++){
 			const ros::master::TopicInfo& info= *it;
 			std::cout <<"topic_"<<it - master_topics.begin()<<": " <<info.name<<std::endl;
-		
-	currentTopic=info.name;
+
+			currentTopic=info.name;
 			if(currentTopic==potentialSubscription1)
 			{
 				ROS_INFO("Topic found! Subscribing to: %s",currentTopic.c_str());

@@ -26,7 +26,7 @@ ros::Publisher pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-	
+
 
 
 	//Callback for filtering and republishing recived data
@@ -55,67 +55,67 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//OUTLIER REMOVAL
 	if(mode==1){
-/*
-  std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
-    std::cerr << "    " << cloud->points[i].x << " "
-                        << cloud->points[i].y << " "
-                        << cloud->points[i].z << std::endl;
-*/
+		/*
+		   std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
+		   for (size_t i = 0; i < cloud->points.size (); ++i)
+		   std::cerr << "    " << cloud->points[i].x << " "
+		   << cloud->points[i].y << " "
+		   << cloud->points[i].z << std::endl;
+		 */
 
-//NEW CONVERSION https://stackoverflow.com/questions/36380217/pclpclpointcloud2-usage
-//or not
-/*
+		//NEW CONVERSION https://stackoverflow.com/questions/36380217/pclpclpointcloud2-usage
+		//or not
+		/*
 
-fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, cl::PointCloud<PointT>& cloud);
-void toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg);
+		   fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, cl::PointCloud<PointT>& cloud);
+		   void toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg);
 
-*/
-/*
+		 */
+		/*
 
-pcl::
-pcl::fromPCLPointCloud2 (*cloud_msg, pcl_pc);
+		   pcl::
+		   pcl::fromPCLPointCloud2 (*cloud_msg, pcl_pc);
 
 
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  // Optional
-  seg.setOptimizeCoefficients (true);
-  // Mandatory
-  seg.setModelType (pcl::SACMODEL_PLANE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setDistanceThreshold (0.01);
+		   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+		   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+		// Create the segmentation object
+		pcl::SACSegmentation<pcl::PointXYZ> seg;
+		// Optional
+		seg.setOptimizeCoefficients (true);
+		// Mandatory
+		seg.setModelType (pcl::SACMODEL_PLANE);
+		seg.setMethodType (pcl::SAC_RANSAC);
+		seg.setDistanceThreshold (0.01);
 
-  seg.setInputCloud (cloudPtrXYX);
-  seg.segment (*inliers, *coefficients);
+		seg.setInputCloud (cloudPtrXYX);
+		seg.segment (*inliers, *coefficients);
 
-  if (inliers->indices.size () == 0)
-  {
-    ROS_INFO("ERROR: Could not estimate a planar model for the given dataset.");
-  }
+		if (inliers->indices.size () == 0)
+		{
+		ROS_INFO("ERROR: Could not estimate a planar model for the given dataset.");
+		}
 
-  std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
-                                      << coefficients->values[1] << " "
-                                      << coefficients->values[2] << " " 
-                                      << coefficients->values[3] << std::endl;
+		std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
+		<< coefficients->values[1] << " "
+		<< coefficients->values[2] << " " 
+		<< coefficients->values[3] << std::endl;
 
-*/
-/*
-  std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
-  for (size_t i = 0; i < inliers->indices.size (); ++i)
-    std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
-                                               << cloud->points[inliers->indices[i]].y << " "
-                                               << cloud->points[inliers->indices[i]].z << std::endl;
-*/
+		 */
+		/*
+		   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
+		   for (size_t i = 0; i < inliers->indices.size (); ++i)
+		   std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
+		   << cloud->points[inliers->indices[i]].y << " "
+		   << cloud->points[inliers->indices[i]].z << std::endl;
+		 */
 	}else if (mode==2){
 
 	}else if (mode==3){
 
 	}
 
-/*
+	/*
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
@@ -125,7 +125,7 @@ pcl::fromPCLPointCloud2 (*cloud_msg, pcl_pc);
 
 	// Publish the data.
 	pub.publish (output);
-*/
+	 */
 
 
 
@@ -198,7 +198,7 @@ main (int argc, char** argv)
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-nh.deleteParam(modeParamName);
+	nh.deleteParam(modeParamName);
 
 	if(myMode=="r"||myMode=="R"){
 		mode=1;

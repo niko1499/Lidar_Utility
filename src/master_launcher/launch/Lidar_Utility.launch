@@ -10,6 +10,7 @@
   </node>
 
   <!--Launch other nodes-->
+  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_core.launch"/>
   <include file="$(find outlier_removal_filter)/launch/outlier_removal_core.launch"/>
   <include file="$(find pass_through_filter)/launch/pass_through_core.launch"/>
   <include file="$(find object_detective)/launch/object_detective_core.launch"/>

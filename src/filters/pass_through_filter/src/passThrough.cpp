@@ -24,7 +24,8 @@ ros::Publisher pc2_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-		//Callback for filtering and republishing recived data
+
+	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
 	ROS_INFO("Pass Through Filer: In Callback");
 	// Create a container for the data and filtered data.
@@ -50,36 +51,36 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//OUTLIER REMOVAL
 	if(mode==1){
- // Create the filtering object
-  pcl::PassThrough<pcl::PCLPointCloud2> pass;
-  pass.setInputCloud (cloudPtr);
-/*  
-pass.setFilterFieldName ("x");
-  pass.setFilterLimits (-50, 50.0);
-pass.setFilterFieldName ("y");
-  pass.setFilterLimits (-50.0, 50.0);
-*/
-pass.setFilterFieldName ("z");
-  pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
-  pass.setFilterLimitsNegative (true);
-  pass.filter (cloud_filtered);
+		// Create the filtering object
+		pcl::PassThrough<pcl::PCLPointCloud2> pass;
+		pass.setInputCloud (cloudPtr);
+		/*  
+		    pass.setFilterFieldName ("x");
+		    pass.setFilterLimits (-50, 50.0);
+		    pass.setFilterFieldName ("y");
+		    pass.setFilterLimits (-50.0, 50.0);
+		 */
+		pass.setFilterFieldName ("z");
+		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
+		pass.setFilterLimitsNegative (true);
+		pass.filter (cloud_filtered);
 
 
 	}else if (mode==2){
 
- // Create the filtering object
-  pcl::PassThrough<pcl::PCLPointCloud2> pass;
-  pass.setInputCloud (cloudPtr);
-/*  
-pass.setFilterFieldName ("x");
-  pass.setFilterLimits (-50, 50.0);
-pass.setFilterFieldName ("y");
-  pass.setFilterLimits (-50.0, 50.0);
-*/
-pass.setFilterFieldName ("z");
-  pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
-  pass.setFilterLimitsNegative (false);
-  pass.filter (cloud_filtered);
+		// Create the filtering object
+		pcl::PassThrough<pcl::PCLPointCloud2> pass;
+		pass.setInputCloud (cloudPtr);
+		/*  
+		    pass.setFilterFieldName ("x");
+		    pass.setFilterLimits (-50, 50.0);
+		    pass.setFilterFieldName ("y");
+		    pass.setFilterLimits (-50.0, 50.0);
+		 */
+		pass.setFilterFieldName ("z");
+		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
+		pass.setFilterLimitsNegative (false);
+		pass.filter (cloud_filtered);
 
 	}else if (mode==3){
 
@@ -150,8 +151,9 @@ main (int argc, char** argv)
 
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
+		printf(COLOR_GREEN BAR COLOR_RST);		
 		nh.getParam(modeParamName,myMode);
-		printf(COLOR_GREEN BAR COLOR_RST);
+
 		ROS_INFO("A param has been set **%s** \n               Setting mode to: %s",modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
@@ -165,7 +167,7 @@ main (int argc, char** argv)
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-nh.deleteParam(modeParamName);
+	nh.deleteParam(modeParamName);
 	if(myMode=="r"||myMode=="R"){
 		mode=1;
 	}else if(myMode=="o"||myMode=="O"){

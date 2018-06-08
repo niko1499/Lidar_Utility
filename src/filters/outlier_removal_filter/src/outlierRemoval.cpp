@@ -61,35 +61,35 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		sor.filter (cloud_filtered);
 	}else if (mode==2){
 		//Convert PointCloud2 to PointXYZ
-ROS_INFO("MADE IT TO 1");
+		ROS_INFO("MADE IT TO 1");
 		pcl::PCLPointCloud2 temp;
 		pcl_conversions::toPCL(*cloud_msg,temp);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ(new pcl::PointCloud<pcl::PointXYZ>);
 		pcl::fromPCLPointCloud2(temp,*cloudXYZ);
-ROS_INFO("MADE IT TO 2");
+		ROS_INFO("MADE IT TO 2");
 
 		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
 		// build the filter
 		outrem.setInputCloud(cloudXYZ);
 		outrem.setRadiusSearch(0.8);
 		outrem.setMinNeighborsInRadius (2);
-ROS_INFO("MADE IT TO 3");
+		ROS_INFO("MADE IT TO 3");
 
 		//setup xyzholder
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
 
-ROS_INFO("MADE IT TO 4");
+		ROS_INFO("MADE IT TO 4");
 
 		// apply filter
 		outrem.filter (*cloud_filteredXYZ);
 
 		//convert bask
 
-		
 
-//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
-//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
+
+		//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
+		//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
 
 	}else if (mode==3){/*
 		// build the condition
@@ -108,15 +108,15 @@ ROS_INFO("MADE IT TO 4");
 		condrem.filter (cloud_filtered);
 			    */
 	}
-ROS_INFO("MADE IT TO 5");
+	ROS_INFO("MADE IT TO 5");
 
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
-ROS_INFO("MADE IT TO 6");
+	ROS_INFO("MADE IT TO 6");
 
 	pcl_conversions::fromPCL(cloud_filtered,output);
-ROS_INFO("MADE IT TO 7");
+	ROS_INFO("MADE IT TO 7");
 
 	// Publish the data.
 	pub.publish (output);
@@ -190,7 +190,7 @@ main (int argc, char** argv)
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
-nh.deleteParam(modeParamName);
+	nh.deleteParam(modeParamName);
 	if(myMode=="r"||myMode=="R"){
 		mode=1;
 	}else if(myMode=="r"||myMode=="F"){

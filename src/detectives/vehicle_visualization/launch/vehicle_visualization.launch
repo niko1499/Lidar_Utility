@@ -1,0 +1,9 @@
+<launch>
+
+  <node name="vehicle_visualization" pkg="vehicle_visualization" type="vehicleVisualization" output="screen">
+    <!--param name="subscriber" value="object_points2"--/>
+    <!--param name="publisher" value="tbd"/-->
+    <param name="mode" value="c"/>
+  </node>
+
+</launch>
