@@ -17,6 +17,11 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/ModelCoefficients.h>
+#include <pcl/filters/project_inliers.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -44,6 +49,11 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	  pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
 	
+
+pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+    pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud2(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+
 	//Filter
 	if(mode==1){
 
@@ -92,7 +102,21 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     extract.setNegative (false);
     extract.filter (*cloud_p);
 
-	}else if (mode==2){
+	}else if (mode==2){//planar projection
+
+  // Create a set of planar coefficients with X=Y=0,Z=1
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+  coefficients->values.resize (4);
+  coefficients->values[0] = coefficients->values[1] = 0;
+  coefficients->values[2] = 1.0;
+  coefficients->values[3] = 0;
+
+  // Create the filtering object
+  pcl::ProjectInliers<pcl::PointXYZ> proj;
+  proj.setModelType (pcl::SACMODEL_PLANE);
+  proj.setInputCloud (temp_cloud2);
+  proj.setModelCoefficients (coefficients);
+  proj.filter (*cloud_filtered);
 	
 	}else if (mode==3){
 
