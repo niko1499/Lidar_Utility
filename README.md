@@ -3,7 +3,7 @@
 ## Nikolas Xarles Gamarra
 
 # Description 
-This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). 
+This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
 
 # Useful Links
 [ROSWIKI/PCL](wiki.ros.org/pcl_ros#pcd_to_pointcloud) Useful documentation on using PCL in ROS
@@ -51,12 +51,12 @@ git clone https://github.com/niko1499/Lidar_Utility.git
 # To compile the project:
 cd ~/Lidar_Utility
 '''
-source devel/setup.bash	*(OR ADD IT TO YOUR BASHRC)
+source devel/setup.bash	   *(OR ADD IT TO YOUR BASHRC)
 '''
 
 '''
 catkin_make
-'''			*If you have trouble delete /build /devel and any CMake files
+'''
 
 **NOTE IF catkin_make fails run this instead or delete the pandalidar driver**
 '''
@@ -69,18 +69,22 @@ There are several ways to run different parts of the project
 
 **First select the source of your lidar data and launch it:**
 
-- rslidar
-
-$ roslaunch rslidar_pointcloud rs_lidar_16.launch
-
+- rslidar: Below is the roslaunch command to launch the rslidar driver.
+'''
+roslaunch rslidar_pointcloud rs_lidar_16.launch
+'''
 - [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros)
-
-$ roslaunch hesai_lidar pandora_ros.launch
-
-- .pcd file
+'''
+roslaunch hesai_lidar pandora_ros.launch
+'''
+- .pcd file: Below is an example of how to use ROS to publis a .pcd as a ros PointCloud2 topic.
 
 '''
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd 1
+'''
+'''
+rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd 1
+
 '''
 - OTHER
 
@@ -89,13 +93,30 @@ data as a ROS topic. See the next step for how to specify a subscription topic a
 
 **Second Launch the Lidar_Utility**	
 
-This is the main launch file. It will launch multiple nodes and rviz. To launch individual nodes you can use rosrun or launch after exploring the director.
-
-$ roslaunch master_launcher Lidar_Utility.launch
-
+This is the main launch file. It will launch multiple nodes and rviz. To launch individual nodes you can use rosrun or roslaunch after exploring the directors. Most nodes contain a launch directory.
+'''
+roslaunch master_launcher Lidar_Utility.launch
+'''
 To manually set your main subscriber simply use
+'''
+roslaunch master_launcher Lidar_Utility.launch _subscriber:="your_topic"
+'''
 
-$ roslaunch master_launcher Lidar_Utility.launch _subscriber:="your_topic"
+The Lidar_Utility.launch will launch other launch files with the nameing convention node_name_core.launch these launch files contain important parameters and sometimes launch multiple instance with different setting of the same node. 
+
+The main purpose of this launch file is to search for all the possib
+# Parameters
+There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these.
+
+subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file
+publisher: sets publisher, if one isn't specified a default will be used as defined in the cpp file
+mode: sets mode, if one isn't specified a default will be used as defined in the cpp file
+For ease of use the mode can be set by a capital letter, lower case letter, or lowercase single word.
+Modes are typically things like filtered vs unfiltered, radial vs statistical ect... Look at the cpp file for a node to see available modes. 
+
+to set a parameter at launch: _parameter_name:="your_setting"
+to set a parameter in a launch file see this [ROS documentation]()
+
 
 
 
