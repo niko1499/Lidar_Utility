@@ -29,7 +29,6 @@ ros::Publisher vis_pub;
 
 visualization_msgs::Marker markerBuilder(float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale){
 
-
 	visualization_msgs::Marker marker;
 	marker.header.frame_id = "base_link";
 	marker.header.stamp = ros::Time();
@@ -86,8 +85,6 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//OUTLIER REMOVAL
 	if(mode==1){
-
-
 		int n=2;//number of objects currently detected
 
 		visualization_msgs::MarkerArray markerArray;
@@ -99,8 +96,6 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		marker=markerBuilder(0,0,0,1,1,1);
 
 		vis_pub.publish(marker);
-
-
 
 	}else if (mode==2){
 
@@ -177,10 +172,8 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-	ROS_INFO("%s: Mode options for parameter %s are: ""car"", ""van""",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""car"", ""van""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
@@ -200,7 +193,6 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-
 
 	vis_pub = nh.advertise<visualization_msgs::Marker>( pTopic, 0 );
 

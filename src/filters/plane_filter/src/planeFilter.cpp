@@ -45,91 +45,87 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
 
 	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
-	
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
-	
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 
-pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-    pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud2(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud2(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
 
 	//Filter
 	if(mode==1){
 
-  //std::cerr << "Point cloud data: " << cloud->points.size ()<<std::endl;
- 
-  pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
- pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+		//std::cerr << "Point cloud data: " << cloud->points.size ()<<std::endl;
 
- // Create the filtering object: downsample the dataset using a leaf size of 1cm
-  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-  sor.setInputCloud (cloudPtr);
-  sor.setLeafSize (0.01f, 0.01f, 0.01f);
-  sor.filter (*cloud_filtered_blob);
+		pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
 
-  // Convert to the templated PointCloud
-  pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);
+		// Create the filtering object: downsample the dataset using a leaf size of 1cm
+		pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+		sor.setInputCloud (cloudPtr);
+		sor.setLeafSize (0.01f, 0.01f, 0.01f);
+		sor.filter (*cloud_filtered_blob);
 
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  // Optional
-  seg.setOptimizeCoefficients (true);
-  // Mandatory
-  seg.setModelType (pcl::SACMODEL_PLANE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setDistanceThreshold (0.01);
+		// Convert to the templated PointCloud
+		pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);
 
-  seg.setInputCloud (cloud_filtered);
-  seg.segment (*inliers, *coefficients);
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+		// Create the segmentation object
+		pcl::SACSegmentation<pcl::PointXYZ> seg;
+		// Optional
+		seg.setOptimizeCoefficients (true);
+		// Mandatory
+		seg.setModelType (pcl::SACMODEL_PLANE);
+		seg.setMethodType (pcl::SAC_RANSAC);
+		seg.setDistanceThreshold (0.01);
 
-  if (inliers->indices.size () == 0)
-  {
-    ROS_INFO("Could not estimate a planar model for the given dataset.");
-    
-  }
-  std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
-                                      << coefficients->values[1] << " "
-                                      << coefficients->values[2] << " " 
-                                      << coefficients->values[3] << std::endl;
+		seg.setInputCloud (cloud_filtered);
+		seg.segment (*inliers, *coefficients);
 
-  pcl::ExtractIndices<pcl::PointXYZ> extract;
- // Extract the inliers
-    extract.setInputCloud (cloud_filtered);
-    extract.setIndices (inliers);
-    extract.setNegative (false);
-    extract.filter (*cloud_p);
+		if (inliers->indices.size () == 0)
+		{
+			ROS_INFO("Could not estimate a planar model for the given dataset.");
+
+		}
+		std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
+			<< coefficients->values[1] << " "
+			<< coefficients->values[2] << " " 
+			<< coefficients->values[3] << std::endl;
+
+		pcl::ExtractIndices<pcl::PointXYZ> extract;
+		// Extract the inliers
+		extract.setInputCloud (cloud_filtered);
+		extract.setIndices (inliers);
+		extract.setNegative (false);
+		extract.filter (*cloud_p);
 
 	}else if (mode==2){//planar projection
 
-  // Create a set of planar coefficients with X=Y=0,Z=1
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
-  coefficients->values.resize (4);
-  coefficients->values[0] = coefficients->values[1] = 0;
-  coefficients->values[2] = 1.0;
-  coefficients->values[3] = 0;
+		// Create a set of planar coefficients with X=Y=0,Z=1
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+		coefficients->values.resize (4);
+		coefficients->values[0] = coefficients->values[1] = 0;
+		coefficients->values[2] = 1.0;
+		coefficients->values[3] = 0;
 
-  // Create the filtering object
-  pcl::ProjectInliers<pcl::PointXYZ> proj;
-  proj.setModelType (pcl::SACMODEL_PLANE);
-  proj.setInputCloud (temp_cloud2);
-  proj.setModelCoefficients (coefficients);
-  proj.filter (*cloud_filtered);
-	
+		// Create the filtering object
+		pcl::ProjectInliers<pcl::PointXYZ> proj;
+		proj.setModelType (pcl::SACMODEL_PLANE);
+		proj.setInputCloud (temp_cloud2);
+		proj.setModelCoefficients (coefficients);
+		proj.filter (*cloud_filtered);
+
 	}else if (mode==3){
 
 	}
-
-sensor_msgs::PointCloud2 output;//create output container
+	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
 	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 	pc2_pub.publish (output);// Publish the data.
 }
-
 	int
 main (int argc, char** argv)
 {
@@ -188,8 +184,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("%s: Mode options for parameter %s are: ""segmentation"", ""projection"", ""x""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);

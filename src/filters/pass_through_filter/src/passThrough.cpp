@@ -25,7 +25,6 @@ ros::Publisher pc2_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
 	//Callback for filtering and republishing recived data
 	ROS_INFO("Pass Through Filer: In Callback");
 	// Create a container for the data and filtered data.
@@ -65,9 +64,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pass.setFilterLimitsNegative (true);
 		pass.filter (cloud_filtered);
 
-
 	}else if (mode==2){
-
 		// Create the filtering object
 		pcl::PassThrough<pcl::PCLPointCloud2> pass;
 		pass.setInputCloud (cloudPtr);
@@ -79,16 +76,11 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	}else if (mode==3){
 
 	}
-
-
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
 
-
 	pcl_conversions::fromPCL(cloud_filtered,output);
-
-
 	// Publish the data.
 	pc2_pub.publish (output);
 }
@@ -118,7 +110,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
 
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
@@ -153,8 +144,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("%s: Mode options for parameter %s are: ""road"", ""objects"", ""x""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);

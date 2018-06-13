@@ -38,28 +38,26 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
 	pcl::PCLPointCloud2 cloud_filtered;
 	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
-	
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
-	
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+
 	//Filter
 	if(mode==1){
 
-  // Create the filtering object
-  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-  sor.setInputCloud (cloudPtr);
-  sor.setLeafSize (0.01f, 0.01f, 0.01f);
-  sor.filter (cloud_filtered);
-
+		// Create the filtering object
+		pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+		sor.setInputCloud (cloudPtr);
+		sor.setLeafSize (0.01f, 0.01f, 0.01f);
+		sor.filter (cloud_filtered);
 
 	}else if (mode==2){
 
-		
+
 	}else if (mode==3){
 
 	}
 
-
-sensor_msgs::PointCloud2 output;//create output container
+	sensor_msgs::PointCloud2 output;//create output container
 	pcl_conversions::fromPCL(cloud_filtered,output);//convert to ROS data type
 	pc2_pub.publish (output);// Publish the data.
 }
@@ -122,8 +120,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("%s: Mode options for parameter %s are: ""downsample""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);

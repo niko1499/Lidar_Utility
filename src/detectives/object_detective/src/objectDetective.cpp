@@ -26,7 +26,6 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-
 #include <pcl/common/centroid.h>
 
 #define COLOR_RED "\033[1;31m"
@@ -62,7 +61,7 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 		r=0.0;
 		g=1.0;
 		b=1.0;
-}else if(type==5){//plate
+	}else if(type==5){//plate
 		r=1.0;
 		g=1.0;
 		b=1.0;
@@ -104,107 +103,107 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	ROS_INFO("ObjectDetective: In Callback");
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-    pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
-    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-visualization_msgs::MarkerArray markerArray;
+	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
+	visualization_msgs::MarkerArray markerArray;
 	visualization_msgs::Marker marker;
-//euclidian cluster extraxion
-//these were moved here for scope of mode
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PCDWriter writer;
-if(mode==1){
-// Create the filtering object: downsample the dataset using a leaf size of 1cm
-  pcl::VoxelGrid<pcl::PointXYZ> vg;
-  vg.setInputCloud (temp_cloud);
-  vg.setLeafSize (0.01f, 0.01f, 0.01f);//default (0.01f, 0.01f, 0.01f)
-  vg.filter (*cloud_filtered);
-  std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
-  // Create the segmentation object for the planar model and set all the parameters
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
+	//euclidian cluster extraxion
+	//these were moved here for scope of mode
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PCDWriter writer;
+	if(mode==1){
+		// Create the filtering object: downsample the dataset using a leaf size of 1cm
+		pcl::VoxelGrid<pcl::PointXYZ> vg;
+		vg.setInputCloud (temp_cloud);
+		vg.setLeafSize (0.01f, 0.01f, 0.01f);//default (0.01f, 0.01f, 0.01f)
+		vg.filter (*cloud_filtered);
+		std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
+		// Create the segmentation object for the planar model and set all the parameters
+		pcl::SACSegmentation<pcl::PointXYZ> seg;
+		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
 
-  seg.setOptimizeCoefficients (true);
-  seg.setModelType (pcl::SACMODEL_PLANE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setMaxIterations (100);
-  seg.setDistanceThreshold (0.02);
+		seg.setOptimizeCoefficients (true);
+		seg.setModelType (pcl::SACMODEL_PLANE);
+		seg.setMethodType (pcl::SAC_RANSAC);
+		seg.setMaxIterations (100);
+		seg.setDistanceThreshold (0.02);
 
-  int i=0, nr_points = (int) cloud_filtered->points.size ();
-  while (cloud_filtered->points.size () > 0.3 * nr_points)
-  {
-    // Segment the largest planar component from the remaining cloud
-    seg.setInputCloud (cloud_filtered);
-    seg.segment (*inliers, *coefficients);
-    if (inliers->indices.size () == 0)
-    {
-      std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
-      break;
-    }
-    // Extract the planar inliers from the input cloud
-    pcl::ExtractIndices<pcl::PointXYZ> extract;
-    extract.setInputCloud (cloud_filtered);
-    extract.setIndices (inliers);
-    extract.setNegative (false);
-    // Get the points associated with the planar surface
-    extract.filter (*cloud_plane);
-    std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
+		int i=0, nr_points = (int) cloud_filtered->points.size ();
+		while (cloud_filtered->points.size () > 0.3 * nr_points)
+		{
+			// Segment the largest planar component from the remaining cloud
+			seg.setInputCloud (cloud_filtered);
+			seg.segment (*inliers, *coefficients);
+			if (inliers->indices.size () == 0)
+			{
+				std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+				break;
+			}
+			// Extract the planar inliers from the input cloud
+			pcl::ExtractIndices<pcl::PointXYZ> extract;
+			extract.setInputCloud (cloud_filtered);
+			extract.setIndices (inliers);
+			extract.setNegative (false);
+			// Get the points associated with the planar surface
+			extract.filter (*cloud_plane);
+			std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
 
-//add missing cloud_f //NI
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
-    // Remove the planar inliers, extract the rest
-    extract.setNegative (true);
-    extract.filter (*cloud_f);
-    *cloud_filtered = *cloud_f;
-  }
-}else if(mode==2||mode==3){
-cloud_filtered=temp_cloud;
-}
-  // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud (cloud_filtered);
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (0.02); // 2cm
-  ec.setMinClusterSize (100);
-  ec.setMaxClusterSize (25000);
-  ec.setSearchMethod (tree);
-  ec.setInputCloud (cloud_filtered);
-  ec.extract (cluster_indices);
-  int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-  {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
-    cloud_cluster->width = cloud_cluster->points.size ();
-    cloud_cluster->height = 1;
-    cloud_cluster->is_dense = true;
+			//add missing cloud_f //NI
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+			// Remove the planar inliers, extract the rest
+			extract.setNegative (true);
+			extract.filter (*cloud_f);
+			*cloud_filtered = *cloud_f;
+		}
+	}else if(mode==2||mode==3){
+		cloud_filtered=temp_cloud;
+	}
+	// Creating the KdTree object for the search method of the extraction
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+	tree->setInputCloud (cloud_filtered);
+	std::vector<pcl::PointIndices> cluster_indices;
+	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+	ec.setClusterTolerance (0.02); // 2cm
+	ec.setMinClusterSize (100);
+	ec.setMaxClusterSize (25000);
+	ec.setSearchMethod (tree);
+	ec.setInputCloud (cloud_filtered);
+	ec.extract (cluster_indices);
+	int j = 0;
+	for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+	{
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+		for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+			cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
+		cloud_cluster->width = cloud_cluster->points.size ();
+		cloud_cluster->height = 1;
+		cloud_cluster->is_dense = true;
 
-    std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
-    std::stringstream ss;
-    ss << "cloud_cluster_" << j << ".pcd";
-    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
-    j++;
-pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
+		std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+		std::stringstream ss;
+		ss << "cloud_cluster_" << j << ".pcd";
+		writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
+		j++;
+		pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
 
-for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
-centroid.add(pcl::PointXYZ(cloud_filtered->points[*pit2].x,cloud_filtered->points[*pit2].y,cloud_filtered->points[*pit2].z));
-}
-pcl::PointXYZ c1;
-centroid.get (c1);
-if(mode!=3){
-	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
-	markerArray.markers.push_back(marker);
-}else if (mode==3){
-	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,.5,.1,5);
-	markerArray.markers.push_back(marker);
-}
-  }
-//publih
-vis_pub.publish(markerArray);
+		for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
+			centroid.add(pcl::PointXYZ(cloud_filtered->points[*pit2].x,cloud_filtered->points[*pit2].y,cloud_filtered->points[*pit2].z));
+		}
+		pcl::PointXYZ c1;
+		centroid.get (c1);
+		if(mode!=3){
+			marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
+			markerArray.markers.push_back(marker);
+		}else if (mode==3){
+			marker=markerBuilder(j,c1.x,c1.y,c1.z,1,.5,.1,5);
+			markerArray.markers.push_back(marker);
+		}
+	}
+	//publih
+	vis_pub.publish(markerArray);
 
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
@@ -219,7 +218,6 @@ main (int argc, char** argv)
 	const std::string defaultSubscriber("object_points1");
 	const std::string defaultPublisher("objects_");
 	const std::string defaultMode("f");
-
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -237,7 +235,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
 
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
@@ -272,8 +269,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: Mode options for parameter %s are: ""filtered"", ""unfiltered"", ""l"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
 
-
-
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
@@ -292,7 +287,6 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-
 
 	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"visualized", 0 );
 

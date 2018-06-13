@@ -35,7 +35,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
 
-float min,max;
+	float min,max;
 	//Filtering
 	if(mode==1){
 		min=150;
@@ -46,14 +46,13 @@ float min,max;
 
 	}
 
-
-// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		pass.setFilterFieldName ("intensity");
-		pass.setFilterLimits (min,max);
-		pass.setFilterLimitsNegative (true);
-		pass.filter (cloud_filtered);
+	// Create the filtering object
+	pcl::PassThrough<pcl::PCLPointCloud2> pass;
+	pass.setInputCloud (cloudPtr);
+	pass.setFilterFieldName ("intensity");
+	pass.setFilterLimits (min,max);
+	pass.setFilterLimitsNegative (true);
+	pass.filter (cloud_filtered);
 
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl_conversions::fromPCL(cloud_filtered,output);//convert to ROS data type
@@ -77,7 +76,7 @@ main (int argc, char** argv)
 	const std::string publisherParamName(nodeName + "/publisher");
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
-	ROS_INFO("Node Name: %s",nodeName.c_str(),nodeName.c_str(),modeParamName.c_str());
+	ROS_INFO("Node Name: %s",nodeName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -112,8 +111,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("%s: Mode options for parameter %s are: ""license"", ""tree"", ""road"", ""car""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);

@@ -26,7 +26,6 @@ ros::Publisher pub;
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
 	ROS_INFO("%s : In Callback",nodeName.c_str());
@@ -73,19 +72,12 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		outrem.setInputCloud(cloudXYZ);
 		outrem.setRadiusSearch(0.8);
 		outrem.setMinNeighborsInRadius (2);
-	
-
 		//setup xyzholder
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
-
 		// apply filter
 		outrem.filter (*cloud_filteredXYZ);
-
 		//convert bask
-
-
-
 		//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
 		//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
 
@@ -106,15 +98,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		condrem.filter (cloud_filtered);
 			    */
 	}
-
-
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-
 	pcl_conversions::fromPCL(cloud_filtered,output);
-
 	// Publish the data.
 	pub.publish (output);
 }
@@ -178,8 +165,6 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 		ROS_INFO("%s: Mode options for parameter %s are: ""statistical"", ""radial"", ""conditional""",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
