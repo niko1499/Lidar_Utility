@@ -29,6 +29,7 @@
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
+static std::string nodeName("plane_filter");
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
@@ -135,9 +136,7 @@ main (int argc, char** argv)
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("passThrough_filtered");
-	const std::string defaultMode("r");
-
-	std::string nodeName("passThrough_filter");//temp name to initialize with
+	const std::string defaultMode("s");
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -151,7 +150,7 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
+
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -187,7 +186,7 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""segmentation"", ""projection"", ""x""",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -196,9 +195,9 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="f"||myMode=="F"){
+	if(myMode=="S"||myMode=="S"||myMode=="segmentation"){
 		mode=1;
-	}else if(myMode=="u"||myMode=="U"){
+	}else if(myMode=="p"||myMode=="P"||myMode=="projection"){
 		mode=2;
 	}else if(myMode=="c"||myMode=="C"){
 		mode=3;

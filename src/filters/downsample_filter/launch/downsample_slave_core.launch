@@ -7,6 +7,4 @@
     <param name="publisher" value="y"/>
     <param name="mode" value="d"/>
   </node>
-
-
 </launch>

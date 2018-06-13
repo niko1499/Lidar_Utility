@@ -16,6 +16,7 @@
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
+static std::string nodeName("pass_through_filter");
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
@@ -100,8 +101,6 @@ main (int argc, char** argv)
 	const std::string defaultPublisher("passThrough_filtered");
 	const std::string defaultMode("r");
 
-	std::string nodeName("passThrough_filter");//temp name to initialize with
-
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
@@ -114,7 +113,7 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
+
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -152,7 +151,7 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""road"", ""objects"", ""x""",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -161,11 +160,11 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="r"||myMode=="R"||myMode=="road"){
 		mode=1;
-	}else if(myMode=="o"||myMode=="O"){
+	}else if(myMode=="o"||myMode=="O"||myMode=="objects"){
 		mode=2;
-	}else if(myMode=="c"||myMode=="C"){
+	}else if(myMode=="c"||myMode=="C"||myMode=="asdf"){
 		mode=3;
 	}
 

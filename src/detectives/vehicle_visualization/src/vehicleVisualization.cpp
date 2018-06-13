@@ -17,7 +17,8 @@
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-int mode =1;//fix this later
+static int mode =1;//fix this later
+static std::string nodeName("vehicle_visualization");
 
 //This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
@@ -61,7 +62,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
-	ROS_INFO("Outlier Removal Filer: In Callback");
+	ROS_INFO("%s: In Callback",nodeName.c_str());
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
@@ -128,8 +129,6 @@ main (int argc, char** argv)
 	const std::string defaultPublisher("self_visualized");
 	const std::string defaultMode("c");
 
-	std::string nodeName("object_detective");//temp name to initialize with
-
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
@@ -141,8 +140,7 @@ main (int argc, char** argv)
 	const std::string publisherParamName(nodeName + "/publisher");
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
-	ROS_INFO("%s: Node Name: %s",nodeName.c_str());
-	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
+	ROS_INFO("Node Name: %s",nodeName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -179,7 +177,7 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+	ROS_INFO("%s: Mode options for parameter %s are: ""car"", ""van""",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -191,9 +189,9 @@ main (int argc, char** argv)
 
 	if(myMode=="c"||myMode=="c"){//car
 		mode=1;
-	}else if(myMode=="v"||myMode=="v"){//van
+	}else if(myMode=="v"||myMode=="v"||myMode=="van"){//van
 		mode=2;
-	}else if(myMode=="c"||myMode=="C"){//t
+	}else if(myMode=="c"||myMode=="C"||myMode=="car"){//car
 		mode=3;
 	}
 

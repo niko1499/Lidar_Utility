@@ -36,6 +36,7 @@
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
+static std::string nodeName("object_detective");
 
 //This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
@@ -219,7 +220,6 @@ main (int argc, char** argv)
 	const std::string defaultPublisher("objects_");
 	const std::string defaultMode("f");
 
-	std::string nodeName("object_detective");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -233,7 +233,6 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -270,7 +269,7 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""filtered"", ""unfiltered"", ""l"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -280,9 +279,9 @@ main (int argc, char** argv)
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
 
-	if(myMode=="f"||myMode=="F"){
+	if(myMode=="f"||myMode=="F"||myMode=="filtered"){
 		mode=1;
-	}else if(myMode=="u"||myMode=="U"){
+	}else if(myMode=="u"||myMode=="U"||myMode=="unfiltered"){
 		mode=2;
 	}else if(myMode=="l"||myMode=="L"){
 		mode=3;//2 then 3

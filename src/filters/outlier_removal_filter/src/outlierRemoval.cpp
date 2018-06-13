@@ -19,7 +19,7 @@
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
 int mode =1;//fix this later
-
+static std::string nodeName("outlier_removal_filter");
 //This node subscribes to a PointCloud2 topic, peforms a statistical outlier filter, and republishes the point cloud. 
 
 ros::Publisher pub;
@@ -128,8 +128,6 @@ main (int argc, char** argv)
 	const std::string defaultPublisher("outliers_filtered");
 	const std::string defaultMode("s");
 
-	std::string nodeName("outlier_removal_filter");//temp name to initialize with
-
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
@@ -142,7 +140,6 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -179,7 +176,7 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""statistical"", ""radial"", ""conditional""",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -188,11 +185,11 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="S"||myMode=="S"||myMode=="statistical"){
 		mode=1;
-	}else if(myMode=="r"||myMode=="F"){
+	}else if(myMode=="r"||myMode=="R"||myMode=="radial"){
 		mode=2;
-	}else if(myMode=="r"||myMode=="V"){
+	}else if(myMode=="c"||myMode=="C"||myMode=="conditional"){
 		mode=3;
 	}
 

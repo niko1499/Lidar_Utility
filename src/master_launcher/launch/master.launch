@@ -1,0 +1,43 @@
+<!--One launch file to rule them all-->
+<launch>
+  <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
+    <!--commented out so program uses defaults or searches for available topic-->
+    <!--param name="subscriber" value="cloud_pcd"/-->
+    <!--param name="publisher" value="lidar_utility_points"/-->
+  </node>
+
+  <!--Launch other nodes-->
+  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_slave.launch">
+    <arg name="name" value="vehicle_visualization" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="self_visualized" />
+    <arg name="mode" value="car" />
+  </include>
+
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass1" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="outliers_removed_pass1" />
+    <arg name="mode" value="statistical" />
+  </include>
+
+<!--
+
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass2" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
+    <arg name="publisher" value="outliers_removed_pass2" />
+    <arg name="mode" value="statistical" />
+  </include>
+-->
+
+<!--
+  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_core.launch"/>
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_core.launch"/>
+  <include file="$(find pass_through_filter)/launch/pass_through_core.launch"/>
+  <include file="$(find object_detective)/launch/object_detective_core.launch"/>
+-->
+  <!--Launch rviz with prepaired configuration-->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
+
+</launch>
