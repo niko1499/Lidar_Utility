@@ -67,9 +67,6 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 		r=1.0;
 		g=1.0;
 		b=1.0;
-xScale=1;
-yScale=.5;
-zScale=.1;
 		alpha=.85;
 	}else{//type unknown
 		r=1.0;
@@ -122,10 +119,15 @@ visualization_msgs::MarkerArray markerArray;
 
 
 //euclidian cluster extraxion
+
+//these were moved here for scope of mode
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PCDWriter writer;
+
 if(mode==1){
 // Create the filtering object: downsample the dataset using a leaf size of 1cm
   pcl::VoxelGrid<pcl::PointXYZ> vg;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+
   vg.setInputCloud (temp_cloud);
   vg.setLeafSize (0.01f, 0.01f, 0.01f);//default (0.01f, 0.01f, 0.01f)
   vg.filter (*cloud_filtered);
@@ -136,7 +138,7 @@ if(mode==1){
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::PCDWriter writer;
+
   seg.setOptimizeCoefficients (true);
   seg.setModelType (pcl::SACMODEL_PLANE);
   seg.setMethodType (pcl::SAC_RANSAC);
@@ -174,7 +176,7 @@ if(mode==1){
     *cloud_filtered = *cloud_f;
   }
 
-}else if(mode==2){
+}else if(mode==2||mode==3){
 cloud_filtered=temp_cloud;
 }
 
@@ -221,9 +223,13 @@ pcl::PointXYZ c1;
 
 
 centroid.get (c1);
-
+if(mode!=3){
 	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
 	markerArray.markers.push_back(marker);
+}else if (mode==3){
+	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,.5,.1,5);
+	markerArray.markers.push_back(marker);
+}
   }
 
 //publish
@@ -318,8 +324,8 @@ main (int argc, char** argv)
 		mode=1;
 	}else if(myMode=="u"||myMode=="U"){
 		mode=2;
-	}else if(myMode=="c"||myMode=="C"){
-		mode=3;
+	}else if(myMode=="l"||myMode=="L"){
+		mode=3;//2 then 3
 	}
 
 	// Create a ROS subscriber for the input point cloud
