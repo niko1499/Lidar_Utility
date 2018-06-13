@@ -1,16 +1,13 @@
+#include <ros/ros.h>
+// PCL specific includes
 #include <iostream>
-
-#include <stdio.h>
-
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/radius_outlier_removal.h>
-#include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/passthrough.h>
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
@@ -20,16 +17,17 @@
 #define BAR "----------------------------------------------------------------------------\n"
 int mode =1;//fix this later
 
-//This node subscribes to a PointCloud2 topic, peforms a statistical outlier filter, and republishes the point cloud. 
+//This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
-ros::Publisher pub;
+ros::Publisher pc2_pub;
 
-void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+	void 
+cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
-	ROS_INFO("Outlier Removal Filer: In Callback");
+	ROS_INFO("Pass Through Filer: In Callback");
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
@@ -53,58 +51,39 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//OUTLIER REMOVAL
 	if(mode==1){
-		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-		pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
-		sor.setInputCloud (cloudPtr);
-		sor.setMeanK (75);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet
-		sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default
-		sor.filter (cloud_filtered);
+		// Create the filtering object
+		pcl::PassThrough<pcl::PCLPointCloud2> pass;
+		pass.setInputCloud (cloudPtr);
+		/*  
+		    pass.setFilterFieldName ("x");
+		    pass.setFilterLimits (-50, 50.0);
+		    pass.setFilterFieldName ("y");
+		    pass.setFilterLimits (-50.0, 50.0);
+		 */
+		pass.setFilterFieldName ("z");
+		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
+		pass.setFilterLimitsNegative (true);
+		pass.filter (cloud_filtered);
+
+
 	}else if (mode==2){
-		//Convert PointCloud2 to PointXYZ
 
-		pcl::PCLPointCloud2 temp;
-		pcl_conversions::toPCL(*cloud_msg,temp);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ(new pcl::PointCloud<pcl::PointXYZ>);
-		pcl::fromPCLPointCloud2(temp,*cloudXYZ);
+		// Create the filtering object
+		pcl::PassThrough<pcl::PCLPointCloud2> pass;
+		pass.setInputCloud (cloudPtr);
+		/*  
+		    pass.setFilterFieldName ("x");
+		    pass.setFilterLimits (-50, 50.0);
+		    pass.setFilterFieldName ("y");
+		    pass.setFilterLimits (-50.0, 50.0);
+		 */
+		pass.setFilterFieldName ("z");
+		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
+		pass.setFilterLimitsNegative (false);
+		pass.filter (cloud_filtered);
 
+	}else if (mode==3){
 
-		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-		// build the filter
-		outrem.setInputCloud(cloudXYZ);
-		outrem.setRadiusSearch(0.8);
-		outrem.setMinNeighborsInRadius (2);
-	
-
-		//setup xyzholder
-
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
-
-		// apply filter
-		outrem.filter (*cloud_filteredXYZ);
-
-		//convert bask
-
-
-
-		//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
-		//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
-
-	}else if (mode==3){/*
-		// build the condition
-		pcl::ConditionAnd<pcl::PCLPointCloud2>::Ptr range_cond (new
-		pcl::ConditionAnd<pcl::PCLPointCloud2> ());
-		range_cond->addComparison (pcl::FieldComparison<pcl::PCLPointCloud2>::ConstPtr (new
-		pcl::FieldComparison<pcl::PCLPointCloud2> ("z", pcl::ComparisonOps::GT, 0.0)));
-		range_cond->addComparison (pcl::FieldComparison<pcl::PCLPointCloud2>::ConstPtr (new
-		pcl::FieldComparison<pcl::PCLPointCloud2> ("z", pcl::ComparisonOps::LT, 0.8)));
-		// build the filter
-		pcl::ConditionalRemoval<pcl::PCLPointCloud2> condrem;
-		condrem.setCondition (range_cond);
-		condrem.setInputCloud (cloudPtr);
-		condrem.setKeepOrganized(true);
-		// apply filter
-		condrem.filter (cloud_filtered);
-			    */
 	}
 
 
@@ -115,20 +94,20 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	pcl_conversions::fromPCL(cloud_filtered,output);
 
-	// Publish the data.
-	pub.publish (output);
-}
 
+	// Publish the data.
+	pc2_pub.publish (output);
+}
 
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("outliers_filtered");
-	const std::string defaultMode("s");
+	const std::string defaultPublisher("passThrough_filtered");
+	const std::string defaultMode("r");
 
-	std::string nodeName("outlier_removal_filter");//temp name to initialize with
+	std::string nodeName("passThrough_filter");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -142,7 +121,7 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
+	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -157,7 +136,7 @@ main (int argc, char** argv)
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("%s: No param set **%s**\nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
@@ -172,8 +151,9 @@ main (int argc, char** argv)
 
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
+		printf(COLOR_GREEN BAR COLOR_RST);		
 		nh.getParam(modeParamName,myMode);
-		printf(COLOR_GREEN BAR COLOR_RST);
+
 		ROS_INFO("%s: A param has been set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
@@ -190,9 +170,9 @@ main (int argc, char** argv)
 	nh.deleteParam(modeParamName);
 	if(myMode=="r"||myMode=="R"){
 		mode=1;
-	}else if(myMode=="r"||myMode=="F"){
+	}else if(myMode=="o"||myMode=="O"){
 		mode=2;
-	}else if(myMode=="r"||myMode=="V"){
+	}else if(myMode=="c"||myMode=="C"){
 		mode=3;
 	}
 
@@ -201,7 +181,7 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin

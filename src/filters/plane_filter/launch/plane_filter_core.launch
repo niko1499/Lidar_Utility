@@ -1,0 +1,23 @@
+<launch>
+
+<!--Launch file to be used by the master launcher-->
+
+  <node name="plane_filter_pass1" pkg="plane_filter" type="planeFilter" output="screen">
+    <param name="subscriber" value="road_points"/>
+    <param name="publisher" value="plane_pass1"/>
+    <param name="mode" value="s"/>
+  </node>
+
+  <node name="plane_filter_pass2" pkg="plane_filter" type="planeFilter" output="screen">
+    <param name="subscriber" value="plane_pass1"/>
+    <param name="publisher" value="plane_pass2"/>
+    <param name="mode" value="s"/>
+  </node>
+
+  <node name="plane_filter_projection" pkg="plane_filter" type="planeFilter" output="screen">
+    <param name="subscriber" value="plane_pass2"/>
+    <param name="publisher" value="plane_projection"/>
+    <param name="mode" value="p"/>
+  </node>
+
+</launch>
