@@ -7,12 +7,9 @@ Panels:
         - /Global Options1
         - /Status1
         - /RAW DATA - PointCloud21
-        - /Outlier Filter Pass1 - PointCloud21
-        - /Outlier Filter Pass2 - PointCloud21
-        - /Road Pass Through - PointCloud21
-        - /Object Pass Through - PointCloud21
         - /Marker1
         - /Lidar - Marker1
+        - /Important Points - PointCloud21
       Splitter Ratio: 0.516666651
     Tree Height: 712
   - Class: rviz/Selection
@@ -119,7 +116,7 @@ Visualization Manager:
       Max Color: 255; 255; 255
       Max Intensity: 255
       Min Color: 0; 0; 0
-      Min Intensity: 0.580456138
+      Min Intensity: 0.581084311
       Name: RAW DATA - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -144,7 +141,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: FlatColor
       Decay Time: 1
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 255
@@ -161,7 +158,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -179,7 +176,7 @@ Visualization Manager:
       Max Color: 255; 255; 255
       Max Intensity: 255
       Min Color: 0; 0; 0
-      Min Intensity: 0.580456138
+      Min Intensity: 0.581084311
       Name: Outlier Filter Pass2 - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -207,9 +204,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 255
+      Max Intensity: 214.957504
       Min Color: 0; 0; 0
-      Min Intensity: 0.637728095
+      Min Intensity: 0.635477901
       Name: Road Pass Through - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -295,7 +292,7 @@ Visualization Manager:
       Class: rviz/PointCloud2
       Color: 255; 255; 255
       Color Transformer: Intensity
-      Decay Time: 0
+      Decay Time: 1
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 0
@@ -339,7 +336,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 22.8279572
+      Distance: 86.7118301
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -354,10 +351,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.03479624
+      Pitch: 0.934795976
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.75538683
+      Yaw: 4.99538708
     Saved: ~
 Window Geometry:
   Displays:

@@ -80,10 +80,10 @@ roslaunch hesai_lidar pandora_ros.launch
 - .pcd file: Below is an example of how to use ROS to publis a .pcd as a ros PointCloud2 topic.
 
 '''
-rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd 1
+rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
 '''
 '''
-rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd 1
+rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 
 '''
 - OTHER

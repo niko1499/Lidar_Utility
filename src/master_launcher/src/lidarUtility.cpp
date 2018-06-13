@@ -24,7 +24,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
 	//Callback to echo any reciveed point cloud topics
 		printf(COLOR_BLUE BAR COLOR_RST);
-	ROS_INFO("Lidar Utility: In Callback");
+	ROS_INFO("--Lidar Utility: In Callback--");
 
 	// Create a container for the data.
 	sensor_msgs::PointCloud2 output;

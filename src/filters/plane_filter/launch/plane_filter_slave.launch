@@ -7,7 +7,7 @@
 
   <node name="$(arg name)" pkg="plane_filter" type="planeFilter" output="screen">
     <param name="subscriber" value="$(arg subscriber)"/>
-    <param name="publisher" value="$(arg subscriber)"/>
+    <param name="publisher" value="$(arg publisher)"/>
     <param name="mode" value="$(arg mode)"/>
   </node>
 

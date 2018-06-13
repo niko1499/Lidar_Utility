@@ -29,7 +29,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
-	ROS_INFO("Outlier Removal Filer: In Callback");
+	ROS_INFO("%s : In Callback",nodeName.c_str());
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
