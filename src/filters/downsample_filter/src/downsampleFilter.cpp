@@ -9,6 +9,13 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
 
+#include <pcl/ModelCoefficients.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -24,83 +31,48 @@ ros::Publisher pc2_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
 	//Callback for filtering and republishing recived data
-	ROS_INFO("Pass Through Filer: In Callback");
+	ROS_INFO("planeFilter: In Callback");
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
 	pcl::PCLPointCloud2 cloud_filtered;
-
-	// Do data processing here...
-
-	//Convert to PCL data type
-	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-	//Perform filtering
-
-	//KEEP THIS BLOCK FOR REFERENCE. 
-	//Examples from PCL.org will need to be changed to match format	
-	/*
-	   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-	   sor.setInputCloud(cloudPtr);
-	   sor.setLeafSize(0.1,0.1,0.1);
-	   sor.filter (cloud_filtered);
-	 */
-
-	//OUTLIER REMOVAL
+	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
+	
+	  pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+	
+	//Filter
 	if(mode==1){
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		/*  
-		    pass.setFilterFieldName ("x");
-		    pass.setFilterLimits (-50, 50.0);
-		    pass.setFilterFieldName ("y");
-		    pass.setFilterLimits (-50.0, 50.0);
-		 */
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
-		pass.setFilterLimitsNegative (true);
-		pass.filter (cloud_filtered);
+
+  // Create the filtering object
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+  sor.setInputCloud (cloudPtr);
+  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.filter (cloud_filtered);
 
 
 	}else if (mode==2){
 
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
-		pass.setFilterLimitsNegative (false);
-		pass.filter (cloud_filtered);
-
+		
 	}else if (mode==3){
 
 	}
 
 
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-
-	pcl_conversions::fromPCL(cloud_filtered,output);
-
-
-	// Publish the data.
-	pc2_pub.publish (output);
+sensor_msgs::PointCloud2 output;//create output container
+	pcl_conversions::fromPCL(cloud_filtered,output);//convert to ROS data type
+	pc2_pub.publish (output);// Publish the data.
 }
 
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
-	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("passThrough_filtered");
-	const std::string defaultMode("r");
+	const std::string defaultSubscriber("lidar_utility_points");
+	const std::string defaultPublisher("downsampled");
+	const std::string defaultMode("d");
 
-	std::string nodeName("passThrough_filter");//temp name to initialize with
+	std::string nodeName("downsample_filter");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -119,8 +91,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
-
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
@@ -129,7 +99,7 @@ main (int argc, char** argv)
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: No param set **%s**\nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
@@ -161,7 +131,7 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="s"||myMode=="S"){
 		mode=1;
 	}else if(myMode=="o"||myMode=="O"){
 		mode=2;

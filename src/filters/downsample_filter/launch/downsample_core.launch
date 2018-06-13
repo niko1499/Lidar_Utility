@@ -1,0 +1,12 @@
+<launch>
+
+<!--Launch file to be used by the master launcher-->
+
+  <node name="downsample_filter" pkg="downsample_filter" type="downsampleFilter" output="screen">
+    <param name="subscriber" value="x/>
+    <param name="publisher" value="y"/>
+    <param name="mode" value="d"/>
+  </node>
+
+
+</launch>

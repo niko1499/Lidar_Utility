@@ -9,13 +9,21 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
 
+#include <pcl/ModelCoefficients.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/extract_indices.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-int mode =1;//fix this later
+static int mode =1;//fix this later
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
@@ -24,79 +32,77 @@ ros::Publisher pc2_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
 	//Callback for filtering and republishing recived data
-	//Comment out as needed. Useful for debuging
-	ROS_INFO("Pass Through Filer: In Callback");
+	ROS_INFO("planeFilter: In Callback");
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-	pcl::PCLPointCloud2 cloud_filtered;
 
-	// Do data processing here...
+	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
+	
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 
-	//Convert to PCL data type
-	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-	//Perform filtering
-
-	//KEEP THIS BLOCK FOR REFERENCE. 
-	//Examples from PCL.org will need to be changed to match format	
-	/*
-	   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-	   sor.setInputCloud(cloudPtr);
-	   sor.setLeafSize(0.1,0.1,0.1);
-	   sor.filter (cloud_filtered);
-	 */
-
-	//OUTLIER REMOVAL
+	  pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+	
+	//Filter
 	if(mode==1){
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		/*  
-		    pass.setFilterFieldName ("x");
-		    pass.setFilterLimits (-50, 50.0);
-		    pass.setFilterFieldName ("y");
-		    pass.setFilterLimits (-50.0, 50.0);
-		 */
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
-		pass.setFilterLimitsNegative (true);
-		pass.filter (cloud_filtered);
 
+  //std::cerr << "Point cloud data: " << cloud->points.size ()<<std::endl;
+ 
+  pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
+ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+
+ // Create the filtering object: downsample the dataset using a leaf size of 1cm
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+  sor.setInputCloud (cloudPtr);
+  sor.setLeafSize (0.01f, 0.01f, 0.01f);
+  sor.filter (*cloud_filtered_blob);
+
+  // Convert to the templated PointCloud
+  pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);
+
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  // Create the segmentation object
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  // Optional
+  seg.setOptimizeCoefficients (true);
+  // Mandatory
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.01);
+
+  seg.setInputCloud (cloud_filtered);
+  seg.segment (*inliers, *coefficients);
+
+  if (inliers->indices.size () == 0)
+  {
+    ROS_INFO("Could not estimate a planar model for the given dataset.");
+    
+  }
+  std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
+                                      << coefficients->values[1] << " "
+                                      << coefficients->values[2] << " " 
+                                      << coefficients->values[3] << std::endl;
+
+  pcl::ExtractIndices<pcl::PointXYZ> extract;
+ // Extract the inliers
+    extract.setInputCloud (cloud_filtered);
+    extract.setIndices (inliers);
+    extract.setNegative (false);
+    extract.filter (*cloud_p);
 
 	}else if (mode==2){
-
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		/*  
-		    pass.setFilterFieldName ("x");
-		    pass.setFilterLimits (-50, 50.0);
-		    pass.setFilterFieldName ("y");
-		    pass.setFilterLimits (-50.0, 50.0);
-		 */
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
-		pass.setFilterLimitsNegative (false);
-		pass.filter (cloud_filtered);
-
+	
 	}else if (mode==3){
 
 	}
 
-
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-
-	pcl_conversions::fromPCL(cloud_filtered,output);
-
-
-	// Publish the data.
-	pc2_pub.publish (output);
+sensor_msgs::PointCloud2 output;//create output container
+	pcl::PCLPointCloud2 temp_output;//create PCLPC2
+	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+	pc2_pub.publish (output);// Publish the data.
 }
 
 	int
@@ -126,8 +132,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
-
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
@@ -136,7 +140,7 @@ main (int argc, char** argv)
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: No param set **%s**\nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
@@ -168,9 +172,9 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="f"||myMode=="F"){
 		mode=1;
-	}else if(myMode=="o"||myMode=="O"){
+	}else if(myMode=="u"||myMode=="U"){
 		mode=2;
 	}else if(myMode=="c"||myMode=="C"){
 		mode=3;

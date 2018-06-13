@@ -17,13 +17,13 @@
 #define COLOR_RST "\033[0m"
 #define BAR "--------------------------------------------------------------------------------------\n"
 
-ros::Publisher pub;
+ros::Publisher pc2_pub;
 
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
 	//Callback to echo any reciveed point cloud topics
-	//Comment out as needed. Useful for debuging
+		printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Lidar Utility: In Callback");
 
 	// Create a container for the data.
@@ -33,7 +33,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 	output = *input;
 
 	// Publish the data.
-	pub.publish (output);
+	pc2_pub.publish (output);
 }
 
 	int
@@ -130,7 +130,7 @@ main (int argc, char** argv)
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin

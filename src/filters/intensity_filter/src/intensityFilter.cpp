@@ -15,7 +15,7 @@
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-int mode =1;//fix this later
+static int mode =1;//fix this later
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
@@ -26,68 +26,35 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 
 	//Callback for filtering and republishing recived data
-	//Comment out as needed. Useful for debuging
 	ROS_INFO("Pass Through Filer: In Callback");
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
 	pcl::PCLPointCloud2 cloud_filtered;
 
-	// Do data processing here...
+	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
 
-	//Convert to PCL data type
-	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-	//Perform filtering
-
-	//KEEP THIS BLOCK FOR REFERENCE. 
-	//Examples from PCL.org will need to be changed to match format	
-	/*
-	   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-	   sor.setInputCloud(cloudPtr);
-	   sor.setLeafSize(0.1,0.1,0.1);
-	   sor.filter (cloud_filtered);
-	 */
-
-	//OUTLIER REMOVAL
+float min,max;
+	//Filtering
 	if(mode==1){
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		/*  
-		    pass.setFilterFieldName ("x");
-		    pass.setFilterLimits (-50, 50.0);
-		    pass.setFilterFieldName ("y");
-		    pass.setFilterLimits (-50.0, 50.0);
-		 */
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
-		pass.setFilterLimitsNegative (true);
-		pass.filter (cloud_filtered);
-
-
+		min=150;
+		max=300;
 	}else if (mode==2){
-
-		// Create the filtering object
-		pcl::PassThrough<pcl::PCLPointCloud2> pass;
-		pass.setInputCloud (cloudPtr);
-		/*  
-		    pass.setFilterFieldName ("x");
-		    pass.setFilterLimits (-50, 50.0);
-		    pass.setFilterFieldName ("y");
-		    pass.setFilterLimits (-50.0, 50.0);
-		 */
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
-		pass.setFilterLimitsNegative (false);
-		pass.filter (cloud_filtered);
 
 	}else if (mode==3){
 
 	}
 
 
-sensor_msgs::PointCloud2 output;//create output container
+// Create the filtering object
+		pcl::PassThrough<pcl::PCLPointCloud2> pass;
+		pass.setInputCloud (cloudPtr);
+		pass.setFilterFieldName ("intensity");
+		pass.setFilterLimits (min,max);
+		pass.setFilterLimitsNegative (true);
+		pass.filter (cloud_filtered);
+
+	sensor_msgs::PointCloud2 output;//create output container
 	pcl_conversions::fromPCL(cloud_filtered,output);//convert to ROS data type
 	pc2_pub.publish (output);// Publish the data.
 }

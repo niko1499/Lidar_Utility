@@ -35,14 +35,12 @@
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-int mode =1;//fix this later
+static int mode =1;//fix this later
 
 //This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
-
-
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
@@ -98,41 +96,29 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 	return marker;
 }
-
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
 	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
-
 	ROS_INFO("ObjectDetective: In Callback");
-
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
     pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
     pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
     pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-
-
 visualization_msgs::MarkerArray markerArray;
 	visualization_msgs::Marker marker;
-
-
 //euclidian cluster extraxion
-
 //these were moved here for scope of mode
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDWriter writer;
-
 if(mode==1){
 // Create the filtering object: downsample the dataset using a leaf size of 1cm
   pcl::VoxelGrid<pcl::PointXYZ> vg;
-
   vg.setInputCloud (temp_cloud);
   vg.setLeafSize (0.01f, 0.01f, 0.01f);//default (0.01f, 0.01f, 0.01f)
   vg.filter (*cloud_filtered);
   std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
-
   // Create the segmentation object for the planar model and set all the parameters
   pcl::SACSegmentation<pcl::PointXYZ> seg;
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -156,34 +142,28 @@ if(mode==1){
       std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
       break;
     }
-
     // Extract the planar inliers from the input cloud
     pcl::ExtractIndices<pcl::PointXYZ> extract;
     extract.setInputCloud (cloud_filtered);
     extract.setIndices (inliers);
     extract.setNegative (false);
-
     // Get the points associated with the planar surface
     extract.filter (*cloud_plane);
     std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
 
 //add missing cloud_f //NI
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
-
     // Remove the planar inliers, extract the rest
     extract.setNegative (true);
     extract.filter (*cloud_f);
     *cloud_filtered = *cloud_f;
   }
-
 }else if(mode==2||mode==3){
 cloud_filtered=temp_cloud;
 }
-
   // Creating the KdTree object for the search method of the extraction
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud_filtered);
-
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
   ec.setClusterTolerance (0.02); // 2cm
@@ -192,7 +172,6 @@ cloud_filtered=temp_cloud;
   ec.setSearchMethod (tree);
   ec.setInputCloud (cloud_filtered);
   ec.extract (cluster_indices);
-
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
@@ -208,20 +187,12 @@ cloud_filtered=temp_cloud;
     ss << "cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
     j++;
-
-//add cluster centroid to array
-
-
-pcl::CentroidPoint<pcl::PointXYZ> centroid;
-
-
+pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
 
 for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
 centroid.add(pcl::PointXYZ(cloud_filtered->points[*pit2].x,cloud_filtered->points[*pit2].y,cloud_filtered->points[*pit2].z));
 }
 pcl::PointXYZ c1;
-
-
 centroid.get (c1);
 if(mode!=3){
 	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
@@ -231,26 +202,15 @@ if(mode!=3){
 	markerArray.markers.push_back(marker);
 }
   }
-
-//publish
-
+//publih
 vis_pub.publish(markerArray);
 
-/*
-pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-    pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
-    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-*/
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
 	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 	pc2_pub.publish (output);// Publish the data.
-
 }
-
-
 	int
 main (int argc, char** argv)
 {
