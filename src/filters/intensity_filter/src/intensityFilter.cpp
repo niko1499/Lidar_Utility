@@ -87,16 +87,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	}
 
 
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-
-	pcl_conversions::fromPCL(cloud_filtered,output);
-
-
-	// Publish the data.
-	pc2_pub.publish (output);
+sensor_msgs::PointCloud2 output;//create output container
+	pcl_conversions::fromPCL(cloud_filtered,output);//convert to ROS data type
+	pc2_pub.publish (output);// Publish the data.
 }
 
 	int
