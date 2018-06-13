@@ -121,11 +121,8 @@ visualization_msgs::MarkerArray markerArray;
 	visualization_msgs::Marker marker;
 
 
-int n=2;//number of objects currently detected
-
-
 //euclidian cluster extraxion
-
+if(mode==1){
 // Create the filtering object: downsample the dataset using a leaf size of 1cm
   pcl::VoxelGrid<pcl::PointXYZ> vg;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
@@ -177,6 +174,10 @@ int n=2;//number of objects currently detected
     *cloud_filtered = *cloud_f;
   }
 
+}else if(mode==2){
+cloud_filtered=temp_cloud;
+}
+
   // Creating the KdTree object for the search method of the extraction
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud_filtered);
@@ -221,28 +222,10 @@ pcl::PointXYZ c1;
 
 centroid.get (c1);
 
-
-
-
 	marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
-
 	markerArray.markers.push_back(marker);
-	
-
-
   }
 
-
-	
-
-
-	if(mode==1){
-
-	}else if (mode==2){
-
-	}else if (mode==3){
-
-	}
 //publish
 
 vis_pub.publish(markerArray);
@@ -268,7 +251,7 @@ main (int argc, char** argv)
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("object_points1");
 	const std::string defaultPublisher("objects_");
-	const std::string defaultMode("o");
+	const std::string defaultMode("f");
 
 	std::string nodeName("object_detective");//temp name to initialize with
 
@@ -331,9 +314,9 @@ main (int argc, char** argv)
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
 
-	if(myMode=="o"||myMode=="O"){
+	if(myMode=="f"||myMode=="F"){
 		mode=1;
-	}else if(myMode=="f"||myMode=="F"){
+	}else if(myMode=="u"||myMode=="U"){
 		mode=2;
 	}else if(myMode=="c"||myMode=="C"){
 		mode=3;
