@@ -96,18 +96,14 @@ sensor_msgs::PointCloud2 output;//create output container
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
-	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("passThrough_filtered");
-	const std::string defaultMode("r");
-
-	std::string nodeName("passThrough_filter");//temp name to initialize with
-
+	const std::string defaultSubscriber("lidar_utility_points");
+	const std::string defaultPublisher("intensity_filtered");
+	const std::string defaultMode("l");
+	std::string nodeName("intensity_filter");//temp name to initialize with
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
 	ros::NodeHandle nh;
-
 	nodeName = ros::this_node::getName();//Update name
-
 	//set parameters on new name
 	const std::string subscriberParamName(nodeName + "/subscriber");
 	const std::string publisherParamName(nodeName + "/publisher");
@@ -119,8 +115,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
-
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
@@ -131,7 +125,6 @@ main (int argc, char** argv)
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
-
 	//Check if the user specified a publishing topic
 	if(nh.hasParam(publisherParamName)){
 		printf(COLOR_GREEN BAR COLOR_RST);
@@ -141,12 +134,10 @@ main (int argc, char** argv)
 		pTopic=defaultPublisher;//set to default if not specified
 		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
-
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
 		printf(COLOR_GREEN BAR COLOR_RST);		
 		nh.getParam(modeParamName,myMode);
-
 		ROS_INFO("%s: A param has been set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
@@ -161,7 +152,7 @@ main (int argc, char** argv)
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="l"||myMode=="L"){
 		mode=1;
 	}else if(myMode=="o"||myMode=="O"){
 		mode=2;

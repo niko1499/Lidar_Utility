@@ -73,10 +73,10 @@ main (int argc, char** argv)
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}else{
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set. Searching advertised topics for appropriate subscribers...");
+		ROS_INFO("%s: No param set. Searching advertised topics for appropriate subscribers...",nodeName.c_str());
 		ros::master::V_TopicInfo master_topics;
 		ros::master::getTopics(master_topics);
 
@@ -89,22 +89,22 @@ main (int argc, char** argv)
 			currentTopic=info.name;
 			if(currentTopic==potentialSubscription1)
 			{
-				ROS_INFO("Topic found! Subscribing to: %s",currentTopic.c_str());
+				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
 				break;
 
 			}else if(info.name==potentialSubscription2){
-				ROS_INFO("Topic found! Subscribing to: %s",currentTopic.c_str());
+				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
 				break;
 
 			}else if(info.name==potentialSubscription3){
-				ROS_INFO("Topic found! Subscribing to: %s",currentTopic.c_str());
+				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
 				break;
 
 			}else{
-				ROS_INFO("Searching... If no topic if found default is: %s", defaultSubscriber.c_str());
+				ROS_INFO("%s: Searching... If no topic if found default is: %s",nodeName.c_str(), defaultSubscriber.c_str());
 				sTopic=defaultSubscriber;
 			}
 
@@ -115,11 +115,11 @@ main (int argc, char** argv)
 	if(nh.hasParam(publisherParamName)){
 		nh.getParam(publisherParamName,pTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}else{
 		pTopic=defaultPublisher;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
 
 	//Clears the assigned parameters Without this default will never be used but instead the last spefified topic
@@ -128,10 +128,10 @@ main (int argc, char** argv)
 	//nh.deleteParam(modeParamName);
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
-	ROS_INFO("Subscribing to %s",sTopic.c_str());
+	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
-	ROS_INFO("Publishing to %s",pTopic.c_str());
+	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin
 	ros::spin ();
