@@ -61,25 +61,23 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		sor.filter (cloud_filtered);
 	}else if (mode==2){
 		//Convert PointCloud2 to PointXYZ
-		ROS_INFO("MADE IT TO 1");
+
 		pcl::PCLPointCloud2 temp;
 		pcl_conversions::toPCL(*cloud_msg,temp);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ(new pcl::PointCloud<pcl::PointXYZ>);
 		pcl::fromPCLPointCloud2(temp,*cloudXYZ);
-		ROS_INFO("MADE IT TO 2");
+
 
 		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
 		// build the filter
 		outrem.setInputCloud(cloudXYZ);
 		outrem.setRadiusSearch(0.8);
 		outrem.setMinNeighborsInRadius (2);
-		ROS_INFO("MADE IT TO 3");
+	
 
 		//setup xyzholder
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
-
-		ROS_INFO("MADE IT TO 4");
 
 		// apply filter
 		outrem.filter (*cloud_filteredXYZ);
@@ -108,15 +106,14 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		condrem.filter (cloud_filtered);
 			    */
 	}
-	ROS_INFO("MADE IT TO 5");
+
 
 	//convert to ROS data type
 	sensor_msgs::PointCloud2 output;
 	//pcl_conversions::fromPCl(cloud_filtered,output);
-	ROS_INFO("MADE IT TO 6");
+
 
 	pcl_conversions::fromPCL(cloud_filtered,output);
-	ROS_INFO("MADE IT TO 7");
 
 	// Publish the data.
 	pub.publish (output);
@@ -145,7 +142,7 @@ main (int argc, char** argv)
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",modeParamName.c_str());
+	ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -156,33 +153,33 @@ main (int argc, char** argv)
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s**  \n         Setting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
 	if(nh.hasParam(publisherParamName)){
 		printf(COLOR_GREEN BAR COLOR_RST);
 		nh.getParam(publisherParamName,pTopic);
-		ROS_INFO("A param has been set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}else{printf(COLOR_RED BAR COLOR_RST);
 		pTopic=defaultPublisher;//set to default if not specified
-		ROS_INFO("No param set **%s** \n          Setting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
 
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
 		nh.getParam(modeParamName,myMode);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \n               Setting mode to: %s",modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s** \n          Setting mode to: %s",modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",modeParamName.c_str());
+		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -202,10 +199,10 @@ main (int argc, char** argv)
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 
-	ROS_INFO("Subscribing to %s",sTopic.c_str());
+	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
-	ROS_INFO("Publishing to %s",pTopic.c_str());
+	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin
 	ros::spin ();

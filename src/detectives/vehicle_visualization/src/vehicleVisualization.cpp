@@ -141,8 +141,8 @@ main (int argc, char** argv)
 	const std::string publisherParamName(nodeName + "/publisher");
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
-	ROS_INFO("Node Name: %s",nodeName.c_str());
-	ROS_INFO("Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",modeParamName.c_str());
+	ROS_INFO("%s: Node Name: %s",nodeName.c_str());
+	ROS_INFO("%s: Mode options for parameter %s are: ""r"", ""r"", ""r"" for road, , and ",nodeName.c_str(),modeParamName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
 	std::string pTopic;
@@ -153,33 +153,33 @@ main (int argc, char** argv)
 	if(nh.hasParam(subscriberParamName)){
 		nh.getParam(subscriberParamName,sTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \nSetting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}else{
 		sTopic=defaultSubscriber;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s**  \nSetting subsceiber to: %s",subscriberParamName.c_str(), sTopic.c_str());
+		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
 	//Check if the user specified a publishing topic
 	if(nh.hasParam(publisherParamName)){
 		printf(COLOR_GREEN BAR COLOR_RST);
 		nh.getParam(publisherParamName,pTopic);
-		ROS_INFO("A param has been set **%s** \nSetting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}else{printf(COLOR_RED BAR COLOR_RST);
 		pTopic=defaultPublisher;//set to default if not specified
-		ROS_INFO("No param set **%s** \nSetting publisher to: %s",publisherParamName.c_str(), pTopic.c_str());
+		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
 
 	//Check if the user specified a mode
 	if(nh.hasParam(modeParamName)){
 		nh.getParam(modeParamName,myMode);
 		printf(COLOR_GREEN BAR COLOR_RST);
-		ROS_INFO("A param has been set **%s** \nSetting mode to: %s",modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("%s: A param has been set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
 	}else{
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
-		ROS_INFO("No param set **%s** \nSetting mode to: %s",modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",modeParamName.c_str());
+		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""s"", ""r"", ""c"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
 
 
@@ -200,7 +200,7 @@ main (int argc, char** argv)
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 
-	ROS_INFO("Subscribing to %s",sTopic.c_str());
+	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 
 
@@ -208,7 +208,7 @@ main (int argc, char** argv)
 
 	//ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
-	ROS_INFO("Publishing to %s",pTopic.c_str());
+	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin
 	ros::spin ();
