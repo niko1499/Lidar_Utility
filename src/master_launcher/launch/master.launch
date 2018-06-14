@@ -66,24 +66,14 @@
     <arg name="mode" value="f" />
   </include>
 
+ <!--Making a costmmap_2d-->
 
-<!--
+<node name="static_tf0" pkg="tf" type="static_transform_publisher" args="2 0 0 0 0 0 /map /base_link 100"/>
 
-  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
-    <arg name="name" value="outlier_removal_pass2" />
-    <arg name="subscriber" value="outliers_removed_pass1" />
-    <arg name="publisher" value="outliers_removed_pass2" />
-    <arg name="mode" value="statistical" />
-  </include>
--->
+<rosparam file="$(find master_launcher)/launch/minimal.yaml" command="load" ns="/costmap_node/costmap" />
 
-<!--
-  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_core.launch"/>
-  <include file="$(find outlier_removal_filter)/launch/outlier_removal_core.launch"/>
-  <include file="$(find pass_through_filter)/launch/pass_through_core.launch"/>
-  <include file="$(find object_detective)/launch/object_detective_core.launch"/>
--->
-  <!--Launch rviz with prepaired configuration-->
+
+
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
 
 </launch>

@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
+#include "nav_msgs/OccupancyGrid.h"
 
 // PCL specific includes
 #include <iostream>
@@ -46,6 +47,7 @@ static std::string nodeName("road_detective");
 
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
+ros::Publisher grid_pub;
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
@@ -90,6 +92,16 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	return marker;
 }
 
+nav_msgs::OccupancyGrid OgridBuilder(){
+
+	nav_msgs::OccupancyGrid grid;
+	grid.header.frame_id = "base_link";
+	grid.header.stamp = ros::Time();
+
+
+	return grid;
+}
+
 
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
@@ -107,13 +119,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 
 //pcl::CentroidPoint<pcl::PointXYZ> centroid;
-//Eigen::Matrix<float,4,1> centroid;
+Eigen::Matrix<Scalar,4,1> centroid;
 
- Eigen::Vector4f centroid;
+ //Eigen::Vector4f centroid;
 
 //	pcl::CentroidPoint<pcl::PointXYZ> centroid;
 	//pcl::Centroid<pcl::PointXYZ> centroid;
-	// pcl::compute3DCentroid(temp_cloud,centroid);
+	 pcl::compute3DCentroid(temp_cloud,centroid);
 		pcl::PointXYZ c1;
 //	centroid.get (c1);
 
@@ -273,9 +285,13 @@ main (int argc, char** argv)
 
 	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"_detective_visualized", 0 );
 
+
 	//ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_detective_points", 1);
+
+
+	grid_pub = nh.advertise<nav_msgs::OccupancyGrid> (pTopic+"_detective_grid", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin
