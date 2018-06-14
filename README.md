@@ -45,23 +45,23 @@ RVIZ configuration files for a number of useful configurations. Named appropriat
 
 
 # To download the project:
-'''
+```
 git clone https://github.com/niko1499/Lidar_Utility.git
-'''
+```
 # To compile the project:
 cd ~/Lidar_Utility
-'''
+```
 source devel/setup.bash	   *(OR ADD IT TO YOUR BASHRC)
-'''
+```
 
-'''
+```
 catkin_make
-'''
+```
 
 **NOTE IF catkin_make fails run this instead or delete the pandalidar driver**
-'''
+```
 catkin_make --cmake-args -DCamera_Enable=ON
-'''
+```
 
 # To Run the project
 There are several ways to run different parts of the project
@@ -70,18 +70,18 @@ There are several ways to run different parts of the project
 **First select the source of your lidar data and launch it:**
 
 - rslidar: Below is the roslaunch command to launch the rslidar driver.
-'''
+```
 roslaunch rslidar_pointcloud rs_lidar_16.launch
-'''
+```
 - [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros)
-'''
+```
 roslaunch hesai_lidar pandora_ros.launch
-'''
+```
 - .pcd file: Below is an example of how to use ROS to publis a .pcd as a ros PointCloud2 topic.
 
-'''
+```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
-'''
+```
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 ```
@@ -114,7 +114,7 @@ mode: sets mode, if one isn't specified a default will be used as defined in the
 For ease of use the mode can be set by a capital letter, lower case letter, or lowercase single word.
 Modes are typically things like filtered vs unfiltered, radial vs statistical ect... Look at the cpp file for a node to see available modes. 
 
-to set a parameter at launch: _parameter_name:="your_setting"
+to set a parameter at launch include the arguement: ```parameter_name:="your_setting"```
 to set a parameter in a launch file see this [ROS documentation]()
 
 
