@@ -51,8 +51,7 @@ git clone https://github.com/niko1499/Lidar_Utility.git
 # To compile the project:
 cd ~/Lidar_Utility
 ```
-source devel/setup.bash	   *(OR ADD IT TO YOUR BASHRC)
-```
+source devel/setup.bash ```*(OR ADD IT TO YOUR BASHRC)
 
 ```
 catkin_make
