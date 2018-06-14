@@ -49,36 +49,31 @@ RVIZ configuration files for a number of useful configurations. Named appropriat
 git clone https://github.com/niko1499/Lidar_Utility.git
 ```
 # To compile the project:
+```
 cd ~/Lidar_Utility
+```
 ```
 source devel/setup.bash 
 ```
-*(OR ADD IT TO YOUR BASHRC)
-
+*(or add your workspace to your bashrc)
 ```
 catkin_make
 ```
 
-**NOTE IF catkin_make fails run this instead or delete the pandalidar driver**
-```
-catkin_make --cmake-args -DCamera_Enable=ON
-```
-
 # To Run the project
-There are several ways to run different parts of the project
+There are several ways to run different parts of the project however one main launch files is provided which wil launch the many nodes that are needed for this program to work properly. 
 
+1. **Select the source of your lidar data and launch it:**
 
-**First select the source of your lidar data and launch it:**
-
-- rslidar: Below is the roslaunch command to launch the rslidar driver.
+- rslidar: Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. 
 ```
 roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
-- [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros)
+- [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros) Not working...
 ```
 roslaunch hesai_lidar pandora_ros.launch
 ```
-- .pcd file: Below is an example of how to use ROS to publis a .pcd as a ros PointCloud2 topic.
+- .pcd file: Below are examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file numbers. 
 
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
@@ -88,19 +83,18 @@ rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/23
 ```
 
 - OTHER
-
 Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
 data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
 
-**Second Launch the Lidar_Utility**	
+2. **Launch the Lidar_Utility**	
 
 This is the main launch file. It will launch multiple nodes and rviz. To launch individual nodes you can use rosrun or roslaunch after exploring the directors. Most nodes contain a launch directory.
 '''
-roslaunch master_launcher Lidar_Utility.launch
+roslaunch master_launcher master.launch
 '''
 To manually set your main subscriber simply use
 '''
-roslaunch master_launcher Lidar_Utility.launch _subscriber:="your_topic"
+roslaunch master_launcher master.launch _subscriber:="your_topic"
 '''
 
 The Lidar_Utility.launch will launch other launch files with the nameing convention node_name_core.launch these launch files contain important parameters and sometimes launch multiple instance with different setting of the same node. 
