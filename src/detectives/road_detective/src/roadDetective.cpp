@@ -1,4 +1,7 @@
 #include <ros/ros.h>
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+
 // PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
@@ -11,135 +14,193 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 
+#include <pcl/ModelCoefficients.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
+
+#include <pcl/common/centroid.h>
+#include <pcl/common/norms.h>
+//#include <pcl/centroid.hpp>
+
+
+ 
+#include "pcl/ros/conversions.h"
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-int mode =1;//fix this later
+static int mode =1;//fix this later
 static std::string nodeName("road_detective");
 
 //This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
-ros::Publisher pub;
+ros::Publisher pc2_pub;
+ros::Publisher vis_pub;
+
+visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
+	float r,g,b;
+	float alpha=.5;
+	if(type==1){//road
+		r=0.0;
+		g=0.0;
+		b=0.0;
+		alpha=.9;
+	}else if(type==2){//type x
+		r=0.0;
+		g=1.0;
+		b=0.0;
+	}else{//type unknown
+		r=1.0;
+		g=1.0;
+		b=1.0;
+	}
+	visualization_msgs::Marker marker;
+	marker.header.frame_id = "base_link";
+	marker.header.stamp = ros::Time();
+	marker.ns = "my_namespace";
+	marker.id = i;
+	marker.type = visualization_msgs::Marker::CUBE;
+	marker.action = visualization_msgs::Marker::ADD;
+	marker.pose.position.x = xLoc;
+	marker.pose.position.y = yLoc;
+	marker.pose.position.z = zLoc;
+	marker.pose.orientation.x = 0.0;
+	marker.pose.orientation.y = 0.0;
+	marker.pose.orientation.z = 0.0;
+	marker.pose.orientation.w = 1.0;
+	marker.scale.x = xScale;
+	marker.scale.y = yScale;
+	marker.scale.z = zScale;
+	marker.color.a =alpha; // Don't forget to set the alpha!
+	marker.color.r = r;
+	marker.color.g = g;
+	marker.color.b = b;
+	//only if using a MESH_RESOURCE marker type:
+	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+	return marker;
+}
+
 
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
+	ROS_INFO("ObjectDetective: In Callback");
+	
+
+	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+	visualization_msgs::MarkerArray markerArray;
+	visualization_msgs::Marker marker;
 
 
+//pcl::CentroidPoint<pcl::PointXYZ> centroid;
+//Eigen::Matrix<float,4,1> centroid;
 
-	//Callback for filtering and republishing recived data
-	//Comment out as needed. Useful for debuging
-	ROS_INFO("Outlier Removal Filer: In Callback");
-	// Create a container for the data and filtered data.
-	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
-	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-	pcl::PCLPointCloud2 cloud_filtered;
+ Eigen::Vector4f centroid;
 
-	// Do data processing here...
+//	pcl::CentroidPoint<pcl::PointXYZ> centroid;
+	//pcl::Centroid<pcl::PointXYZ> centroid;
+	// pcl::compute3DCentroid(temp_cloud,centroid);
+		pcl::PointXYZ c1;
+//	centroid.get (c1);
 
-	//Convert to PCL data type
-	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-	//Perform filtering
-
-	//KEEP THIS BLOCK FOR REFERENCE. 
-	//Examples from PCL.org will need to be changed to match format	
-	/*
-	   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-	   sor.setInputCloud(cloudPtr);
-	   sor.setLeafSize(0.1,0.1,0.1);
-	   sor.filter (cloud_filtered);
-	 */
-
-	//OUTLIER REMOVAL
-	if(mode==1){
-		/*
-		   std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
-		   for (size_t i = 0; i < cloud->points.size (); ++i)
-		   std::cerr << "    " << cloud->points[i].x << " "
-		   << cloud->points[i].y << " "
-		   << cloud->points[i].z << std::endl;
-		 */
-
-		//NEW CONVERSION https://stackoverflow.com/questions/36380217/pclpclpointcloud2-usage
-		//or not
-		/*
-
-		   fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, cl::PointCloud<PointT>& cloud);
-		   void toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg);
-
-		 */
-		/*
-
-		   pcl::
-		   pcl::fromPCLPointCloud2 (*cloud_msg, pcl_pc);
-
-
-		   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-		   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-		// Create the segmentation object
-		pcl::SACSegmentation<pcl::PointXYZ> seg;
-		// Optional
-		seg.setOptimizeCoefficients (true);
-		// Mandatory
-		seg.setModelType (pcl::SACMODEL_PLANE);
-		seg.setMethodType (pcl::SAC_RANSAC);
-		seg.setDistanceThreshold (0.01);
-
-		seg.setInputCloud (cloudPtrXYX);
-		seg.segment (*inliers, *coefficients);
-
-		if (inliers->indices.size () == 0)
-		{
-		ROS_INFO("ERROR: Could not estimate a planar model for the given dataset.");
-		}
-
-		std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
-		<< coefficients->values[1] << " "
-		<< coefficients->values[2] << " " 
-		<< coefficients->values[3] << std::endl;
-
-		 */
-		/*
-		   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
-		   for (size_t i = 0; i < inliers->indices.size (); ++i)
-		   std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
-		   << cloud->points[inliers->indices[i]].y << " "
-		   << cloud->points[inliers->indices[i]].z << std::endl;
-		 */
-	}else if (mode==2){
-
-	}else if (mode==3){
-
-	}
-
-	/*
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-	pcl_conversions::fromPCL(cloud_filtered,output);
-
-
-	// Publish the data.
-	pub.publish (output);
-	 */
-
-
-
+float xMin=0,xMax=0,yMin=0,yMax=0,zMin=0,zMax=0;
+/*
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+	tree->setInputCloud (temp_cloud);
+	std::vector<pcl::PointIndices> cluster_indices;
+	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+	ec.setClusterTolerance (0.1); // 2cm
+	ec.setMinClusterSize (50);
+	ec.setMaxClusterSize (250000);
+	ec.setSearchMethod (tree);
+	ec.setInputCloud (temp_cloud);
+	ec.extract (cluster_indices);
+*/
+/*
+for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+	{
+if(temp_cloud->points[*it].x>xMax){
+xMax=temp_cloud->points[*it];
+}else if (temp_cloud->points[*it].x<xMin){
+xMin=temp_cloud->points[*it].x;
+}
+ if(temp_cloud->points[*it].y>yMax){
+yMax=temp_cloud->points[*it];
+}else if (temp_cloud->points[*it].y<yMin){
+yMin=temp_cloud->points[*it].y;
+}
+if(temp_cloud->points[*it].z>zMax){
+zMax=temp_cloud->points[*it];
+}else if (temp_cloud->points[*it].z<zMin){
+zMin=temp_cloud->points[*it].z;
+}
 }
 
+*/
+/*
+
+for (size_t i = 0; i < temp_cloud.size(); ++i)
+    {//find min and max
+if(temp_cloud[i].x>xMax){
+xMax=temp_cloud[i];
+}else if (temp_cloud[i].x<xMin){
+xMin=temp_cloud[i];
+}
+ if(temp_cloud[i].y>yMax){
+yMax=temp_cloud[i];
+}else if (temp_cloud[i].y<yMin){
+yMin=temp_cloud[i];
+}
+if(temp_cloud[i].z>zMax){
+zMax=temp_cloud[i];
+}else if (temp_cloud[i].z<zMin){
+zMin=temp_cloud[i];
+}
+   }
+
+*/
+float xScale=abs(xMax)-abs(xMin);
+float yScale=abs(yMax)-abs(yMin);
+float zScale=abs(zMax)-abs(zMin);
+
+ xScale=10;
+ yScale=10;
+ zScale=.5;
+			marker=markerBuilder(1,c1.x,c1.y,c1.z,xScale,yScale,zScale,1);
+			markerArray.markers.push_back(marker);
+		
+	
+	//publih
+	vis_pub.publish(markerArray);
+
+	sensor_msgs::PointCloud2 output;//create output container
+	pcl::PCLPointCloud2 temp_output;//create PCLPC2
+
+	pcl::toPCLPointCloud2(*temp_cloud,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+	pc2_pub.publish (output);// Publish the data.
+}
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
-	const std::string defaultSubscriber("road_points1");
-	const std::string defaultPublisher("road");
-	const std::string defaultMode("r");
-
+	const std::string defaultSubscriber("road_points");
+	const std::string defaultPublisher("road");//dynamic name ending See belows
+	const std::string defaultMode("f");
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -157,7 +218,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
 
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
@@ -189,22 +249,20 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: TBD",nodeName.c_str(),modeParamName.c_str());
+		ROS_INFO("%s: Mode options for parameter %s are: ""filtered"", ""unfiltered"", ""l"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
-
-
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
 
-	if(myMode=="r"||myMode=="R"){
+	if(myMode=="f"||myMode=="F"||myMode=="filtered"){
 		mode=1;
-	}else if(myMode=="f"||myMode=="F"){
+	}else if(myMode=="u"||myMode=="U"||myMode=="unfiltered"){
 		mode=2;
-	}else if(myMode=="c"||myMode=="C"){
-		mode=3;
+	}else if(myMode=="l"||myMode=="L"){
+		mode=3;//2 then 3
 	}
 
 	// Create a ROS subscriber for the input point cloud
@@ -212,7 +270,12 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+
+	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"_detective_visualized", 0 );
+
+	//ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_detective_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin

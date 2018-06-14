@@ -39,37 +39,42 @@ ros::Publisher pc2_pub;
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	//Callback for filtering and republishing recived data
-	ROS_INFO("planeFilter: In Callback");
-	// Create a container for the data and filtered data.
-	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
+	ROS_INFO("%s: In Callback",nodeName.c_str());
+
+	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
 
 	pcl_conversions::toPCL(*cloud_msg, *cloud);	//Convert to PCL data type
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+	//create PCLXYZ for
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ for input to be converted to 
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud2(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
 
+
+pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
 	//Filter
-	if(mode==1){
 
-		//std::cerr << "Point cloud data: " << cloud->points.size ()<<std::endl;
-
-		pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
-
-		// Create the filtering object: downsample the dataset using a leaf size of 1cm
+// Create the filtering object: downsample the dataset using a leaf size of 1cm
 		pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
-		sor.setLeafSize (0.01f, 0.01f, 0.01f);
+		sor.setLeafSize (0.01f, 0.01f, 0.01f);//.01 default
 		sor.filter (*cloud_filtered_blob);
 
 		// Convert to the templated PointCloud
-		pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);
+		pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);//PCLPC2toPCLXYZ
 
+
+
+	if(mode==1){//segmentation
+
+		//std::cerr << "Point cloud data: " << cloud->points.size ()<<std::endl;
+
+		
 		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
 		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
 		// Create the segmentation object
@@ -85,8 +90,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		seg.segment (*inliers, *coefficients);
 
 		if (inliers->indices.size () == 0)
-		{
-			ROS_INFO("Could not estimate a planar model for the given dataset.");
+		{	printf(COLOR_RED BAR COLOR_RST);
+			ROS_INFO("ERROR: Could not estimate a planar model for the given dataset.");
 
 		}
 		std::cerr << "Model coefficients: " << coefficients->values[0] << " " 
@@ -113,16 +118,16 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		// Create the filtering object
 		pcl::ProjectInliers<pcl::PointXYZ> proj;
 		proj.setModelType (pcl::SACMODEL_PLANE);
-		proj.setInputCloud (temp_cloud2);
+		proj.setInputCloud (cloud_filtered);
 		proj.setModelCoefficients (coefficients);
-		proj.filter (*cloud_filtered);
+		proj.filter (*cloud_p);
 
 	}else if (mode==3){
 
 	}
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
-	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl::toPCLPointCloud2(*cloud_p,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 	pc2_pub.publish (output);// Publish the data.
 }

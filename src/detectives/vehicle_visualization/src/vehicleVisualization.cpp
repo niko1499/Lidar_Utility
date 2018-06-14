@@ -172,19 +172,19 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""car"", ""van""",nodeName.c_str(),modeParamName.c_str());
+		
 	}
-
+	ROS_INFO("%s: Mode options for parameter %s are: ""car"", ""van""",nodeName.c_str(),modeParamName.c_str());
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
 
-	if(myMode=="c"||myMode=="c"){//car
+	if(myMode=="c"||myMode=="c"||myMode=="car"){//car
 		mode=1;
 	}else if(myMode=="v"||myMode=="v"||myMode=="van"){//van
 		mode=2;
-	}else if(myMode=="c"||myMode=="C"||myMode=="car"){//car
+	}else if(myMode=="x"||myMode=="x"||myMode=="x"){//car
 		mode=3;
 	}
 

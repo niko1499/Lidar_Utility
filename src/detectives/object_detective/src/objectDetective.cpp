@@ -100,7 +100,7 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
-	ROS_INFO("ObjectDetective: In Callback");
+	ROS_INFO("%s ObjectDetective: In Callback", nodeName.c_str());
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
