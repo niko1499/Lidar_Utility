@@ -22,7 +22,7 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/filters/project_inliers.h>
 
-#include <plane_filter/RoadLoc.h>
+
 
 //#include <pcl/common.h>
 #include <pcl/common/common.h>
@@ -40,7 +40,10 @@
 #include <pcl/common/common.h>
 #include <pcl/point_types.h>
 //msg
-#include <plane_filter/RoadLoc.h>
+//#include <~/Lidar_Utility/src/lidar_utility_msgs/RoadLoc.h>
+
+
+#include <lidar_utility_msgs/roadInfo.h>
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
@@ -57,7 +60,7 @@ ros::Publisher pc2_pub;
 ros::Publisher msg_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
-{
+{ROS_INFO("TEST*********************************************************************!");
 	//Callback for filtering and republishing recived data
 	ROS_INFO("%s: In Callback",nodeName.c_str());
 
@@ -146,7 +149,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::Poi
 
 	}
 
-
+ROS_INFO("TEST*********************************************************************!");
 
 
 
@@ -164,7 +167,7 @@ pcl::getMinMax3D (*cloud_p,pMin,pMax);
 
 //custom msg
 
-plane_filter::RoadLoc msg;
+lidar_utility_msgs::roadInfo msg;
 
 msg.headerstamp = ros::Time::now();
 msg.header.frame_id = "/world";
@@ -262,10 +265,10 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> ("testx", 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_pts", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
-
-	msg_pub=nh.advertise<plane_filter::RoadLoc>(pTopic+"_msg",1);
+ROS_INFO("TEST*********************************************************************!");
+	msg_pub=nh.advertise<lidar_utility_msgs::roadInfo>(pTopic+"_msg",1);
 
 
 	// Spin

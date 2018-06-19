@@ -307,7 +307,7 @@ Visualization Manager:
       Size (Pixels): 5
       Size (m): 0.100000001
       Style: Boxes
-      Topic: /plane_segmented
+      Topic: /plane_segmented_pts
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

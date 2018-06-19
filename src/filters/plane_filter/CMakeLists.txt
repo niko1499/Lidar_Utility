@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   roscpp
   sensor_msgs
-  message_generation #added for custom msg
+  lidar_utility_msgs
 )
 
 #test
@@ -21,9 +21,7 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 #Fix SRC -niko
-#catkin_package(
-#CATKIN_DEPENDS message_runtime #?
-#)
+catkin_package()
 
 #PCL - niko
 add_executable(planeFilter src/planeFilter.cpp)
@@ -63,11 +61,12 @@ target_link_libraries(planeFilter ${catkin_LIBRARIES})
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-# Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   RoadLoc.msg
- )
+## Generate messages in the 'msg' folder
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -83,11 +82,11 @@ target_link_libraries(planeFilter ${catkin_LIBRARIES})
 #   Action2.action
 # )
 
-# Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   sensor_msgs
- )
+## Generate added messages and services with any dependencies listed here
+# generate_messages(
+#   DEPENDENCIES
+#   sensor_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -123,7 +122,6 @@ catkin_package(
 #  LIBRARIES my_pcl_tutorial
 #  CATKIN_DEPENDS pcl_conversions pcl_ros roscpp sensor_msgs
 #  DEPENDS system_lib
-CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -146,8 +144,6 @@ include_directories(
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(${plane_filter} ${${plane_filter}_EXPORT_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context

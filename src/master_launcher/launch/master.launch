@@ -51,13 +51,6 @@
     <arg name="publisher" value="plane_segmented" />
     <arg name="mode" value="segmentation" />
   </include>
- <!--performs plane projection-->
-<include file="$(find plane_filter)/launch/plane_filter_slave.launch">
-    <arg name="name" value="plane_filter2" />
-    <arg name="subscriber" value="outliers_removed_pass2" />
-    <arg name="publisher" value="plane_projected" />
-    <arg name="mode" value="5" />
-  </include>
  <!--creates road visualization-->
 <include file="$(find road_detective)/launch/road_detective_slave.launch">
     <arg name="name" value="road_detective" />
