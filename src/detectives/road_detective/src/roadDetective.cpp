@@ -119,13 +119,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 
 //pcl::CentroidPoint<pcl::PointXYZ> centroid;
-Eigen::Matrix<Scalar,4,1> centroid;
+//Eigen::Matrix<Scalar,4,1> centroid;
 
  //Eigen::Vector4f centroid;
-
+//********************************************************
 //	pcl::CentroidPoint<pcl::PointXYZ> centroid;
 	//pcl::Centroid<pcl::PointXYZ> centroid;
-	 pcl::compute3DCentroid(temp_cloud,centroid);
+//	 pcl::compute3DCentroid(temp_cloud,centroid);
 		pcl::PointXYZ c1;
 //	centroid.get (c1);
 

@@ -22,6 +22,26 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/filters/project_inliers.h>
 
+#include <plane_filter/RoadLoc.h>
+
+//#include <pcl/common.h>
+#include <pcl/common/common.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/centroid.h>
+
+//#include <pcl/impl/point_types.h>
+#include <pcl/impl/point_types.hpp>
+#include <pcl/search/search.h>
+#include <pcl/point_cloud.h>
+//#include <Eigen>
+
+#include <pcl/common/projection_matrix.h>
+
+#include <pcl/common/common.h>
+#include <pcl/point_types.h>
+//msg
+#include <plane_filter/RoadLoc.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -34,7 +54,7 @@ static std::string nodeName("plane_filter");
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
 ros::Publisher pc2_pub;
-
+ros::Publisher msg_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
@@ -125,6 +145,39 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::Poi
 	}else if (mode==3){
 
 	}
+
+
+
+
+
+//float xMax,xMin,yMax,yMin,zMax,zMin;
+//Eigen::Vector4f min_pt, max_pt;
+
+//pcl::PointT pMin;
+//pcl::PointT pMax;
+
+//pcl::PointXYZRGB pMin;
+//pcl::PointXYZRGB pMax;
+
+pcl::PointXYZ pMin,pMax;
+pcl::getMinMax3D (*cloud_p,pMin,pMax);
+
+//custom msg
+
+plane_filter::RoadLoc msg;
+
+msg.headerstamp = ros::Time::now();
+msg.header.frame_id = "/world";
+msg.xMax=pMax.x;
+msg.xMin=pMin.x;
+msg.yMax=pMax.y;
+msg.yMin=pMin.y;
+msg.zMax=pMax.z;
+msg.zMin=pMin.z;
+
+msg_pub.publish(msg);
+
+
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
 	pcl::toPCLPointCloud2(*cloud_p,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
@@ -209,8 +262,11 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> ("testx", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+
+	msg_pub=nh.advertise<plane_filter::RoadLoc>(pTopic+"_msg",1);
+
 
 	// Spin
 	ros::spin ();
