@@ -58,6 +58,14 @@
     <arg name="publisher" value="road" />
     <arg name="mode" value="f" />
   </include>
+<!--performs pass through filter to cut out objects not on road -->
+  <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
+    <arg name="name" value="pass_through_objects_advanced" />
+    <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="publisher" value="adv_obj" />
+    <arg name="mode" value="1" />
+  </include>
+
 
  <!--Making a costmmap_2d-->
 
