@@ -17,6 +17,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -35,7 +37,6 @@ ros::Publisher pc2_pub;
 
 void message_cb (const lidar_utility_msgs::roadInfo& data)
 {
-	printf("xMin: %f",data.xMin);
 	xMinf = data.xMin;
 	xMaxf = data.xMax;
 	yMinf = data.yMin;
@@ -75,7 +76,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	if(mode==1){//road
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
+		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)//SETTING
 		pass.setFilterLimitsNegative (true);
 
 		pass.filter (cloud_filtered);
@@ -89,7 +90,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	}else if (mode==2){//objects
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
+		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()//SETTING
 		pass.setFilterLimitsNegative (false);
 
 		pass.filter (cloud_filtered);
@@ -131,7 +132,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		ptfilter.setInputCloud(cloud_filtered_xy);
 		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (zMaxf,1.2);
+		ptfilter.setFilterLimits (zMaxf,1.2);//SETTING
 		ptfilter.setNegative (false);
 		ptfilter.filter (*cloud_filtered_xyz);
 

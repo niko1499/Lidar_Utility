@@ -10,6 +10,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33m"
@@ -17,8 +19,10 @@
 #define COLOR_RST "\033[0m"
 #define BAR "--------------------------------------------------------------------------------------\n"
 
-ros::Publisher pc2_pub;
+static int mode;
 
+ros::Publisher pc2_pub;
+ros::Publisher msg_pub;
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
@@ -43,7 +47,7 @@ main (int argc, char** argv)
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("lidar_utility_points");
 
-	std::string nodeName("Lidar_Utility");//temp name to initialize with
+	std::string nodeName("lidar_utility");//temp name to initialize with
 
 	// Initialize ROS
 	ros::init (argc, argv, nodeName);
@@ -91,20 +95,24 @@ main (int argc, char** argv)
 			{
 				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
+				mode=1;
 				break;
 
 			}else if(info.name==potentialSubscription2){
 				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
+				mode=2;
 				break;
 
 			}else if(info.name==potentialSubscription3){
 				ROS_INFO("%s: Topic found! Subscribing to: %s",nodeName.c_str(),currentTopic.c_str());
 				sTopic=info.name;
+				mode=3;
 				break;
 
 			}else{
 				ROS_INFO("%s: Searching... If no topic if found default is: %s",nodeName.c_str(), defaultSubscriber.c_str());
+				mode=4;
 				sTopic=defaultSubscriber;
 			}
 
@@ -132,6 +140,53 @@ main (int argc, char** argv)
 	// Create a ROS publisher for the output point cloud
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+
+	msg_pub=nh.advertise<lidar_utility_msgs::lidarUtilitySettings>(pTopic+"_settings",1);
+
+
+//custom msg
+lidar_utility_msgs::lidarUtilitySettings msg;
+
+msg.headerstamp = ros::Time::now();
+msg.header.frame_id = "/world";
+msg.downSampleLeafSize_A = 00;
+msg.downSampleLeafSize_B = 0.01;
+msg.planeDistanceThreshold = 00;
+msg.lowestRoadPoint = 00;
+msg.highestRoadPoint = 00;
+msg.lowestObjectPoint = 00;
+msg.highestObjectPoint = 00;
+msg.outlierMeanK = 00;
+msg.outlierStdDev = 00;
+msg.outlierRadius = 00;
+msg.outlierMinumNeighbors = 00;
+msg.intensityMinimum_A = 00;
+msg.intensityMaximum_A = 00;
+msg.intensityMinimum_B = 00;
+msg.intensityMaximum_B = 00;
+msg.planeSegMaxIterations = 00;
+msg.planeSegDistThresh = 00;
+msg.objDetectMaxIterations = 100;
+msg.objDetectDistThresh = 0.02;
+msg.objDetectClusterTolerance = 0.325;//a
+msg.objDetectMinClusterSize = 100;
+msg.objDetectMaxClusterSize = 40000;
+
+
+
+if(mode==1){
+
+}else if (mode==2){
+
+}else if (mode==3){
+
+}else if (mode==4){
+
+}else{
+
+}
+
+msg_pub.publish(msg);
 
 	// Spin
 	ros::spin ();

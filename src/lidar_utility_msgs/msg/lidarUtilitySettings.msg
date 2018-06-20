@@ -1,0 +1,27 @@
+Header header
+time headerstamp
+float32 downSampleLeafSize_A 
+float32 downSampleLeafSize_B
+float32 planeDistanceThreshold
+float32 lowestRoadPoint
+float32 highestRoadPoint
+float32 lowestObjectPoint
+float32 highestObjectPoint
+float32 outlierMeanK
+float32 outlierStdDev
+float32 outlierRadius
+float32 outlierMinumNeighbors
+float32 intensityMinimum_A
+float32 intensityMaximum_A
+float32 intensityMinimum_B
+float32 intensityMaximum_B
+float32 intensityMinimum_C
+float32 intensityMaximum_C
+float32 planeSegMaxIterations
+float32 planeSegDistThresh
+float32 objDetectMaxIterations
+float32 objDetectDistThresh
+float32 objDetectClusterTolerance
+float32 objDetectMinClusterSize
+float32 objDetectMaxClusterSize
+

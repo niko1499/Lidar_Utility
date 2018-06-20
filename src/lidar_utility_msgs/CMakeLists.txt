@@ -7,6 +7,7 @@ add_message_files(
   DIRECTORY msg
   FILES
   roadInfo.msg
+  lidarUtilitySettings.msg
 )
 generate_messages(DEPENDENCIES std_msgs)
 

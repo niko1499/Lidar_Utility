@@ -47,7 +47,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		// Create the filtering object
 		pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
-		sor.setLeafSize (0.01f, 0.01f, 0.01f);
+		sor.setLeafSize (0.01f, 0.01f, 0.01f);//SETTING ALT
 		sor.filter (cloud_filtered);
 
 	}else if (mode==2){

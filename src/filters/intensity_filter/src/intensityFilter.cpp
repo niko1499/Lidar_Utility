@@ -38,8 +38,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	float min,max;
 	//Filtering
 	if(mode==1){
-		min=150;
-		max=300;
+		min=150;//SETTING
+		max=300;//SETTING
 	}else if (mode==2){
 
 	}else if (mode==3){

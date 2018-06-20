@@ -12,4 +12,5 @@ float32 yMax
 float32 yMin
 float32 zMax
 float32 zMin
-geometry_msgs/PoseStamped
+String type
+#geometry_msgs/PoseStamped

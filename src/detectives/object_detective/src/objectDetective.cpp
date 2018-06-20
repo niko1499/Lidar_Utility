@@ -28,7 +28,6 @@
 
 #include <pcl/common/centroid.h>
 
-
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
@@ -43,6 +42,8 @@
 #include <pcl/common/common.h>
 #include <pcl/point_types.h>
 
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -56,6 +57,24 @@ static std::string nodeName("object_detective");
 
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
+
+//settings 
+static float leaf_setting=0.01;
+static float setMaxIterations_setting=100;
+static float setDistanceThreshold_setting=.02;
+static float setClusterTolerance_setting=.325;
+static float setMinClusterSize_setting=100;
+static float setMaxClusterSize_setting=40000;
+
+void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
+{
+	setMaxIterations_setting = data.objDetectMaxIterations;
+	setDistanceThreshold_setting = data.objDetectDistThresh;
+	setClusterTolerance_setting = data.objDetectClusterTolerance;
+	setMinClusterSize_setting = data.objDetectMinClusterSize;
+	setMaxClusterSize_setting = data.objDetectMaxClusterSize;
+	leaf_setting = data.downSampleLeafSize_B;
+}
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
@@ -131,7 +150,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		// Create the filtering object: downsample the dataset using a leaf size of 1cm
 		pcl::VoxelGrid<pcl::PointXYZ> vg;
 		vg.setInputCloud (temp_cloud);
-		vg.setLeafSize (0.01f, 0.01f, 0.01f);//default (0.01f, 0.01f, 0.01f)
+		vg.setLeafSize (leaf_setting, leaf_setting, leaf_setting);//default (0.01f, 0.01f, 0.01f)//SETTING
 		vg.filter (*cloud_filtered);
 		std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
 		// Create the segmentation object for the planar model and set all the parameters
@@ -143,8 +162,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		seg.setOptimizeCoefficients (true);
 		seg.setModelType (pcl::SACMODEL_PLANE);
 		seg.setMethodType (pcl::SAC_RANSAC);
-		seg.setMaxIterations (100);
-		seg.setDistanceThreshold (0.02);
+		seg.setMaxIterations (setMaxIterations_setting);//SETTING
+		seg.setDistanceThreshold (setDistanceThreshold_setting);//SETTING
 
 		int i=0, nr_points = (int) cloud_filtered->points.size ();
 		while (cloud_filtered->points.size () > 0.3 * nr_points)
@@ -181,9 +200,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	tree->setInputCloud (cloud_filtered);
 	std::vector<pcl::PointIndices> cluster_indices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance (0.325); // 2cm
-	ec.setMinClusterSize (100);
-	ec.setMaxClusterSize (40000);
+	ec.setClusterTolerance (setClusterTolerance_setting); // 2cm//SETTING
+	ec.setMinClusterSize (setMinClusterSize_setting);//SETTING
+	ec.setMaxClusterSize (setMaxClusterSize_setting);//SETTING
 	ec.setSearchMethod (tree);
 	ec.setInputCloud (cloud_filtered);
 	ec.extract (cluster_indices);
@@ -310,6 +329,7 @@ main (int argc, char** argv)
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
+	ros::Subscriber sub2 = nh.subscribe("lidar_utility_settings", 1, settings_cb);
 	// Create a ROS publisher for the output point cloud
 
 	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"_visualized", 0 );
@@ -319,6 +339,10 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
+
+
 	// Spin
 	ros::spin ();
 }
+
+

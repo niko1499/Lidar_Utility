@@ -86,7 +86,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::Poi
 // Create the filtering object: downsample the dataset using a leaf size of 1cm
 		pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
-		sor.setLeafSize (0.01f, 0.01f, 0.01f);//.01 default
+		sor.setLeafSize (0.01f, 0.01f, 0.01f);//.01 defaultSETTING
 		sor.filter (*cloud_filtered_blob);
 
 		// Convert to the templated PointCloud
@@ -105,7 +105,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::Poi
 		// Mandatory
 		seg.setModelType (pcl::SACMODEL_PLANE);
 		seg.setMethodType (pcl::SAC_RANSAC);
-		seg.setDistanceThreshold (0.01);
+		seg.setDistanceThreshold (0.01);//SETTING
 
 		seg.setInputCloud (cloud_filtered);
 		seg.segment (*inliers, *coefficients);

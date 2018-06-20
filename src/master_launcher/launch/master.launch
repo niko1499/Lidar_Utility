@@ -1,5 +1,7 @@
 <!--One launch file to rule them all-->
 <!--see readme section on launch files for details on how to use file-->
+<!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
+
 <launch>
   <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
     <!--commented out so program uses defaults or searches for available topic-->

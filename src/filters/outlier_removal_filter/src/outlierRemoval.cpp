@@ -55,8 +55,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 		pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
-		sor.setMeanK (75);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet
-		sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default
+		sor.setMeanK (75);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet//SETTING
+		sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default//SETTING
 		sor.filter (cloud_filtered);
 	}else if (mode==2){
 		//Convert PointCloud2 to PointXYZ
@@ -70,8 +70,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
 		// build the filter
 		outrem.setInputCloud(cloudXYZ);
-		outrem.setRadiusSearch(0.8);
-		outrem.setMinNeighborsInRadius (2);
+		outrem.setRadiusSearch(0.8);//SETTING
+		outrem.setMinNeighborsInRadius (2);//SETTING
 		//setup xyzholder
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
@@ -106,7 +106,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	pub.publish (output);
 }
 
-
 	int
 main (int argc, char** argv)
 {
@@ -131,7 +130,6 @@ main (int argc, char** argv)
 	std::string sTopic;
 	std::string pTopic;
 	std::string myMode;
-
 
 	//Check if the user specified a subscription topic
 	if(nh.hasParam(subscriberParamName)){
