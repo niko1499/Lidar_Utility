@@ -11,6 +11,12 @@
 
 #include <lidar_utility_msgs/roadInfo.h>
 
+#include <pcl/filters/extract_indices.h>
+
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -19,91 +25,124 @@
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
 static std::string nodeName("pass_through_filter");
+static 	float xMinf, xMaxf, yMinf, yMaxf, zMinf, zMaxf;
+bool called = false;
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
 ros::Publisher pc2_pub;
 
-class Listener{
-	public:
-	float xMin, xMax, yMin, yMax, zMin, zMax;
-	pcl::PCLPointCloud2 *cloud = new pcl::PCLPointCloud2;
-	void message_cb(const lidar_utility_msgs::roadInfo& data);
-	void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg);
-};
 
-
-void Listener::message_cb (const lidar_utility_msgs::roadInfo& data)
+void message_cb (const lidar_utility_msgs::roadInfo& data)
 {
-	xMin = data.xMin;
-	xMax = data.xMax;
-	yMin = data.yMin;
-	yMax = data.yMax;
-	zMin = data.zMin;
-	zMax = data.zMax;	
+	ROS_INFO("NEWHERE^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+	printf("xMin: %f",data.xMin);
+	xMinf = data.xMin;
+	xMaxf = data.xMax;
+	yMinf = data.yMin;
+	yMaxf = data.yMax;
+	zMinf = data.zMin;
+	zMaxf = data.zMax;	
 }	
 
-void Listener::cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+
+	//pcl::PCLPointCloud2 *cloud = new pcl::PCLPointCloud2;
+
 	//Callback for filtering and republishing recived data
 	ROS_INFO("%s: In Callback",nodeName.c_str());
 	// Create a container for the data and filtered data.
-
-	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
+	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-
 	pcl::PCLPointCloud2 cloud_filtered;
-/*
-
-//asdf
-
+	pcl_conversions::toPCL(*cloud_msg, *cloud);
 
 	// Do data processing here...
 
 	//Convert to PCL data type
 	pcl_conversions::toPCL(*cloud_msg, *cloud);
-*/
-pcl::PassThrough<pcl::PCLPointCloud2> pass;
+	called = true;
+
+
+	// Do data processing here...
+
+	//Convert to PCL data type
+	//pcl_conversions::toPCL(*cloud_msg, *cloud);
+
+	pcl::PassThrough<pcl::PCLPointCloud2> pass;
 	pass.setInputCloud (cloudPtr);
 
-	if(mode==1){
+	if(mode==1){//road
 		pass.setFilterFieldName ("z");
 		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
 		pass.setFilterLimitsNegative (true);
 
+		pass.filter (cloud_filtered);
 
-	}else if (mode==2){
+		//convert to ROS data type
+		sensor_msgs::PointCloud2 output;
+
+		pcl_conversions::fromPCL(cloud_filtered,output);
+		// Publish the data.
+		pc2_pub.publish (output);
+
+	}else if (mode==2){//objects
 		pass.setFilterFieldName ("z");
 		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
 		pass.setFilterLimitsNegative (false);
-	}else if (mode==3){
-/*
-		pass.setFilterFieldName ("x");
-		pass.setFilterLimits (listener.xMin,listener.xMax);
-pass.setFilterFieldName ("y");
-		pass.setFilterLimits (listener.yMin,listener.yMax);
-pass.setFilterFieldName ("z");
-		pass.setFilterLimits (listener.zMin,listener.zMax);
-		pass.setFilterLimitsNegative (false);
-*/
-
-	}
 
 		pass.filter (cloud_filtered);
 
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
+		//convert to ROS data type
+		sensor_msgs::PointCloud2 output;
 
-	pcl_conversions::fromPCL(cloud_filtered,output);
-	// Publish the data.
-	pc2_pub.publish (output);
+		pcl_conversions::fromPCL(cloud_filtered,output);
+		// Publish the data.
+		pc2_pub.publish (output);
+
+	}else if (mode==3){//adv objects
+
+		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+		pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+		pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 
 
+		pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
+		pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
+
+		///pcl::PCLPointX cloud_filtered_x;
+		//pcl::PCLPointCloud2 cloud_filtered_xz;
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
+		ptfilter.setInputCloud (temp_cloud);
+		ptfilter.setFilterFieldName ("x");
+		ptfilter.setFilterLimits (xMinf, xMaxf);
+		ptfilter.filter (*cloud_filtered_x);
+
+		ptfilter.setInputCloud(cloud_filtered_x);
+		ptfilter.setFilterFieldName ("y");
+		ptfilter.setFilterLimits (yMinf,yMaxf);
+		ptfilter.filter (*cloud_filtered_xy);
+
+		ptfilter.setInputCloud(cloud_filtered_xy);
+		ptfilter.setFilterFieldName ("z");
+		ptfilter.setFilterLimits (zMaxf,.75);
+		ptfilter.setNegative (false);
+		ptfilter.filter (*cloud_filtered_xyz);
+
+		sensor_msgs::PointCloud2 output;//create output container
+		pcl::PCLPointCloud2 temp_output;//create PCLPC2
+		pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+		pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+		pc2_pub.publish (output);// Publish the data.
+	}
 }
-
 	int
 main (int argc, char** argv)
 {
@@ -172,67 +211,20 @@ main (int argc, char** argv)
 		mode=1;
 	}else if(myMode=="o"||myMode=="O"||myMode=="objects"){
 		mode=2;
-	}else if(myMode=="3"||myMode=="C"||myMode=="asdf"){
+	}else if(myMode=="3"||myMode=="C"||myMode=="advObjects"){
 		mode=3;
 	}
-Listener listener;
+
 	// Create a ROS subscriber for the input point cloud
-	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, &Listener::cloud_cb, &listener);
+	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
+	ros::Subscriber sub2 = nh.subscribe("plane_segmented_msg", 1, message_cb);
 
-
-ros::Subscriber sub2 = nh.subscribe("topic_subscribed", 1, &Listener::message_cb, &listener);
-	
-	while(ros::ok()){
-		ros::spinOnce();
-
-		// = listener.xMin;
-/*
-	pcl::PCLPointCloud2 cloud_filtered;
-printf("test((( %f",listener.xMax);
-	pcl::PCLPointCloud2ConstPtr cloudPtr(listener.cloud);
-	
-	pcl::PassThrough<pcl::PCLPointCloud2> pass;
-	pass.setInputCloud (cloudPtr);
-
-	if(mode==1){
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)
-		pass.setFilterLimitsNegative (true);
-
-
-	}else if (mode==2){
-		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()
-		pass.setFilterLimitsNegative (false);
-	}else if (mode==3){
-		pass.setFilterFieldName ("x");
-		pass.setFilterLimits (listener.xMin,listener.xMax);
-pass.setFilterFieldName ("y");
-		pass.setFilterLimits (listener.yMin,listener.yMax);
-pass.setFilterFieldName ("z");
-		pass.setFilterLimits (listener.zMin,listener.zMax);
-		pass.setFilterLimitsNegative (false);
-	}
-
-		pass.filter (cloud_filtered);
-
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-
-	pcl_conversions::fromPCL(cloud_filtered,output);
-	// Publish the data.
-	pc2_pub.publish (output);
-		//loop_rate.sleep();
-*/
-
-	}	
-
-	}		
+	ros::spin();
+}		
 
