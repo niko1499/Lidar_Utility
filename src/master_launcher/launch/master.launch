@@ -72,7 +72,13 @@
     <arg name="publisher" value="adv_obj_filtered" />
     <arg name="mode" value="statistical" />
   </include>
-
+ <!--performs object detection-->
+  <include file="$(find object_detective)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective" />
+    <arg name="subscriber" value="adv_obj_filtered" />
+    <arg name="publisher" value="objects" />
+    <arg name="mode" value="u" />
+  </include>
 
  <!--Making a costmmap_2d-->
 

@@ -28,6 +28,21 @@
 
 #include <pcl/common/centroid.h>
 
+
+#include <pcl/common/common.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/centroid.h>
+
+#include <pcl/impl/point_types.hpp>
+#include <pcl/search/search.h>
+#include <pcl/point_cloud.h>
+
+
+#include <pcl/common/projection_matrix.h>
+
+#include <pcl/common/common.h>
+#include <pcl/point_types.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -44,13 +59,13 @@ ros::Publisher vis_pub;
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
-	float alpha=.5;
+	float alpha=.75;
 	if(type==1){//truck||bus
 		r=1.0;
 		g=0.0;
 		b=0.0;
 	}else if(type==2){//car
-		r=0.0;
+		r=1.0;
 		g=1.0;
 		b=0.0;
 	}else if(type==3){//person
@@ -166,9 +181,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	tree->setInputCloud (cloud_filtered);
 	std::vector<pcl::PointIndices> cluster_indices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance (0.02); // 2cm
+	ec.setClusterTolerance (0.40); // 2cm
 	ec.setMinClusterSize (100);
-	ec.setMaxClusterSize (25000);
+	ec.setMaxClusterSize (40000);
 	ec.setSearchMethod (tree);
 	ec.setInputCloud (cloud_filtered);
 	ec.extract (cluster_indices);
@@ -195,7 +210,16 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::PointXYZ c1;
 		centroid.get (c1);
 		if(mode!=3){
-			marker=markerBuilder(j,c1.x,c1.y,c1.z,1,1,1,3);
+
+
+pcl::PointXYZ pMin,pMax;
+pcl::getMinMax3D (*cloud_cluster,pMin,pMax);
+
+float xScale=abs(pMax.x)-abs(pMin.x);
+float yScale=abs(pMax.y)-abs(pMin.y);
+float zScale=abs(pMax.z)-abs(pMin.z);
+
+			marker=markerBuilder(j,c1.x,c1.y,c1.z,xScale,yScale,zScale,2);
 			markerArray.markers.push_back(marker);
 		}else if (mode==3){
 			marker=markerBuilder(j,c1.x,c1.y,c1.z,1,.5,.1,5);
@@ -288,11 +312,11 @@ main (int argc, char** argv)
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 
-	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"visualized", 0 );
+	vis_pub = nh.advertise<visualization_msgs::MarkerArray>( pTopic+"_visualized", 0 );
 
 	//ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
-	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"points", 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	// Spin

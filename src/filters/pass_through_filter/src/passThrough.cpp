@@ -35,7 +35,6 @@ ros::Publisher pc2_pub;
 
 void message_cb (const lidar_utility_msgs::roadInfo& data)
 {
-	ROS_INFO("NEWHERE^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 	printf("xMin: %f",data.xMin);
 	xMinf = data.xMin;
 	xMaxf = data.xMax;
