@@ -131,7 +131,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		ptfilter.setInputCloud(cloud_filtered_xy);
 		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (zMaxf,.75);
+		ptfilter.setFilterLimits (zMaxf,1.2);
 		ptfilter.setNegative (false);
 		ptfilter.filter (*cloud_filtered_xyz);
 

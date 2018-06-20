@@ -181,7 +181,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	tree->setInputCloud (cloud_filtered);
 	std::vector<pcl::PointIndices> cluster_indices;
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance (0.40); // 2cm
+	ec.setClusterTolerance (0.325); // 2cm
 	ec.setMinClusterSize (100);
 	ec.setMaxClusterSize (40000);
 	ec.setSearchMethod (tree);
@@ -215,9 +215,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 pcl::PointXYZ pMin,pMax;
 pcl::getMinMax3D (*cloud_cluster,pMin,pMax);
 
-float xScale=abs(pMax.x)-abs(pMin.x);
-float yScale=abs(pMax.y)-abs(pMin.y);
-float zScale=abs(pMax.z)-abs(pMin.z);
+float xScale=abs(pMax.x-pMin.x);
+float yScale=abs(pMax.y-pMin.y);
+float zScale=abs(pMax.z-pMin.z);
 
 			marker=markerBuilder(j,c1.x,c1.y,c1.z,xScale,yScale,zScale,2);
 			markerArray.markers.push_back(marker);
