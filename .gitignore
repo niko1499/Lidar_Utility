@@ -1,2 +1,6 @@
 /build
-/devel
+/devel/include
+/devel/lib
+/devel/share
+
+

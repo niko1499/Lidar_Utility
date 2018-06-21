@@ -188,7 +188,7 @@ main (int argc, char** argv)
 
 	msg_pub=nh.advertise<lidar_utility_msgs::lidarUtilitySettings>(pTopic+"_settings",1);
 
-ros::Timer timer= nh.createTimer(ros::Duration(1),timer_cb,true);
+ros::Timer timer= nh.createTimer(ros::Duration(3),timer_cb,true);
 
 //NTS: ADD BUFFER SIZE MODE - NIKO 5/21/18 
 

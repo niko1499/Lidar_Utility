@@ -75,13 +75,19 @@
     <arg name="mode" value="statistical" />
   </include>
  <!--performs object detection-->
-  <include file="$(find object_detective)/launch/object_detective_slave.launch">
-    <arg name="name" value="object_detective" />
+  <include file="$(find object_detective_euclidean)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective_euclidean" />
     <arg name="subscriber" value="adv_obj_filtered" />
     <arg name="publisher" value="objects" />
     <arg name="mode" value="u" />
   </include>
-
+ <!--performs object detection-->
+  <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective_don" />
+    <arg name="subscriber" value="adv_obj_filtered" />
+    <arg name="publisher" value="objects_don" />
+    <arg name="mode" value="u" />
+  </include>
  <!--Making a costmmap_2d-->
 
 <node name="static_tf0" pkg="tf" type="static_transform_publisher" args="2 0 0 0 0 0 /map /base_link 100"/>
