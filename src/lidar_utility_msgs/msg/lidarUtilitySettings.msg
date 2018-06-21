@@ -24,4 +24,7 @@ float32 objDetectDistThresh
 float32 objDetectClusterTolerance
 float32 objDetectMinClusterSize
 float32 objDetectMaxClusterSize
-
+float32 donScale1
+float32 donScale2
+float32 donThreshold
+float32 donSegradius

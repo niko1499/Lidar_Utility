@@ -51,22 +51,26 @@ ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
 
 //settings 
+/*
 static float leaf_setting=0.01;
 static float setMaxIterations_setting=100;
 static float setDistanceThreshold_setting=.02;
 static float setClusterTolerance_setting=.325;
 static float setMinClusterSize_setting=100;
 static float setMaxClusterSize_setting=40000;
+*/
+
+  static double scale1;//The smallest scale to use in the DoN filter.
+  static double scale2;  //The largest scale to use in the DoN filter.
+  static double threshold;  //The minimum DoN magnitude to threshold by
+  static double segradius;//segment scene into clusters with given distance tolerance using euclidean clustering
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
-
-	setMaxIterations_setting = data.objDetectMaxIterations;
-	setDistanceThreshold_setting = data.objDetectDistThresh;
-	setClusterTolerance_setting = data.objDetectClusterTolerance;
-	setMinClusterSize_setting = data.objDetectMinClusterSize;
-	setMaxClusterSize_setting = data.objDetectMaxClusterSize;
-	leaf_setting = data.downSampleLeafSize_B;
+	scale1 = data.donScale1;
+	scale2 = data.donScale2;
+	threshold = data.donThreshold;
+	segradius = data.donSegradius;
 }
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
@@ -139,104 +143,154 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//these were moved here for scope of mode
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PCDWriter writer;
+//___BEGIN___DON
+
+//!!!!!!!!!!!!!!!!!!!!!!!!HERE
+
+  // Load cloud in blob format
+  pcl::PCLPointCloud2 blob;
+  pcl::io::loadPCDFile (infile.c_str (), blob);
+  pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);
+  pcl::fromPCLPointCloud2 (blob, *cloud);
+
+  // Create a search tree, use KDTreee for non-organized data.
+  pcl::search::Search<PointXYZRGB>::Ptr tree;
+  if (cloud->isOrganized ())
+  {
+    tree.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB> ());
+  }
+  else
+  {
+    tree.reset (new pcl::search::KdTree<PointXYZRGB> (false));
+  }
+
+  // Set the input pointcloud for the search tree
+  tree->setInputCloud (cloud);
+
+  if (scale1 >= scale2)
+  {
+    cerr << "Error: Large scale must be > small scale!" << endl;
+    exit (EXIT_FAILURE);
+  }
+
+  // Compute normals using both small and large scales at each point
+  pcl::NormalEstimationOMP<PointXYZRGB, PointNormal> ne;
+  ne.setInputCloud (cloud);
+  ne.setSearchMethod (tree);
+
+  /**
+   * NOTE: setting viewpoint is very important, so that we can ensure
+   * normals are all pointed in the same direction!
+   */
+  ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
+
+  // calculate normals with the small scale
+  cout << "Calculating normals for scale..." << scale1 << endl;
+  pcl::PointCloud<PointNormal>::Ptr normals_small_scale (new pcl::PointCloud<PointNormal>);
+
+  ne.setRadiusSearch (scale1);
+  ne.compute (*normals_small_scale);
+
+  // calculate normals with the large scale
+  cout << "Calculating normals for scale..." << scale2 << endl;
+  pcl::PointCloud<PointNormal>::Ptr normals_large_scale (new pcl::PointCloud<PointNormal>);
+
+  ne.setRadiusSearch (scale2);
+  ne.compute (*normals_large_scale);
+
+  // Create output cloud for DoN results
+  PointCloud<PointNormal>::Ptr doncloud (new pcl::PointCloud<PointNormal>);
+  copyPointCloud<PointXYZRGB, PointNormal>(*cloud, *doncloud);
+
+  cout << "Calculating DoN... " << endl;
+  // Create DoN operator
+  pcl::DifferenceOfNormalsEstimation<PointXYZRGB, PointNormal, PointNormal> don;
+  don.setInputCloud (cloud);
+  don.setNormalScaleLarge (normals_large_scale);
+  don.setNormalScaleSmall (normals_small_scale);
+
+  if (!don.initCompute ())
+  {
+    std::cerr << "Error: Could not initialize DoN feature operator" << std::endl;
+    exit (EXIT_FAILURE);
+  }
+
+  // Compute DoN
+  don.computeFeature (*doncloud);
+
+  // Save DoN features
+  pcl::PCDWriter writer;
+  writer.write<pcl::PointNormal> ("don.pcd", *doncloud, false); 
+
+  // Filter by magnitude
+  cout << "Filtering out DoN mag <= " << threshold << "..." << endl;
+
+  // Build the condition for filtering
+  pcl::ConditionOr<PointNormal>::Ptr range_cond (
+    new pcl::ConditionOr<PointNormal> ()
+    );
+  range_cond->addComparison (pcl::FieldComparison<PointNormal>::ConstPtr (
+                               new pcl::FieldComparison<PointNormal> ("curvature", pcl::ComparisonOps::GT, threshold))
+                             );
+  // Build the filter
+  pcl::ConditionalRemoval<PointNormal> condrem (range_cond);
+  condrem.setInputCloud (doncloud);
+
+  pcl::PointCloud<PointNormal>::Ptr doncloud_filtered (new pcl::PointCloud<PointNormal>);
+
+  // Apply filter
+  condrem.filter (*doncloud_filtered);
+
+  doncloud = doncloud_filtered;
+
+  // Save filtered output
+  std::cout << "Filtered Pointcloud: " << doncloud->points.size () << " data points." << std::endl;
+
+  writer.write<pcl::PointNormal> ("don_filtered.pcd", *doncloud, false); 
+
+  // Filter by magnitude
+  cout << "Clustering using EuclideanClusterExtraction with tolerance <= " << segradius << "..." << endl;
+
+  pcl::search::KdTree<PointNormal>::Ptr segtree (new pcl::search::KdTree<PointNormal>);
+  segtree->setInputCloud (doncloud);
+
+  std::vector<pcl::PointIndices> cluster_indices;
+  pcl::EuclideanClusterExtraction<PointNormal> ec;
+
+  ec.setClusterTolerance (segradius);
+  ec.setMinClusterSize (50);
+  ec.setMaxClusterSize (100000);
+  ec.setSearchMethod (segtree);
+  ec.setInputCloud (doncloud);
+  ec.extract (cluster_indices);
+
+  int j = 0;
+  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
+  {
+    pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
+    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+    {
+      cloud_cluster_don->points.push_back (doncloud->points[*pit]);
+    }
+
+    cloud_cluster_don->width = int (cloud_cluster_don->points.size ());
+    cloud_cluster_don->height = 1;
+    cloud_cluster_don->is_dense = true;
+
+    //Save cluster
+/*
+    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
+    stringstream ss;
+    ss << "don_cluster_" << j << ".pcd";
+    writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
+*/
+  
+}
+
+//END DON_____
+	
 	if(mode==1){
-		// Create the filtering object: downsample the dataset using a leaf size of 1cm
-		pcl::VoxelGrid<pcl::PointXYZ> vg;
-		vg.setInputCloud (temp_cloud);
-		vg.setLeafSize (leaf_setting, leaf_setting, leaf_setting);//default (0.01f, 0.01f, 0.01f)//SETTING
-		vg.filter (*cloud_filtered);
-		std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
-		// Create the segmentation object for the planar model and set all the parameters
-		pcl::SACSegmentation<pcl::PointXYZ> seg;
-		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
-
-		seg.setOptimizeCoefficients (true);
-		seg.setModelType (pcl::SACMODEL_PLANE);
-		seg.setMethodType (pcl::SAC_RANSAC);
-		seg.setMaxIterations (setMaxIterations_setting);//SETTING
-		seg.setDistanceThreshold (setDistanceThreshold_setting);//SETTING
-
-		int i=0, nr_points = (int) cloud_filtered->points.size ();
-		while (cloud_filtered->points.size () > 0.3 * nr_points)
-		{
-			// Segment the largest planar component from the remaining cloud
-			seg.setInputCloud (cloud_filtered);
-			seg.segment (*inliers, *coefficients);
-			if (inliers->indices.size () == 0)
-			{
-				std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
-				break;
-			}
-			// Extract the planar inliers from the input cloud
-			pcl::ExtractIndices<pcl::PointXYZ> extract;
-			extract.setInputCloud (cloud_filtered);
-			extract.setIndices (inliers);
-			extract.setNegative (false);
-			// Get the points associated with the planar surface
-			extract.filter (*cloud_plane);
-			std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
-
-			//add missing cloud_f //NI
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
-			// Remove the planar inliers, extract the rest
-			extract.setNegative (true);
-			extract.filter (*cloud_f);
-			*cloud_filtered = *cloud_f;
-		}
-	}else if(mode==2||mode==3){
-		cloud_filtered=temp_cloud;
-	}
-	// Creating the KdTree object for the search method of the extraction
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-	tree->setInputCloud (cloud_filtered);
-	std::vector<pcl::PointIndices> cluster_indices;
-	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance (setClusterTolerance_setting); // 2cm//SETTING
-	ec.setMinClusterSize (setMinClusterSize_setting);//SETTING
-	ec.setMaxClusterSize (setMaxClusterSize_setting);//SETTING
-	ec.setSearchMethod (tree);
-	ec.setInputCloud (cloud_filtered);
-	ec.extract (cluster_indices);
-	int j = 0;
-	for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-	{
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-		for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-			cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
-		cloud_cluster->width = cloud_cluster->points.size ();
-		cloud_cluster->height = 1;
-		cloud_cluster->is_dense = true;
-
-		std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
-		std::stringstream ss;
-		ss << "cloud_cluster_" << j << ".pcd";
-		writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
-		j++;
-		pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
-
-		for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
-			centroid.add(pcl::PointXYZ(cloud_filtered->points[*pit2].x,cloud_filtered->points[*pit2].y,cloud_filtered->points[*pit2].z));
-		}
-		pcl::PointXYZ c1;
-		centroid.get (c1);
-		if(mode!=3){
-
-
-pcl::PointXYZ pMin,pMax;
-pcl::getMinMax3D (*cloud_cluster,pMin,pMax);
-
-float xScale=abs(pMax.x-pMin.x);
-float yScale=abs(pMax.y-pMin.y);
-float zScale=abs(pMax.z-pMin.z);
-
-			marker=markerBuilder(j,c1.x,c1.y,c1.z,xScale,yScale,zScale,2);
-			markerArray.markers.push_back(marker);
-		}else if (mode==3){
-			marker=markerBuilder(j,c1.x,c1.y,c1.z,1,.5,.1,5);
-			markerArray.markers.push_back(marker);
-		}
+		
 	}
 	//publih
 	vis_pub.publish(markerArray);
