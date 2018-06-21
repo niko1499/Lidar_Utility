@@ -18,32 +18,25 @@ ROS generated scripts
 - /src: 
 Where all the code goes
 - 	/src/drivers: 
-ROS Lidar Drivers Provided by manufacturer. See README for more info on how to use
+ROS Lidar Drivers Provided by manufacturers. See included README for more info on how to use. These are the drivers and versions for the hardware I used while at SAIC Motor. Some modifications to the drivers had to be made. 
 - 	/src/master_launcher: 
-Node and launch files for organizing entire project together. Subscribes automatically or manually to the raw PointCloud2 topic and republishes it for use by other nodes. 
+Node and launch files for organizing entire project together. Subscribes automatically or manually to the raw PointCloud2 topic and republishes it for use by other nodes. Also publishes a topic of settings to be read by other nodes. The settings that are published can be automatically changed for the source of lidar data. 
 -	/src/my_pcl_tutorial: 
-Partial implementation of [this](http://wiki.ros.org/pcl/Tutorials) tutorial. Useful as a skeleton for other code. Simply subscribes on a topic and echos what it hears to a publisher. See [link](http://www.pointclouds.org/documentation/tutorials/) for ways to add to the skeleton code.
+Partial implementation of [this](http://wiki.ros.org/pcl/Tutorials) tutorial. Useful as a skeleton for other code. Simply subscribes on a topic and echos what it hears to a publisher. See [link](http://www.pointclouds.org/documentation/tutorials/) for ways to add to the skeleton code. Note that appropriate conversions between ROS and PCL may will need to be made. 
 -	/src/filters: 
-A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another ROS topic. Each one has a default topic constant and the ability to change the topics via parameters specified after rosrun or in a launch file.
+A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another ROS topic. Each one has a default topic and the ability to change the topics via parameters specified after rosrun or in a launch file.
 -	/src/detectives: 
-A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or a type of vehicle and then publish the data for visuilization or to be used my other more advanced nodes.
+A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or an objects location/type and then publish the data for visuilization or to be used my other more advanced nodes.
 -	/src/SLAM: 
 Put slam here when implemented.
 -	/src/master_launcher: 
-Main launch file. Launches multiple other launch files. Also cpp code to listen for likely topics and republish on a topic that the rest of the program expects. 
 - /setIP: 
-A script and two .txt files that are usefult for configuring a static or dynamic IP address that are needed when connecting to the lidars. This is useful when connecting back and forth between internet and an ethernet connected lidar. For details on how to use it see the comments in the setIP.sh file.
+A script and two .txt files that are usefult for configuring a static or dynamic IP address that are needed when connecting to the rslidar. This is useful when connecting back and forth between internet and an ethernet connected lidar with static IP. For details on how to use it see the comments in the setIP.sh file.
 - /data:
 Recorded point cloud data for offline testing in multiple formats
-- /data/pcd:
-Point Cloud Data collected from various sensors for offline testing in the .pcd format. To publish this data see the publish data section below.
-- /data/rosbag:
-Point Cloud Data collected from various sensors in the rosbag format. To publish this data see the publish data section below. 
-rosbag
 - /rviz: 
-RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory.
-
-
+RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory. Note this is not the location of the main rviz config file. The primary rviz config exists in the maser_launcher node. These are just alternate configs that may be useful. 
+- /PCL_testspace: A place to test C++ PCL code before trying to integrate it into a ROS node. 
 # To download the project:
 ```
 git clone https://github.com/niko1499/Lidar_Utility.git
