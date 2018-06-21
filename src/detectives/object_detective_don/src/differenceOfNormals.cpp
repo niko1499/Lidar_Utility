@@ -1,8 +1,11 @@
+//ROS:
 #include <ros/ros.h>
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
-
-// PCL specific includes
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+//C
+#include <string>
+//PCL:Base
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -13,36 +16,25 @@
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
-
+//PCL:common
 #include <pcl/ModelCoefficients.h>
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/filters/extract_indices.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-
 #include <pcl/common/centroid.h>
-
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
-#include <pcl/common/centroid.h>
-
 #include <pcl/impl/point_types.hpp>
 #include <pcl/search/search.h>
-#include <pcl/point_cloud.h>
-
-
 #include <pcl/common/projection_matrix.h>
-
-#include <pcl/common/common.h>
-#include <pcl/point_types.h>
-
-#include <lidar_utility_msgs/lidarUtilitySettings.h>
+//PCL:DON
+#include <pcl/search/organized.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/filters/conditional_removal.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/features/don.h>
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
