@@ -68,6 +68,7 @@ static float setMaxClusterSize_setting=40000;
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
+ROS_INFO("HERE*****************************************************X");
 	setMaxIterations_setting = data.objDetectMaxIterations;
 	setDistanceThreshold_setting = data.objDetectDistThresh;
 	setClusterTolerance_setting = data.objDetectClusterTolerance;
@@ -338,8 +339,6 @@ main (int argc, char** argv)
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
-
-
 
 	// Spin
 	ros::spin ();

@@ -40,12 +40,57 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 	pc2_pub.publish (output);
 }
 
+void timer_cb (const ros::TimerEvent& event){
+//custom msg
+lidar_utility_msgs::lidarUtilitySettings msg;
+
+msg.headerstamp = ros::Time::now();
+msg.header.frame_id = "/world";
+msg.downSampleLeafSize_A = 00;
+msg.downSampleLeafSize_B = 0.01;
+msg.planeDistanceThreshold = 00;
+msg.lowestRoadPoint = 00;
+msg.highestRoadPoint = 00;
+msg.lowestObjectPoint = 00;
+msg.highestObjectPoint = 00;
+msg.outlierMeanK = 00;
+msg.outlierStdDev = 00;
+msg.outlierRadius = 00;
+msg.outlierMinumNeighbors = 00;
+msg.intensityMinimum_A = 00;
+msg.intensityMaximum_A = 00;
+msg.intensityMinimum_B = 00;
+msg.intensityMaximum_B = 00;
+msg.planeSegMaxIterations = 00;
+msg.planeSegDistThresh = 00;
+msg.objDetectMaxIterations = 100;
+msg.objDetectDistThresh = 0.02;
+msg.objDetectClusterTolerance = 0.325;//a
+msg.objDetectMinClusterSize = 100;
+msg.objDetectMaxClusterSize = 40000;
+
+
+
+if(mode==1){
+
+}else if (mode==2){
+
+}else if (mode==3){
+
+}else if (mode==4){
+
+}else{
+
+}
+msg_pub.publish(msg);
+}
+
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("lidar_utility_points");
+	const std::string defaultPublisher("lidar_utility");
 
 	std::string nodeName("lidar_utility");//temp name to initialize with
 
@@ -138,56 +183,20 @@ main (int argc, char** argv)
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	msg_pub=nh.advertise<lidar_utility_msgs::lidarUtilitySettings>(pTopic+"_settings",1);
 
+ros::Timer timer= nh.createTimer(ros::Duration(1),timer_cb,true);
 
-//custom msg
-lidar_utility_msgs::lidarUtilitySettings msg;
-
-msg.headerstamp = ros::Time::now();
-msg.header.frame_id = "/world";
-msg.downSampleLeafSize_A = 00;
-msg.downSampleLeafSize_B = 0.01;
-msg.planeDistanceThreshold = 00;
-msg.lowestRoadPoint = 00;
-msg.highestRoadPoint = 00;
-msg.lowestObjectPoint = 00;
-msg.highestObjectPoint = 00;
-msg.outlierMeanK = 00;
-msg.outlierStdDev = 00;
-msg.outlierRadius = 00;
-msg.outlierMinumNeighbors = 00;
-msg.intensityMinimum_A = 00;
-msg.intensityMaximum_A = 00;
-msg.intensityMinimum_B = 00;
-msg.intensityMaximum_B = 00;
-msg.planeSegMaxIterations = 00;
-msg.planeSegDistThresh = 00;
-msg.objDetectMaxIterations = 100;
-msg.objDetectDistThresh = 0.02;
-msg.objDetectClusterTolerance = 0.325;//a
-msg.objDetectMinClusterSize = 100;
-msg.objDetectMaxClusterSize = 40000;
+//NTS: ADD BUFFER SIZE MODE - NIKO 5/21/18 
 
 
-
-if(mode==1){
-
-}else if (mode==2){
-
-}else if (mode==3){
-
-}else if (mode==4){
-
-}else{
-
-}
-
-msg_pub.publish(msg);
-
+//ROS_INFO("HERE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXspin");
+//r.sleep();
+//ros::spinOnce();
+//}
 	// Spin
 	ros::spin ();
 }
