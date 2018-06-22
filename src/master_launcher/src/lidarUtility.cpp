@@ -72,6 +72,8 @@ msg.donScale1=11;
 msg.donScale2=22;
 msg.donThreshold=0;
 msg.donSegradius=1;
+msg.objDetectDoNMinClusterSize = 100;
+msg.objDetectDoNMaxClusterSize = 40000;
 
 
 if(mode==1){

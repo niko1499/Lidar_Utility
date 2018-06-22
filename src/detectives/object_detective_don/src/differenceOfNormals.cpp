@@ -86,6 +86,10 @@ static float setMaxClusterSize_setting=40000;
   static double scale2=20;  //The largest scale to use in the DoN filter.
   static double threshold=.1;  //The minimum DoN magnitude to threshold by
   static double segradius=.5;//segment scene into clusters with given distance tolerance using euclidean clustering
+static double setMinClusterSize_setting=50;
+static double setMaxClusterSize_setting=40000;
+
+
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
@@ -93,6 +97,8 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	scale2 = data.donScale2;
 	threshold = data.donThreshold;
 	segradius = data.donSegradius;
+setMinClusterSize_setting=data.objDetectDoNMinClusterSize;
+setMaxClusterSize_setting=data.objDetectDoNMaxClusterSize;
 }
 
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
@@ -286,8 +292,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::EuclideanClusterExtraction<pcl::PointNormal> ec;
 
   ec.setClusterTolerance (segradius);
-  ec.setMinClusterSize (50);
-  ec.setMaxClusterSize (100000);
+  ec.setMinClusterSize (setMinClusterSize_setting);//SETTING old was 100000
+  ec.setMaxClusterSize (setMaxClusterSize_setting);//SETTING old was 100000
   ec.setSearchMethod (segtree);
   ec.setInputCloud (doncloud);
   ec.extract (cluster_indices);
@@ -315,11 +321,14 @@ ROS_INFO( "ObjDetDoN: PointCloud representing the Cluster: %i", cloud_cluster_do
     //ss << "don_cluster_" << j << ".pcd";
   //  writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
 
-  
+//EXTRACT  
+
+
+
 //publish mini clusters
 sensor_msgs::PointCloud2 output;//create output container
 pcl::PCLPointCloud2 temp_output;//create PCLPC2
-pcl::toPCLPointCloud2(*doncloud,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+pcl::toPCLPointCloud2(*cloud_cluster_don,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 switch(cloudNum){

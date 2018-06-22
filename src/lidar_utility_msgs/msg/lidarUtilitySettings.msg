@@ -28,3 +28,5 @@ float32 donScale1
 float32 donScale2
 float32 donThreshold
 float32 donSegradius
+float32 objDetectDoNMinClusterSize
+float32 objDetectDoNMaxClusterSize
