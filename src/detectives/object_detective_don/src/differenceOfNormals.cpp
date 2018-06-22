@@ -72,7 +72,7 @@ ros::Publisher cl8_pub;
 ros::Publisher cl9_pub;
 
 
-//settings 
+//Settings. Note will get overwritten by setting_cb 
 /*
 static float leaf_setting=0.01;
 static float setMaxIterations_setting=100;
@@ -152,11 +152,7 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-
-
-
-	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
-	ROS_INFO("%s ObjectDetective: In Callback", nodeName.c_str());
+	ROS_INFO("%s: In Callback", nodeName.c_str());
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
@@ -295,7 +291,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   ec.setSearchMethod (segtree);
   ec.setInputCloud (doncloud);
   ec.extract (cluster_indices);
-
+int cloudNum=0;
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
@@ -310,7 +306,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     cloud_cluster_don->is_dense = true;
 
 
-
+ROS_INFO( "ObjDetDoN: PointCloud representing the Cluster: %i", cloud_cluster_don->points.size ());
 
     //Save cluster
 //
@@ -325,7 +321,45 @@ sensor_msgs::PointCloud2 output;//create output container
 pcl::PCLPointCloud2 temp_output;//create PCLPC2
 pcl::toPCLPointCloud2(*doncloud,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
-pc2_pub.publish (output);// Publish the data.
+
+switch(cloudNum){
+case 0:
+cl0_pub.publish (output);
+break;
+case 1:
+cl1_pub.publish (output);
+break;
+case 2:
+cl2_pub.publish (output);
+break;
+case 3:
+cl3_pub.publish (output);
+break;
+case 4:
+cl4_pub.publish (output);
+break;
+case 5:
+cl5_pub.publish (output);
+break;
+case 6:
+cl6_pub.publish (output);
+break;
+case 7:
+cl7_pub.publish (output);
+break;
+case 8:
+cl8_pub.publish (output);
+break;
+case 9:
+cl9_pub.publish (output);
+break;
+default:
+ROS_INFO("ERR: More clusters than available pc2 topics.");
+//cloudNun=-1;
+break;
+}
+cloudNum++;
+//pc2_pub.publish (output);// Publish the data.
 
 
 
@@ -340,7 +374,7 @@ pc2_pub.publish (output);// Publish the data.
 	}
 	//publih
 	vis_pub.publish(markerArray);
-
+ROS_INFO("%s: Out of callback",nodeName.c_str());
 	
 }
 	int
@@ -431,15 +465,15 @@ main (int argc, char** argv)
 
 //cluster publishers
 	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl0", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl1", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl2", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl3", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl4", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl5", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl6", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl7", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl8", 1);
-	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl9", 1);
+	cl1_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl1", 1);
+	cl2_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl2", 1);
+	cl3_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl3", 1);
+	cl4_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl4", 1);
+	cl5_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl5", 1);
+	cl6_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl6", 1);
+	cl7_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl7", 1);
+	cl8_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl8", 1);
+	cl9_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl9", 1);
 	// Spin
 	ros::spin ();
 }

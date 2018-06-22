@@ -1,12 +1,12 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 78
+    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Outlier Filter Pass2 - PointCloud21
+        - /cl - PointCloud210
       Splitter Ratio: 0.516666651
-    Tree Height: 521
+    Tree Height: 437
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: RAW DATA - PointCloud2
+    SyncSource: Important Points 2 - PointCloud2
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Views
@@ -33,6 +33,13 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+  - Class: rviz/Displays
+    Help Height: 75
+    Name: Displays
+    Property Tree Widget:
+      Expanded: ~
+      Splitter Ratio: 0.5
+    Tree Height: 719
 Visualization Manager:
   Class: ""
   Displays:
@@ -178,7 +185,7 @@ Visualization Manager:
       Max Color: 255; 255; 255
       Max Intensity: 255
       Min Color: 0; 0; 0
-      Min Intensity: 0.593743443
+      Min Intensity: 0.581084311
       Name: Outlier Filter Pass2 - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -272,7 +279,7 @@ Visualization Manager:
       Marker Topic: /objects_visualized
       Name: MarkerArray
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -294,7 +301,7 @@ Visualization Manager:
       Class: rviz/PointCloud2
       Color: 0; 170; 0
       Color Transformer: FlatColor
-      Decay Time: 1
+      Decay Time: 3
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
@@ -324,8 +331,8 @@ Visualization Manager:
       Class: rviz/PointCloud2
       Color: 0; 0; 255
       Color Transformer: FlatColor
-      Decay Time: 1
-      Enabled: true
+      Decay Time: 3
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 255
@@ -339,6 +346,306 @@ Visualization Manager:
       Size (m): 0.150000006
       Style: Spheres
       Topic: /adv_obj
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 0; 255
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl0
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 170; 255; 0
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl1
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 85; 255; 255
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl2
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 170; 127
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl3
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 85; 0; 0
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl4
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 170; 170; 127
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl5
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 0; 0; 127
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl6
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 85; 0
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl7
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 170; 0; 255
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl8
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 0.400000006
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 6.16927767
+        Min Value: -2.94796014
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 127
+      Color Transformer: FlatColor
+      Decay Time: 3
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.580456138
+      Name: cl - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Points
+      Topic: /cl9
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -368,7 +675,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 32.6711693
+      Distance: 33.8480339
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -383,10 +690,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.05479789
+      Pitch: 0.93979764
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.75730753
+      Yaw: 5.99730158
     Saved: ~
 Window Geometry:
   Displays:
@@ -394,7 +701,7 @@ Window Geometry:
   Height: 1176
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd00000003000000000000016a0000040efc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000298000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001200530065006c0065006300740069006f006e01000002c6000000890000006100fffffffb0000000a005600690065007700730100000355000000e1000000ad00ffffff000000010000010f0000040efc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e000000ad00ffffff00000003000007800000003efc0100000002fb0000000800540069006d00650100000000000007800000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000006100000040e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000003000000000000016a0000040efc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000002800000350000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001200530065006c0065006300740069006f006e0000000385000000b10000006100fffffffb0000000a005600690065007700730100000028000000ad000000ad00fffffffb000000100044006900730070006c00610079007301000000db0000035b000000d700ffffff000000010000010f0000040efc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e000000ad00ffffff00000003000007800000003efc0100000002fb0000000800540069006d00650100000000000007800000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000006100000040e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

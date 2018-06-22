@@ -56,7 +56,7 @@ static float setMaxIterations_setting=100;
 static float setDistanceThreshold_setting=.02;
 static float setClusterTolerance_setting=.325;
 static float setMinClusterSize_setting=100;
-static float setMaxClusterSize_setting=40000;
+static float setMaxClusterSize_setting=0000;//default 40000 0 for test
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
@@ -127,7 +127,7 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
-	ROS_INFO("%s ObjectDetective: In Callback", nodeName.c_str());
+	ROS_INFO("%s: In Callback", nodeName.c_str());
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
@@ -176,7 +176,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 			extract.setNegative (false);
 			// Get the points associated with the planar surface
 			extract.filter (*cloud_plane);
-			std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
+			std::cout << "ObjDetEuc: PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
 
 			//add missing cloud_f //NI
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
@@ -209,7 +209,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		cloud_cluster->height = 1;
 		cloud_cluster->is_dense = true;
 
-		std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+		std::cout << "ObjDetEuc: PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
 		std::stringstream ss;
 		ss << "cloud_cluster_" << j << ".pcd";
 		writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*

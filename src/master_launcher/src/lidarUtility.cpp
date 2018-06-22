@@ -68,7 +68,10 @@ msg.objDetectDistThresh = 0.02;
 msg.objDetectClusterTolerance = 0.325;//a
 msg.objDetectMinClusterSize = 100;
 msg.objDetectMaxClusterSize = 40000;
-
+msg.donScale1=11;
+msg.donScale2=22;
+msg.donThreshold=0;
+msg.donSegradius=1;
 
 
 if(mode==1){
@@ -188,7 +191,7 @@ main (int argc, char** argv)
 
 	msg_pub=nh.advertise<lidar_utility_msgs::lidarUtilitySettings>(pTopic+"_settings",1);
 
-ros::Timer timer= nh.createTimer(ros::Duration(3),timer_cb,true);
+ros::Timer timer= nh.createTimer(ros::Duration(1.5),timer_cb,true);
 
 //NTS: ADD BUFFER SIZE MODE - NIKO 5/21/18 
 
