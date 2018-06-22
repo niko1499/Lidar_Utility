@@ -44,6 +44,8 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/segmentation/extract_clusters.h>
 
+#include <pcl/impl/point_types.hpp>
+
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
@@ -80,10 +82,10 @@ static float setMinClusterSize_setting=100;
 static float setMaxClusterSize_setting=40000;
 */
 
-  static double scale1;//The smallest scale to use in the DoN filter.
-  static double scale2;  //The largest scale to use in the DoN filter.
-  static double threshold;  //The minimum DoN magnitude to threshold by
-  static double segradius;//segment scene into clusters with given distance tolerance using euclidean clustering
+  static double scale1=10;//The smallest scale to use in the DoN filter.
+  static double scale2=20;  //The largest scale to use in the DoN filter.
+  static double threshold=.1;  //The minimum DoN magnitude to threshold by
+  static double segradius=.5;//segment scene into clusters with given distance tolerance using euclidean clustering
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
@@ -150,6 +152,9 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+
+
+
 	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
 	ROS_INFO("%s ObjectDetective: In Callback", nodeName.c_str());
 	//NEW CONVERSION
@@ -157,8 +162,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 	
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
-//  pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);//create PCLXYZ
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//note pcl:
+//pcl::PointCloud<pcl::PointXYZRGB> cloud;
 	pcl::fromPCLPointCloud2(pcl_pc2,*cloud);//convert PCLPC2 to PCLXYZ
 	visualization_msgs::MarkerArray markerArray;
 	visualization_msgs::Marker marker;
@@ -171,7 +177,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 //!!!!!!!!!!!!!!!!!!!!!!!!HEREds
 
-/*
+
 
   // Load cloud in blob format
   //pcl::PCLPointCloud2 blob;
@@ -180,14 +186,14 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   //pcl::fromPCLPointCloud2 (blob, *cloud);
 
   // Create a search tree, use KDTreee for non-organized data.
-  pcl::search::Search<PointXYZRGB>::Ptr tree;
+  pcl::search::Search<pcl::PointXYZRGB>::Ptr tree;
   if (cloud->isOrganized ())
   {
-    tree.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB> ());
+    tree.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGB> ());
   }
   else
   {
-    tree.reset (new pcl::search::KdTree<PointXYZRGB> (false));
+    tree.reset (new pcl::search::KdTree<pcl::PointXYZRGB> (false));
   }
 
   // Set the input pointcloud for the search tree
@@ -195,12 +201,12 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
   if (scale1 >= scale2)
   {
-    cerr << "Error: Large scale must be > small scale!" << endl;
+    ROS_INFO("Error: Large scale must be > small scale!");
     exit (EXIT_FAILURE);
   }
 
   // Compute normals using both small and large scales at each point
-  pcl::NormalEstimationOMP<PointXYZRGB, PointNormal> ne;
+  pcl::NormalEstimationOMP<pcl::PointXYZRGB, pcl::PointNormal> ne;
   ne.setInputCloud (cloud);
   ne.setSearchMethod (tree);
 
@@ -211,26 +217,26 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
 
   // calculate normals with the small scale
-  cout << "Calculating normals for scale..." << scale1 << endl;
-  pcl::PointCloud<PointNormal>::Ptr normals_small_scale (new pcl::PointCloud<PointNormal>);
+  ROS_INFO( "Calculating normals for scale...");
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_small_scale (new pcl::PointCloud<pcl::PointNormal>);
 
   ne.setRadiusSearch (scale1);
   ne.compute (*normals_small_scale);
 
   // calculate normals with the large scale
-  cout << "Calculating normals for scale..." << scale2 << endl;
-  pcl::PointCloud<PointNormal>::Ptr normals_large_scale (new pcl::PointCloud<PointNormal>);
+  ROS_INFO( "Calculating normals for scale..." );
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_large_scale (new pcl::PointCloud<pcl::PointNormal>);
 
   ne.setRadiusSearch (scale2);
   ne.compute (*normals_large_scale);
 
   // Create output cloud for DoN results
-  PointCloud<PointNormal>::Ptr doncloud (new pcl::PointCloud<PointNormal>);
-  copyPointCloud<PointXYZRGB, PointNormal>(*cloud, *doncloud);
+  pcl::PointCloud<pcl::PointNormal>::Ptr doncloud (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::copyPointCloud<pcl::PointXYZRGB, pcl::PointNormal>(*cloud, *doncloud);
 
-  cout << "Calculating DoN... " << endl;
+  ROS_INFO( "Calculating DoN... ");
   // Create DoN operator
-  pcl::DifferenceOfNormalsEstimation<PointXYZRGB, PointNormal, PointNormal> don;
+  pcl::DifferenceOfNormalsEstimation<pcl::PointXYZRGB, pcl::PointNormal, pcl::PointNormal> don;
   don.setInputCloud (cloud);
   don.setNormalScaleLarge (normals_large_scale);
   don.setNormalScaleSmall (normals_small_scale);
@@ -249,20 +255,20 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   writer.write<pcl::PointNormal> ("don.pcd", *doncloud, false); 
 
   // Filter by magnitude
-  cout << "Filtering out DoN mag <= " << threshold << "..." << endl;
+  ROS_INFO( "Filtering out DoN mag <= %f ",threshold );
 
   // Build the condition for filtering
-  pcl::ConditionOr<PointNormal>::Ptr range_cond (
-    new pcl::ConditionOr<PointNormal> ()
+  pcl::ConditionOr<pcl::PointNormal>::Ptr range_cond (
+    new pcl::ConditionOr<pcl::PointNormal> ()
     );
-  range_cond->addComparison (pcl::FieldComparison<PointNormal>::ConstPtr (
-                               new pcl::FieldComparison<PointNormal> ("curvature", pcl::ComparisonOps::GT, threshold))
+  range_cond->addComparison (pcl::FieldComparison<pcl::PointNormal>::ConstPtr (
+                               new pcl::FieldComparison<pcl::PointNormal> ("curvature", pcl::ComparisonOps::GT, threshold))
                              );
   // Build the filter
-  pcl::ConditionalRemoval<PointNormal> condrem (range_cond);
+  pcl::ConditionalRemoval<pcl::PointNormal> condrem (range_cond);
   condrem.setInputCloud (doncloud);
 
-  pcl::PointCloud<PointNormal>::Ptr doncloud_filtered (new pcl::PointCloud<PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr doncloud_filtered (new pcl::PointCloud<pcl::PointNormal>);
 
   // Apply filter
   condrem.filter (*doncloud_filtered);
@@ -270,18 +276,18 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   doncloud = doncloud_filtered;
 
   // Save filtered output
-  std::cout << "Filtered Pointcloud: " << doncloud->points.size () << " data points." << std::endl;
+  ROS_INFO( "Filtered Pointcloud: %i data points.",doncloud->points.size());
 
   writer.write<pcl::PointNormal> ("don_filtered.pcd", *doncloud, false); 
 
   // Filter by magnitude
-  cout << "Clustering using EuclideanClusterExtraction with tolerance <= " << segradius << "..." << endl;
+  ROS_INFO( "Clustering using EuclideanClusterExtraction with tolerance <= %f" ,segradius);
 
-  pcl::search::KdTree<PointNormal>::Ptr segtree (new pcl::search::KdTree<PointNormal>);
+  pcl::search::KdTree<pcl::PointNormal>::Ptr segtree (new pcl::search::KdTree<pcl::PointNormal>);
   segtree->setInputCloud (doncloud);
 
   std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<PointNormal> ec;
+  pcl::EuclideanClusterExtraction<pcl::PointNormal> ec;
 
   ec.setClusterTolerance (segradius);
   ec.setMinClusterSize (50);
@@ -293,7 +299,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
-    pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<pcl::PointNormal>);
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
     {
       cloud_cluster_don->points.push_back (doncloud->points[*pit]);
@@ -308,7 +314,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
     //Save cluster
 //
-//    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
+//    ROS_INFO( "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
   //  stringstream ss;
     //ss << "don_cluster_" << j << ".pcd";
   //  writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
@@ -325,7 +331,7 @@ pc2_pub.publish (output);// Publish the data.
 
 }
 
-*/
+
 
 //END DON_____
 	
