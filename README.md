@@ -27,6 +27,8 @@ Partial implementation of [this](http://wiki.ros.org/pcl/Tutorials) tutorial. Us
 A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another ROS topic. Each one has a default topic and the ability to change the topics via parameters specified after rosrun or in a launch file.
 -	/src/detectives: 
 A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or an objects location/type and then publish the data for visuilization or to be used my other more advanced nodes.
+- 	src/lidar_utility_msgs:
+Files defining custom message types. Used to send settings to nodes all sub-nodes and metadata between worker nodes. 
 -	/src/SLAM: 
 Put slam here when implemented.
 -	/src/master_launcher: 
