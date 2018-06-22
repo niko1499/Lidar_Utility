@@ -1,4 +1,4 @@
-# Install script for directory: /home/pc/PCL_testspace/DoN
+# Install script for directory: /home/pc/Lidar_Utility/PCL_testspace/DoN
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/pc/PCL_testspace/DoN/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/pc/Lidar_Utility/PCL_testspace/DoN/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

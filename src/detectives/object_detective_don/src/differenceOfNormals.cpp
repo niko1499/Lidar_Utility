@@ -36,6 +36,15 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/features/don.h>
 
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/search/organized.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/filters/conditional_removal.h>
+#include <pcl/segmentation/extract_clusters.h>
+
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -49,6 +58,17 @@ static std::string nodeName("object_detective");
 
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
+ros::Publisher cl0_pub;
+ros::Publisher cl1_pub;
+ros::Publisher cl2_pub;
+ros::Publisher cl3_pub;
+ros::Publisher cl4_pub;
+ros::Publisher cl5_pub;
+ros::Publisher cl6_pub;
+ros::Publisher cl7_pub;
+ros::Publisher cl8_pub;
+ros::Publisher cl9_pub;
+
 
 //settings 
 /*
@@ -135,23 +155,29 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
-	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
+	
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
+//  pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);//create PCLXYZ
+	pcl::fromPCLPointCloud2(pcl_pc2,*cloud);//convert PCLPC2 to PCLXYZ
 	visualization_msgs::MarkerArray markerArray;
 	visualization_msgs::Marker marker;
 	//euclidian cluster extraxion
-	//these were moved here for scope of mode
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PCDWriter writer;
+	
+//these were moved here for scope of mode
+	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+//	pcl::PCDWriter writer;
 //___BEGIN___DON
 
-//!!!!!!!!!!!!!!!!!!!!!!!!HERE
+//!!!!!!!!!!!!!!!!!!!!!!!!HEREds
+
+/*
 
   // Load cloud in blob format
-  pcl::PCLPointCloud2 blob;
-  pcl::io::loadPCDFile (infile.c_str (), blob);
-  pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);
-  pcl::fromPCLPointCloud2 (blob, *cloud);
+  //pcl::PCLPointCloud2 blob;
+  //pcl::io::loadPCDFile (infile.c_str (), blob);
+
+  //pcl::fromPCLPointCloud2 (blob, *cloud);
 
   // Create a search tree, use KDTreee for non-organized data.
   pcl::search::Search<PointXYZRGB>::Ptr tree;
@@ -178,10 +204,10 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   ne.setInputCloud (cloud);
   ne.setSearchMethod (tree);
 
-  /**
-   * NOTE: setting viewpoint is very important, so that we can ensure
-   * normals are all pointed in the same direction!
-   */
+  
+//   NOTE: setting viewpoint is very important, so that we can ensure
+//   normals are all pointed in the same direction!
+
   ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
 
   // calculate normals with the small scale
@@ -277,15 +303,29 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     cloud_cluster_don->height = 1;
     cloud_cluster_don->is_dense = true;
 
+
+
+
     //Save cluster
-/*
-    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
-    stringstream ss;
-    ss << "don_cluster_" << j << ".pcd";
-    writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
-*/
+//
+//    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
+  //  stringstream ss;
+    //ss << "don_cluster_" << j << ".pcd";
+  //  writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
+
   
+//publish mini clusters
+sensor_msgs::PointCloud2 output;//create output container
+pcl::PCLPointCloud2 temp_output;//create PCLPC2
+pcl::toPCLPointCloud2(*doncloud,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+pc2_pub.publish (output);// Publish the data.
+
+
+
 }
+
+*/
 
 //END DON_____
 	
@@ -295,11 +335,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//publih
 	vis_pub.publish(markerArray);
 
-	sensor_msgs::PointCloud2 output;//create output container
-	pcl::PCLPointCloud2 temp_output;//create PCLPC2
-	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
-	pc2_pub.publish (output);// Publish the data.
+	
 }
 	int
 main (int argc, char** argv)
@@ -386,6 +422,18 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
+
+//cluster publishers
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl0", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl1", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl2", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl3", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl4", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl5", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl6", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl7", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl8", 1);
+	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl9", 1);
 	// Spin
 	ros::spin ();
 }
