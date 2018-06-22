@@ -49,7 +49,7 @@
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
-#define COLOR_YELLOW "\033[1;33"
+#define COLOR_YELLOW "\033[1;33m"
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
@@ -88,11 +88,13 @@ static float setMaxClusterSize_setting=40000;
   static double segradius=.5;//segment scene into clusters with given distance tolerance using euclidean clustering
 static double setMinClusterSize_setting=50;
 static double setMaxClusterSize_setting=40000;
+static bool canContinue=false;
 
 
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
+	canContinue=data.permissionToContinue;
 	scale1 = data.donScale1;
 	scale2 = data.donScale2;
 	threshold = data.donThreshold;
@@ -158,6 +160,9 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+if(canContinue){
+
+
 	ROS_INFO("%s: In Callback", nodeName.c_str());
 	//NEW CONVERSION
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
@@ -180,6 +185,10 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 //!!!!!!!!!!!!!!!!!!!!!!!!HEREds
 
 
+//try******************8
+
+//std::vector indices; //保存去除的点的索引
+//pcl::removeNaNFromPointCloud(*cloud,*cloud, indices); //去除点云中的NaN点
 
   // Load cloud in blob format
   //pcl::PCLPointCloud2 blob;
@@ -206,7 +215,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     ROS_INFO("Error: Large scale must be > small scale!");
     exit (EXIT_FAILURE);
   }
-
+		printf(COLOR_YELLOW BAR COLOR_RST);
   // Compute normals using both small and large scales at each point
   pcl::NormalEstimationOMP<pcl::PointXYZRGB, pcl::PointNormal> ne;
   ne.setInputCloud (cloud);
@@ -217,6 +226,9 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 //   normals are all pointed in the same direction!
 
   ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
+
+
+		printf(COLOR_YELLOW BAR COLOR_RST);
 
   // calculate normals with the small scale
   ROS_INFO( "Calculating normals for scale...");
@@ -312,7 +324,7 @@ int cloudNum=0;
     cloud_cluster_don->is_dense = true;
 
 
-ROS_INFO( "ObjDetDoN: PointCloud representing the Cluster: %i", cloud_cluster_don->points.size ());
+std::cout << "ObjDetDoN: PointCloud representing the Cluster: " << cloud_cluster_don->points.size ()<< " data points."<< std::endl;
 
     //Save cluster
 //
@@ -384,7 +396,7 @@ cloudNum++;
 	//publih
 	vis_pub.publish(markerArray);
 ROS_INFO("%s: Out of callback",nodeName.c_str());
-	
+	}
 }
 	int
 main (int argc, char** argv)

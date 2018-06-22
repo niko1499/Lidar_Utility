@@ -1,0 +1,38 @@
+<!--For testing nodes that don't play well with others-->
+<!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
+
+<launch>
+  <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
+    <!--commented out so program uses defaults or searches for available topic-->
+    <!--param name="subscriber" value="cloud_pcd"/-->
+    <!--param name="publisher" value="lidar_utility_points"/-->
+  </node>
+
+ <!--Launch other nodes-->
+
+ <!--publishes a marker for the lidar location-->
+  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_slave.launch">
+    <arg name="name" value="vehicle_visualization" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="self_visualized" />
+    <arg name="mode" value="car" />
+  </include>
+ <!--performs first pass outlier removal filter-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass1" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="outliers_removed_pass1" />
+    <arg name="mode" value="statistical" />
+  </include>
+ <!--performs object detection-->
+  <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective_don" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
+    <arg name="publisher" value="objects_don" />
+    <arg name="mode" value="u" />
+  </include>
+ 
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
+
+</launch>

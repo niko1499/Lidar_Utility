@@ -67,7 +67,7 @@
     <arg name="publisher" value="adv_obj" />
     <arg name="mode" value="advObjects" />
   </include>
- <!--performs outlier removal filter on the adv_obj-->
+<!--performs outlier removal filter on the adv_obj-->
   <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
     <arg name="name" value="outlier_removal_pass3" />
     <arg name="subscriber" value="adv_obj" />
@@ -84,7 +84,7 @@
  <!--performs object detection-->
   <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
     <arg name="name" value="object_detective_don" />
-    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
     <arg name="publisher" value="objects_don" />
     <arg name="mode" value="u" />
   </include>

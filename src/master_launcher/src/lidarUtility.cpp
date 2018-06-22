@@ -45,6 +45,7 @@ void timer_cb (const ros::TimerEvent& event){
 lidar_utility_msgs::lidarUtilitySettings msg;
 
 msg.headerstamp = ros::Time::now();
+msg.permissionToContinue=true;
 msg.header.frame_id = "/world";
 msg.downSampleLeafSize_A = 00;
 msg.downSampleLeafSize_B = 0.01;
@@ -68,10 +69,10 @@ msg.objDetectDistThresh = 0.02;
 msg.objDetectClusterTolerance = 0.325;//a
 msg.objDetectMinClusterSize = 100;
 msg.objDetectMaxClusterSize = 40000;
-msg.donScale1=11;
-msg.donScale2=22;
+msg.donScale1=.2;
+msg.donScale2=20;
 msg.donThreshold=0;
-msg.donSegradius=1;
+msg.donSegradius=1.4;
 msg.objDetectDoNMinClusterSize = 100;
 msg.objDetectDoNMaxClusterSize = 40000;
 

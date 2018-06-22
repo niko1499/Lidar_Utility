@@ -1,5 +1,6 @@
 Header header
 time headerstamp
+bool permissionToContinue
 float32 downSampleLeafSize_A 
 float32 downSampleLeafSize_B
 float32 planeDistanceThreshold
