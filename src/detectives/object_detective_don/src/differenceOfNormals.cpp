@@ -46,7 +46,7 @@
 
 #include <pcl/impl/point_types.hpp>
 
-
+#include <pcl/filters/filter.h>
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33m"
@@ -161,50 +161,37 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	if(canContinue){
-
-
-		ROS_INFO("%s: In Callback", nodeName.c_str());
-		//NEW CONVERSION
 		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 
+pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  //pcl::PointCloud<pcl::PointXYZ> in_cloud;
+  //pcl::PointCloud<pcl::PointXYZ> out_cloud;
+  std::vector<int> indicies;
+  pcl::fromPCLPointCloud2(pcl_pc2, *in_cloud);
+  pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+  pcl::removeNaNFromPointCloud(*in_cloud, *cloud, indicies);
 
-		//	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);//create
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//note pcl:
-		//pcl::PointCloud<pcl::PointXYZRGB> cloud;
-		pcl::fromPCLPointCloud2(pcl_pc2,*cloud);//convert PCLPC2 to PCLXYZ
+
+
+//pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//note pcl:
+
+//copyPointCloud(*out_cloud,*cloud);
+
 		visualization_msgs::MarkerArray markerArray;
 		visualization_msgs::Marker marker;
-		//euclidian cluster extraxion
 
-		//these were moved here for scope of mode
-		//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-		//	pcl::PCDWriter writer;
-		//___BEGIN___DON
-
-		//!!!!!!!!!!!!!!!!!!!!!!!!HEREds
-
-
-		//try******************8
-		//working theroy is data includes invalid nan or inf points
-		//std::vector indices; //保存去除的点的索引
-		//pcl::removeNaNFromPointCloud(*cloud,*cloud, indices); //去除点云中的NaN点
-
-		// Load cloud in blob format
-		//pcl::PCLPointCloud2 blob;
-		//pcl::io::loadPCDFile (infile.c_str (), blob);
-
-		//pcl::fromPCLPointCloud2 (blob, *cloud);
 
 		// Create a search tree, use KDTreee for non-organized data.
-		pcl::search::Search<pcl::PointXYZRGB>::Ptr tree;
+		pcl::search::Search<pcl::PointXYZ>::Ptr tree;
 		if (cloud->isOrganized ())
 		{
-			tree.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGB> ());
+			tree.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
 		}
 		else
 		{
-			tree.reset (new pcl::search::KdTree<pcl::PointXYZRGB> (false));
+			tree.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
 		}
 
 		// Set the input pointcloud for the search tree
@@ -216,8 +203,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 			exit (EXIT_FAILURE);
 		}
 		printf(COLOR_YELLOW BAR COLOR_RST);
+
+
+
+
+
 		// Compute normals using both small and large scales at each point
-		pcl::NormalEstimationOMP<pcl::PointXYZRGB, pcl::PointNormal> ne;
+		pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> ne;
 		ne.setInputCloud (cloud);
 		ne.setSearchMethod (tree);
 
@@ -246,11 +238,11 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		// Create output cloud for DoN results
 		pcl::PointCloud<pcl::PointNormal>::Ptr doncloud (new pcl::PointCloud<pcl::PointNormal>);
-		pcl::copyPointCloud<pcl::PointXYZRGB, pcl::PointNormal>(*cloud, *doncloud);
+		pcl::copyPointCloud<pcl::PointXYZ, pcl::PointNormal>(*cloud, *doncloud);
 
 		ROS_INFO( "Calculating DoN... ");
 		// Create DoN operator
-		pcl::DifferenceOfNormalsEstimation<pcl::PointXYZRGB, pcl::PointNormal, pcl::PointNormal> don;
+		pcl::DifferenceOfNormalsEstimation<pcl::PointXYZ, pcl::PointNormal, pcl::PointNormal> don;
 		don.setInputCloud (cloud);
 		don.setNormalScaleLarge (normals_large_scale);
 		don.setNormalScaleSmall (normals_small_scale);
