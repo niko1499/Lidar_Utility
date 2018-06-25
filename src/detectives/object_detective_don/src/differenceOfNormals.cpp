@@ -153,11 +153,14 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	if(canContinue){
+		
+pcl::PCDWriter writer;
 		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+
 		std::vector<int> indicies;
 		pcl::fromPCLPointCloud2(pcl_pc2, *in_cloud);
 		pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
@@ -166,6 +169,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		visualization_msgs::MarkerArray markerArray;
 		visualization_msgs::Marker marker;
 
+		cloud->is_dense = false;
 
 		// Create a search tree, use KDTreee for non-organized data.
 		pcl::search::Search<pcl::PointXYZ>::Ptr tree;
@@ -199,19 +203,12 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
 
-		printf(COLOR_YELLOW BAR COLOR_RST);
-
 		// calculate normals with the small scale
 		ROS_INFO( "Calculating normals for scale...");
 		pcl::PointCloud<pcl::PointNormal>::Ptr normals_small_scale (new pcl::PointCloud<pcl::PointNormal>);
-		printf(COLOR_YELLOW BAR COLOR_RST);
 
-		//ROS_INFO( pcl::search::OrganizedNeighbor< PointXYZ >::isValid (cloud));
-		//crash here*********************************************
 		ne.setRadiusSearch (scale1);
 		ne.compute (*normals_small_scale);
-
-		printf(COLOR_YELLOW BAR COLOR_RST);
 
 		// calculate normals with the large scale
 		ROS_INFO( "Calculating normals for scale..." );
@@ -241,7 +238,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		don.computeFeature (*doncloud);
 
 		// Save DoN features
-		pcl::PCDWriter writer;
+		//pcl::PCDWriter writer;//moved for scope
 		writer.write<pcl::PointNormal> ("don.pcd", *doncloud, false); 
 
 		// Filter by magnitude
@@ -272,8 +269,6 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		// Filter by magnitude
 		ROS_INFO( "Clustering using EuclideanClusterExtraction with tolerance <= %f" ,segradius);
-
-		printf(COLOR_YELLOW BAR COLOR_RST);
 
 		pcl::search::KdTree<pcl::PointNormal>::Ptr segtree (new pcl::search::KdTree<pcl::PointNormal>);
 		segtree->setInputCloud (doncloud);
@@ -383,6 +378,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 			pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+
+
 
 			switch(cloudNum){
 				case 0:

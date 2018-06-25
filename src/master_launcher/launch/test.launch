@@ -27,7 +27,7 @@
  <!--performs object detection-->
   <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
     <arg name="name" value="object_detective_don" />
-    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
     <arg name="publisher" value="objects_don" />
     <arg name="mode" value="u" />
   </include>

@@ -69,10 +69,10 @@ void timer_cb (const ros::TimerEvent& event){
 	msg.objDetectClusterTolerance = 0.325;//a
 	msg.objDetectMinClusterSize = 100;
 	msg.objDetectMaxClusterSize = 40000;
-	msg.donScale1=.2;
+	msg.donScale1=.5;
 	msg.donScale2=20;
-	msg.donThreshold=0;
-	msg.donSegradius=1.4;
+	msg.donThreshold=0.05;
+	msg.donSegradius=.5;
 	msg.objDetectDoNMinClusterSize = 100;
 	msg.objDetectDoNMaxClusterSize = 40000;
 
