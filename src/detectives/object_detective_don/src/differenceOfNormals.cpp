@@ -33,87 +33,11 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/conditional_removal.h>
-#include <pcl/segmentation/extract_clusters.h>
 #include <pcl/features/don.h>
-
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/search/organized.h>
-#include <pcl/search/kdtree.h>
-#include <pcl/features/normal_3d_omp.h>
-#include <pcl/filters/conditional_removal.h>
-#include <pcl/segmentation/extract_clusters.h>
-
-#include <pcl/impl/point_types.hpp>
-
 #include <pcl/filters/filter.h>
-
-
-#include <pcl/ModelCoefficients.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/ModelCoefficients.h>
 #include <pcl/filters/project_inliers.h>
-
-//#include <pcl/common.h>
-#include <pcl/common/common.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/centroid.h>
-
-//#include <pcl/impl/point_types.h>
-#include <pcl/impl/point_types.hpp>
-#include <pcl/search/search.h>
-#include <pcl/point_cloud.h>
-//#include <Eigen>
-
-#include <ros/ros.h>
 // PCL specific includes
-#include <iostream>
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
-
-#include <pcl/ModelCoefficients.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/filters/project_inliers.h>
-
-
-
-//#include <pcl/common.h>
-#include <pcl/common/common.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/centroid.h>
-
-//#include <pcl/impl/point_types.h>
-#include <pcl/impl/point_types.hpp>
-#include <pcl/search/search.h>
-#include <pcl/point_cloud.h>
-//#include <Eigen>
-
-#include <pcl/common/projection_matrix.h>
-
-#include <pcl/common/common.h>
-#include <pcl/point_types.h>
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
@@ -232,20 +156,12 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  //pcl::PointCloud<pcl::PointXYZ> in_cloud;
-  //pcl::PointCloud<pcl::PointXYZ> out_cloud;
-  std::vector<int> indicies;
-  pcl::fromPCLPointCloud2(pcl_pc2, *in_cloud);
-  pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
-  pcl::removeNaNFromPointCloud(*in_cloud, *cloud, indicies);
-
-
-
-//pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);//note pcl:
-
-//copyPointCloud(*out_cloud,*cloud);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		std::vector<int> indicies;
+		pcl::fromPCLPointCloud2(pcl_pc2, *in_cloud);
+		pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+		pcl::removeNaNFromPointCloud(*in_cloud, *cloud, indicies);
 
 		visualization_msgs::MarkerArray markerArray;
 		visualization_msgs::Marker marker;
@@ -271,34 +187,27 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 			exit (EXIT_FAILURE);
 		}
 
-
-  pcl::removeNaNFromPointCloud(*cloud, *cloud, indicies);
-
-
+		pcl::removeNaNFromPointCloud(*cloud, *cloud, indicies);
 
 		// Compute normals using both small and large scales at each point
 		pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> ne;
 		ne.setInputCloud (cloud);
 		ne.setSearchMethod (tree);
 
-
-
 		//   NOTE: setting viewpoint is very important, so that we can ensure
 		//   normals are all pointed in the same direction!
 
 		ne.setViewPoint (std::numeric_limits<float>::max (), std::numeric_limits<float>::max (), std::numeric_limits<float>::max ());
-
 
 		printf(COLOR_YELLOW BAR COLOR_RST);
 
 		// calculate normals with the small scale
 		ROS_INFO( "Calculating normals for scale...");
 		pcl::PointCloud<pcl::PointNormal>::Ptr normals_small_scale (new pcl::PointCloud<pcl::PointNormal>);
-
 		printf(COLOR_YELLOW BAR COLOR_RST);
 
-//ROS_INFO( pcl::search::OrganizedNeighbor< PointXYZ >::isValid (cloud));
- 			//crash here*********************************************
+		//ROS_INFO( pcl::search::OrganizedNeighbor< PointXYZ >::isValid (cloud));
+		//crash here*********************************************
 		ne.setRadiusSearch (scale1);
 		ne.compute (*normals_small_scale);
 
@@ -307,8 +216,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 		// calculate normals with the large scale
 		ROS_INFO( "Calculating normals for scale..." );
 		pcl::PointCloud<pcl::PointNormal>::Ptr normals_large_scale (new pcl::PointCloud<pcl::PointNormal>);
-
-
 
 		ne.setRadiusSearch (scale2);
 		ne.compute (*normals_large_scale);
@@ -412,69 +319,69 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 			//publish mini clusters
 			sensor_msgs::PointCloud2 output;//create output container
 			pcl::PCLPointCloud2 temp_output;//create PCLPC2
-//			pcl::toPCLPointCloud2(*cloud_cluster_don,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-//			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+			//			pcl::toPCLPointCloud2(*cloud_cluster_don,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+			//			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr temX (new pcl::PointCloud<pcl::PointXYZ>);
+			pcl::PointCloud<pcl::PointXYZ>::Ptr temX (new pcl::PointCloud<pcl::PointXYZ>);
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
 
-/*
-pcl::ExtractIndices<pcl::PointNormal> extract;
-		// Extract the inliers
-		extract.setInputCloud (cloud_cluster_don);
-		extract.setIndices (cluster_indices);
-		extract.setNegative (false);
-		extract.filter (*cloud_p);
-*/
-//Cut a box
-pcl::PointNormal pMin,pMax;
-pcl::getMinMax3D (*cloud_cluster_don,pMin,pMax);
-float xMaxf=pMax.x;
-float xMinf=pMin.x;
-float yMaxf=pMax.y;
-float yMinf=pMin.y;
-float zMaxf=pMax.z;
-float zMinf=pMin.z;
+			/*
+			   pcl::ExtractIndices<pcl::PointNormal> extract;
+			// Extract the inliers
+			extract.setInputCloud (cloud_cluster_don);
+			extract.setIndices (cluster_indices);
+			extract.setNegative (false);
+			extract.filter (*cloud_p);
+			 */
+			//Cut a box
+			pcl::PointNormal pMin,pMax;
+			pcl::getMinMax3D (*cloud_cluster_don,pMin,pMax);
+			float xMaxf=pMax.x;
+			float xMinf=pMin.x;
+			float yMaxf=pMax.y;
+			float yMinf=pMin.y;
+			float zMaxf=pMax.z;
+			float zMinf=pMin.z;
 
-//std::cout << "max: " << zMaxf << "  min"<< zMinf << std::endl;
+			//std::cout << "max: " << zMaxf << "  min"<< zMinf << std::endl;
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+			pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-		//pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-		//pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-		pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-
-
-		pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
-		pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
-
-		///pcl::PCLPointX cloud_filtered_x;
-		//pcl::PCLPointCloud2 cloud_filtered_xz;
-
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); 
-		ptfilter.setInputCloud (temp_cloud);
-		ptfilter.setFilterFieldName ("x");
-		ptfilter.setFilterLimits (xMinf, xMaxf);
-		ptfilter.filter (*cloud_filtered_x);
-
-		ptfilter.setInputCloud(cloud_filtered_x);
-		ptfilter.setFilterFieldName ("y");
-		ptfilter.setFilterLimits (yMinf,yMaxf);
-		ptfilter.filter (*cloud_filtered_xy);
-
-		ptfilter.setInputCloud(cloud_filtered_xy);
-		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (zMinf,zMaxf);//SETTING
-		ptfilter.setNegative (false);
-		ptfilter.filter (*cloud_filtered_xyz);
+			//pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+			//pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+			pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 
 
-pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+			pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
+			pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
+
+			///pcl::PCLPointX cloud_filtered_x;
+			//pcl::PCLPointCloud2 cloud_filtered_xz;
+
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
+			pcl::PassThrough<pcl::PointXYZ> ptfilter (true); 
+			ptfilter.setInputCloud (temp_cloud);
+			ptfilter.setFilterFieldName ("x");
+			ptfilter.setFilterLimits (xMinf, xMaxf);
+			ptfilter.filter (*cloud_filtered_x);
+
+			ptfilter.setInputCloud(cloud_filtered_x);
+			ptfilter.setFilterFieldName ("y");
+			ptfilter.setFilterLimits (yMinf,yMaxf);
+			ptfilter.filter (*cloud_filtered_xy);
+
+			ptfilter.setInputCloud(cloud_filtered_xy);
+			ptfilter.setFilterFieldName ("z");
+			ptfilter.setFilterLimits (zMinf,zMaxf);//SETTING
+			ptfilter.setNegative (false);
+			ptfilter.filter (*cloud_filtered_xyz);
+
+
+			pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 			switch(cloudNum){
@@ -516,11 +423,7 @@ pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to 
 			cloudNum++;
 			//pc2_pub.publish (output);// Publish the data.
 
-
-
 		}
-
-
 
 		//END DON_____
 
