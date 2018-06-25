@@ -37,7 +37,8 @@ Panels:
     Help Height: 75
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /MarkerArray1
       Splitter Ratio: 0.5
     Tree Height: 719
 Visualization Manager:
@@ -275,13 +276,13 @@ Visualization Manager:
       Queue Size: 100
       Value: false
     - Class: rviz/MarkerArray
-      Enabled: false
-      Marker Topic: /objects_visualized
+      Enabled: true
+      Marker Topic: /objects_don_visualized
       Name: MarkerArray
       Namespaces:
-        {}
+        my_namespace: true
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /self_visualized
@@ -675,7 +676,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 33.8480339
+      Distance: 26.2119179
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -690,10 +691,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.964797735
+      Pitch: 0.839797854
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.21731091
+      Yaw: 3.92230487
     Saved: ~
 Window Geometry:
   Displays:

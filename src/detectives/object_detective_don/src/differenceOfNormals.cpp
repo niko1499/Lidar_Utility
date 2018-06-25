@@ -95,31 +95,32 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	setMaxClusterSize_setting=data.objDetectDoNMaxClusterSize;
 }
 
-visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
+visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int size){
 	float r,g,b;
 	float alpha=.75;
-	if(type==1){//truck||bus
-		r=1.0;
-		g=0.0;
-		b=0.0;
-	}else if(type==2){//car
-		r=1.0;
+	//size=800;
+	if(size<=100){//person: green
+		r=0.0;
 		g=1.0;
 		b=0.0;
-	}else if(type==3){//person
-		r=0.0;
-		g=0.0;
-		b=1.0;
-	}else if(type==4){//bike||motorcycle
+	}else if(size<=200){//bike||motorcycle: blue/green
 		r=0.0;
 		g=1.0;
 		b=1.0;
-	}else if(type==5){//plate
-		r=1.0;
-		g=1.0;
+	}else if(size<=300){//car: blue
+		r=0.0;
+		g=0.0;
 		b=1.0;
+	}else if(size<=700){//large car: blue/red
+		r=1.0;
+		g=0.0;
+		b=1.0;
+	}else if(size<=800){//truck||large vehicle: red
+		r=1.0;
+		g=0.0;
+		b=0.0;
 		alpha=.85;
-	}else{//type unknown
+	}else{//type unknown: white
 		r=1.0;
 		g=1.0;
 		b=1.0;
@@ -378,6 +379,31 @@ pcl::PCDWriter writer;
 
 			pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+
+//box
+/*
+pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
+
+		for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
+			centroid.add(pcl::PointXYZ(cloud_cluster_don->points[*pit2].x,cloud_cluster_don->points[*pit2].y,cloud_cluster_don->points[*pit2].z));
+		}
+		pcl::PointXYZ c1;
+		centroid.get (c1);
+
+*/
+
+float xScale=abs(pMax.x-pMin.x);
+float yScale=abs(pMax.y-pMin.y);
+float zScale=abs(pMax.z-pMin.z);
+
+float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
+float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
+float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
+
+
+marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->width);
+			markerArray.markers.push_back(marker);
+
 
 
 
