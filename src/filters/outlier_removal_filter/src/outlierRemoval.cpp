@@ -39,17 +39,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//Convert to PCL data type
 	pcl_conversions::toPCL(*cloud_msg, *cloud);
 
-	//Perform filtering
-
-	//KEEP THIS BLOCK FOR REFERENCE. 
-	//Examples from PCL.org will need to be changed to match format	
-	/*
-	   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-	   sor.setInputCloud(cloudPtr);
-	   sor.setLeafSize(0.1,0.1,0.1);
-	   sor.filter (cloud_filtered);
-	 */
-
 	//OUTLIER REMOVAL
 	if(mode==1){
 		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
