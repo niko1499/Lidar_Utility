@@ -3,6 +3,7 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include <lidar_utility_msgs/lidarUtilitySettings.h>
+#include <lidar_utility_msgs/roadInfo.h>
 //C
 #include <string>
 //PCL:Base
@@ -81,7 +82,7 @@ static double segradius=.5;//segment scene into clusters with given distance tol
 static double setMinClusterSize_setting=50;
 static double setMaxClusterSize_setting=40000;
 static bool canContinue=false;
-
+static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
@@ -94,11 +95,20 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	setMinClusterSize_setting=data.objDetectDoNMinClusterSize;
 	setMaxClusterSize_setting=data.objDetectDoNMaxClusterSize;
 }
+void road_cb (const lidar_utility_msgs::roadInfo& data)
+{
+	xMinRoad = data.xMin;
+	xMaxRoad = data.xMax;
+	yMinRoad = data.yMin;
+	yMaxRoad = data.yMax;
+	zMinRoad = data.zMin;
+	zMaxRoad = data.zMax;	
+}
 
-visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int size){
+visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int size){
 	float r,g,b;
 	float alpha=.75;
-	//size=800;
+	size=800;
 	if(size<=100){//person: green
 		r=0.0;
 		g=1.0;
@@ -111,11 +121,11 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 		r=0.0;
 		g=0.0;
 		b=1.0;
-	}else if(size<=700){//large car: blue/red
+	}else if(size<=400){//large car: blue/red
 		r=1.0;
 		g=0.0;
 		b=1.0;
-	}else if(size<=800){//truck||large vehicle: red
+	}else if(size<=500){//truck||large vehicle: red
 		r=1.0;
 		g=0.0;
 		b=0.0;
@@ -129,7 +139,7 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	marker.header.frame_id = "base_link";
 	marker.header.stamp = ros::Time();
 	marker.ns = "my_namespace";
-	marker.id = i;
+	marker.id = id;
 	marker.type = visualization_msgs::Marker::CUBE;
 	marker.action = visualization_msgs::Marker::ADD;
 	marker.pose.position.x = xLoc;
@@ -142,6 +152,129 @@ visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc
 	marker.scale.x = xScale;
 	marker.scale.y = yScale;
 	marker.scale.z = zScale;
+	marker.color.a =alpha; // Don't forget to set the alpha!
+	marker.color.r = r;
+	marker.color.g = g;
+	marker.color.b = b;
+	//only if using a MESH_RESOURCE marker type:
+	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+	return marker;
+}
+
+
+visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLoc,float xScale,float yScale,float zScale, float headding,int size){
+	float r,g,b;
+	float alpha=.75;
+	float xScaleResult,yScaleResult,zScaleResult;
+	float distMultiplier =  sqrt((xLoc*xLoc)+(yLoc*yLoc))-1.25;
+	float constantMultiplier=.025;
+	float locMultiplier;
+
+	if(abs(xLoc)<=2.35){//close to center of x
+	locMultiplier=1.25;
+	if(yLoc<0){
+	yLoc=yLoc-1;
+	}else{
+	yLoc=yLoc+1;
+	}
+	}else if (abs(xLoc)<=1.35){//very close to center of x
+	locMultiplier=2;
+	if(yLoc<0){
+	yLoc=yLoc-1.9;
+	}else{
+	yLoc=yLoc+1.9;
+	}
+	}else if (abs(yLoc)<=1.5){//close to center of y
+	locMultiplier=1.3;
+	if(xLoc<0){
+	xLoc=xLoc-.25;
+	}else{
+	xLoc=xLoc+.25;
+	}
+	}else if (abs(yLoc)<=.75){//very close to center of y
+	locMultiplier=1.6;
+	if(xLoc<0){
+	xLoc=xLoc-.5;
+	}else{
+	xLoc=xLoc+.5;
+	}
+	}else{
+	locMultiplier=1;
+	}
+
+float zMidRoad = zMaxRoad - (abs(zMaxRoad)-abs(zMinRoad))
+	size=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
+	//size=800;
+
+for(int i=0; i<3;i++){
+	if(size<=100){//person: green
+		r=0.0;
+		g=1.0;
+		b=0.0;
+		xScaleResult=.75;
+		yScaleResult=.75;
+		zScaleResult=1.25;
+	}else if(size<=150){//bike||motorcycle: blue/green
+		r=0.0;
+		g=1.0;
+		b=1.0;
+		xScaleResult=.75;
+		yScaleResult=1.9;
+		zScaleResult=1.25;
+	}else if(size<=300){//car: blue
+		r=0.0;
+		g=0.0;
+		b=1.0;
+		xScaleResult=2.3;
+		yScaleResult=6;
+		zScaleResult=2;
+	}else if(size<=600){//large car: blue/red
+		r=1.0;
+		g=0.0;
+		b=1.0;
+		xScaleResult=2.5;
+		yScaleResult=8;
+		zScaleResult=2.5;
+	}else if(size<=700){//truck||large vehicle: red
+		r=1.0;
+		g=0.0;
+		b=0.0;
+		xScaleResult=3;
+		yScaleResult=10;
+		zScaleResult=3;
+	}else{//type unknown: white
+		r=1.0;
+		g=1.0;
+		b=1.0;
+		xScaleResult=5;
+		yScaleResult=5;
+		zScaleResult=3;
+	}
+	if(xScaleResult<=xScale){
+	size=size+(size/2);
+}
+
+}
+	zLoc=zMidRoad+(zScaleResule/2);//set z same
+
+//create msg
+	visualization_msgs::Marker marker;
+	marker.header.frame_id = "base_link";
+	marker.header.stamp = ros::Time();
+	marker.ns = "my_namespace";
+	marker.id = id;
+	marker.type = visualization_msgs::Marker::CUBE;
+	marker.action = visualization_msgs::Marker::ADD;
+	marker.pose.position.x = xLoc;
+	marker.pose.position.y = yLoc;
+	marker.pose.position.z = zLoc;
+	marker.pose.orientation.x = 0.0;
+	marker.pose.orientation.y = 0.0;
+	marker.pose.orientation.z = 0.0;
+	marker.pose.orientation.w = 1.0;
+	marker.scale.x = xScaleResult;
+	marker.scale.y = yScaleResult;
+	marker.scale.z = zScaleResult;
 	marker.color.a =alpha; // Don't forget to set the alpha!
 	marker.color.r = r;
 	marker.color.g = g;
@@ -274,7 +407,6 @@ pcl::PCDWriter writer;
 		pcl::search::KdTree<pcl::PointNormal>::Ptr segtree (new pcl::search::KdTree<pcl::PointNormal>);
 		segtree->setInputCloud (doncloud);
 
-
 		std::vector<pcl::PointIndices> cluster_indices;
 		pcl::EuclideanClusterExtraction<pcl::PointNormal> ec;
 
@@ -298,39 +430,16 @@ pcl::PCDWriter writer;
 			cloud_cluster_don->height = 1;
 			cloud_cluster_don->is_dense = true;
 
-
 			std::cout << "ObjDetDoN: PointCloud representing the Cluster: " << cloud_cluster_don->points.size ()<< " data points."<< std::endl;
-
-			//Save cluster
-			//
-			//    ROS_INFO( "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
-			//  stringstream ss;
-			//ss << "don_cluster_" << j << ".pcd";
-			//  writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
-
-			//EXTRACT  
-
-
 
 			//publish mini clusters
 			sensor_msgs::PointCloud2 output;//create output container
 			pcl::PCLPointCloud2 temp_output;//create PCLPC2
-			//			pcl::toPCLPointCloud2(*cloud_cluster_don,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-			//			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
-
-
+		
 			pcl::PointCloud<pcl::PointXYZ>::Ptr temX (new pcl::PointCloud<pcl::PointXYZ>);
 
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
 
-			/*
-			   pcl::ExtractIndices<pcl::PointNormal> extract;
-			// Extract the inliers
-			extract.setInputCloud (cloud_cluster_don);
-			extract.setIndices (cluster_indices);
-			extract.setNegative (false);
-			extract.filter (*cloud_p);
-			 */
 			//Cut a box
 			pcl::PointNormal pMin,pMax;
 			pcl::getMinMax3D (*cloud_cluster_don,pMin,pMax);
@@ -341,20 +450,12 @@ pcl::PCDWriter writer;
 			float zMaxf=pMax.z;
 			float zMinf=pMin.z;
 
-			//std::cout << "max: " << zMaxf << "  min"<< zMinf << std::endl;
-
 			pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-			//pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-			//pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 			pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-
 
 			pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
 			pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
-
-			///pcl::PCLPointX cloud_filtered_x;
-			//pcl::PCLPointCloud2 cloud_filtered_xz;
 
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -376,36 +477,26 @@ pcl::PCDWriter writer;
 			ptfilter.setNegative (false);
 			ptfilter.filter (*cloud_filtered_xyz);
 
-
 			pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 //box
-/*
-pcl::CentroidPoint<pcl::PointXYZ> centroid;//add cluster centroid to array
-
-		for (std::vector<int>::const_iterator pit2 = it->indices.begin (); pit2 != it->indices.end (); ++pit2){
-			centroid.add(pcl::PointXYZ(cloud_cluster_don->points[*pit2].x,cloud_cluster_don->points[*pit2].y,cloud_cluster_don->points[*pit2].z));
-		}
-		pcl::PointXYZ c1;
-		centroid.get (c1);
-
-*/
 
 float xScale=abs(pMax.x-pMin.x);
 float yScale=abs(pMax.y-pMin.y);
-float zScale=abs(pMax.z-pMin.z);
+float zScale=(pMax.z-pMin.z);
 
 float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
 float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
 float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
 
+if((zLoc-.25<zRoadMax)){
 
-marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->width);
+}else{
+
+//marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->width);
+marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,0,cloud_cluster_don->width);
 			markerArray.markers.push_back(marker);
-
-
-
 
 			switch(cloudNum){
 				case 0:
@@ -440,15 +531,12 @@ marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->wi
 					break;
 				default:
 					ROS_INFO("ERR: More clusters than available pc2 topics.");
-					//cloudNun=-1;
+					cloudNum=-1;
 					break;
 			}
 			cloudNum++;
-			//pc2_pub.publish (output);// Publish the data.
-
+}
 		}
-
-		//END DON_____
 
 		if(mode==1){
 
@@ -543,6 +631,7 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
+	ros::Subscriber sub2 = nh.subscribe("plane_segmented_msg", 1, road_cb);
 
 	//cluster publishers
 	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl0", 1);

@@ -8,7 +8,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
-
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
 #include <lidar_utility_msgs/roadInfo.h>
 
 #include <pcl/filters/extract_indices.h>
@@ -17,7 +17,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <lidar_utility_msgs/lidarUtilitySettings.h>
+
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"

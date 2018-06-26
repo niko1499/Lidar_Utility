@@ -241,7 +241,7 @@ float zScale=abs(pMax.z-pMin.z);
 	//publih
 
 
-//	vis_pub.publish(markerArray);
+	vis_pub.publish(markerArray);
 
 	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
