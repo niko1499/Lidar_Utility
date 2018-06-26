@@ -83,7 +83,7 @@ static double setMinClusterSize_setting=50;
 static double setMaxClusterSize_setting=40000;
 static bool canContinue=false;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
-
+static int lastMarkerMax=0;
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
@@ -164,7 +164,7 @@ visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLo
 
 visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLoc,float xScale,float yScale,float zScale, float headding,int size){
 	float r,g,b;
-	float alpha=.75;
+	float alpha=.5;
 	float xScaleResult,yScaleResult,zScaleResult;
 	float distMultiplier =  sqrt((xLoc*xLoc)+(yLoc*yLoc))-1.25;
 	float constantMultiplier=.025;
@@ -202,7 +202,7 @@ visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLo
 	locMultiplier=1;
 	}
 
-float zMidRoad = zMaxRoad - (abs(zMaxRoad)-abs(zMinRoad))
+float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
 	size=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
 	//size=800;
 
@@ -255,7 +255,7 @@ for(int i=0; i<3;i++){
 }
 
 }
-	zLoc=zMidRoad+(zScaleResule/2);//set z same
+	zLoc=zMidRoad+(zScaleResult/2);//set z same
 
 //create msg
 	visualization_msgs::Marker marker;
@@ -279,6 +279,8 @@ for(int i=0; i<3;i++){
 	marker.color.r = r;
 	marker.color.g = g;
 	marker.color.b = b;
+	marker.text = "test";
+	//marker.lifetime = 1.0;
 	//only if using a MESH_RESOURCE marker type:
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 	return marker;
@@ -418,6 +420,11 @@ pcl::PCDWriter writer;
 		ec.extract (cluster_indices);
 		int cloudNum=0;
 		int j = 0;
+
+for(int k=0;k<9;k++){
+markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
+}
+
 		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
 		{
 			pcl::PointCloud<pcl::PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<pcl::PointNormal>);
@@ -489,11 +496,24 @@ float zScale=(pMax.z-pMin.z);
 float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
 float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
 float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
-
-if((zLoc-.25<zRoadMax)){
-
+//Discard bad clusters
+if((zLoc-.1<zMaxRoad)){
+ROS_INFO("Discarding Cluster: Too low");
+}else if(zScale<.4){
+ROS_INFO("Discarding Cluster: Too short");
 }else{
 
+//NEED TO ADD SOMETHING TO CLEAR MARKER ARRAY.
+/*
+if(j=0){
+for(int k=0;k<9;k++){
+markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
+}
+}
+*/
+
+
+//rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
 //marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->width);
 marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,0,cloud_cluster_don->width);
 			markerArray.markers.push_back(marker);
@@ -535,16 +555,18 @@ marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,0,cloud_cluster_don->
 					break;
 			}
 			cloudNum++;
-}
 		}
-
 		if(mode==1){
-
 		}
 		//publih
+//for(cloudNum;cloudNum<=lastMarkerMax;cloudNum++){
+//markerArray.markers.push_back(markerBuilder(cloudNum,0,0,0,0,0,0,0));
+//}
 		vis_pub.publish(markerArray);
 		ROS_INFO("%s: Out of callback",nodeName.c_str());
+	lastMarkerMax=cloudNum;
 	}
+}
 }
 	int
 main (int argc, char** argv)
@@ -631,7 +653,7 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
-	ros::Subscriber sub2 = nh.subscribe("plane_segmented_msg", 1, road_cb);
+	ros::Subscriber sub3 = nh.subscribe("plane_segmented_msg", 1, road_cb);
 
 	//cluster publishers
 	cl0_pub = nh.advertise<sensor_msgs::PointCloud2> ("cl0", 1);
