@@ -4,6 +4,7 @@
 #include "visualization_msgs/MarkerArray.h"
 #include <lidar_utility_msgs/lidarUtilitySettings.h>
 #include <lidar_utility_msgs/roadInfo.h>
+#include <lidar_utility_msgs/objectInfo.h>
 //C
 #include <string>
 //PCL:Base
@@ -63,7 +64,7 @@ ros::Publisher cl6_pub;
 ros::Publisher cl7_pub;
 ros::Publisher cl8_pub;
 ros::Publisher cl9_pub;
-
+ros::Publisher msg_pub;
 
 //Settings. Note will get overwritten by setting_cb 
 /*
@@ -85,6 +86,11 @@ static bool canContinue=false;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 static int lastMarkerMax=0;
 
+class XYZ{
+public:
+float x,y,z;
+};
+
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
 	canContinue=data.permissionToContinue;
@@ -105,71 +111,21 @@ void road_cb (const lidar_utility_msgs::roadInfo& data)
 	zMaxRoad = data.zMax;	
 }
 
-visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int size){
-	float r,g,b;
-	float alpha=.75;
-	size=800;
-	if(size<=100){//person: green
-		r=0.0;
-		g=1.0;
-		b=0.0;
-	}else if(size<=200){//bike||motorcycle: blue/green
-		r=0.0;
-		g=1.0;
-		b=1.0;
-	}else if(size<=300){//car: blue
-		r=0.0;
-		g=0.0;
-		b=1.0;
-	}else if(size<=400){//large car: blue/red
-		r=1.0;
-		g=0.0;
-		b=1.0;
-	}else if(size<=500){//truck||large vehicle: red
-		r=1.0;
-		g=0.0;
-		b=0.0;
-		alpha=.85;
-	}else{//type unknown: white
-		r=1.0;
-		g=1.0;
-		b=1.0;
-	}
-	visualization_msgs::Marker marker;
-	marker.header.frame_id = "base_link";
-	marker.header.stamp = ros::Time();
-	marker.ns = "my_namespace";
-	marker.id = id;
-	marker.type = visualization_msgs::Marker::CUBE;
-	marker.action = visualization_msgs::Marker::ADD;
-	marker.pose.position.x = xLoc;
-	marker.pose.position.y = yLoc;
-	marker.pose.position.z = zLoc;
-	marker.pose.orientation.x = 0.0;
-	marker.pose.orientation.y = 0.0;
-	marker.pose.orientation.z = 0.0;
-	marker.pose.orientation.w = 1.0;
-	marker.scale.x = xScale;
-	marker.scale.y = yScale;
-	marker.scale.z = zScale;
-	marker.color.a =alpha; // Don't forget to set the alpha!
-	marker.color.r = r;
-	marker.color.g = g;
-	marker.color.b = b;
-	//only if using a MESH_RESOURCE marker type:
-	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
-	return marker;
-}
+visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headding,int size){
+	float xLoc=loc.x;
+	float yLoc=loc.y;
+	float zLoc=loc.z;	
+	float xScale=scale.x;
+	float yScale=scale.y;
+	float zScale=scale.z;
 
-
-visualization_msgs::Marker markerBuilder(int id,float xLoc,float yLoc, float zLoc,float xScale,float yScale,float zScale, float headding,int size){
 	float r,g,b;
 	float alpha=.5;
 	float xScaleResult,yScaleResult,zScaleResult;
 	float distMultiplier =  sqrt((xLoc*xLoc)+(yLoc*yLoc))-1.25;
 	float constantMultiplier=.025;
 	float locMultiplier;
-
+	std::string type;
 	if(abs(xLoc)<=2.35){//close to center of x
 	locMultiplier=1.25;
 	if(yLoc<0){
@@ -214,6 +170,7 @@ for(int i=0; i<3;i++){
 		xScaleResult=.75;
 		yScaleResult=.75;
 		zScaleResult=1.25;
+		type="person";
 	}else if(size<=150){//bike||motorcycle: blue/green
 		r=0.0;
 		g=1.0;
@@ -221,6 +178,7 @@ for(int i=0; i<3;i++){
 		xScaleResult=.75;
 		yScaleResult=1.9;
 		zScaleResult=1.25;
+		type="bike";
 	}else if(size<=300){//car: blue
 		r=0.0;
 		g=0.0;
@@ -228,6 +186,7 @@ for(int i=0; i<3;i++){
 		xScaleResult=2.3;
 		yScaleResult=6;
 		zScaleResult=2;
+		type="car";
 	}else if(size<=600){//large car: blue/red
 		r=1.0;
 		g=0.0;
@@ -235,13 +194,15 @@ for(int i=0; i<3;i++){
 		xScaleResult=2.5;
 		yScaleResult=8;
 		zScaleResult=2.5;
+		type="car";
 	}else if(size<=700){//truck||large vehicle: red
-		r=1.0;
+		r=1.0; 
 		g=0.0;
 		b=0.0;
 		xScaleResult=3;
 		yScaleResult=10;
 		zScaleResult=3;
+		type="truck";
 	}else{//type unknown: white
 		r=1.0;
 		g=1.0;
@@ -283,6 +244,25 @@ for(int i=0; i<3;i++){
 	//marker.lifetime = 1.0;
 	//only if using a MESH_RESOURCE marker type:
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+
+	lidar_utility_msgs::objectInfo msg;
+
+	msg.headerstamp = ros::Time::now();
+	msg.id = id;
+	msg.xLoc=xLoc;
+	msg.yLoc=yLoc;
+	msg.zLoc=zLoc;
+	msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
+	msg.heading=0;
+	msg.xMax=0;
+	msg.xMin=0;
+	msg.yMax=0;
+	msg.yMin=0;
+	msg.zMax=0;
+	msg.zMin=0;
+	msg.type=type;
+	//msg_pub.publish(msg);
+
 	return marker;
 }
 	void 
@@ -420,9 +400,10 @@ pcl::PCDWriter writer;
 		ec.extract (cluster_indices);
 		int cloudNum=0;
 		int j = 0;
+		int markerID=0;
 
 for(int k=0;k<9;k++){
-markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
+//markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
 }
 
 		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
@@ -503,19 +484,35 @@ ROS_INFO("Discarding Cluster: Too low");
 ROS_INFO("Discarding Cluster: Too short");
 }else{
 
-//NEED TO ADD SOMETHING TO CLEAR MARKER ARRAY.
-/*
-if(j=0){
-for(int k=0;k<9;k++){
-markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
-}
-}
-*/
-
-
+XYZ loc;
+XYZ scale;
+loc.x=xLoc;
+loc.y=yLoc;
+loc.z=zLoc;
+scale.x=xScale;
+scale.y=yScale;
+scale.z=zScale;
 //rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
-//marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,cloud_cluster_don->width);
-marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,0,cloud_cluster_don->width);
+marker=markerBuilder(j,loc,scale,0,cloud_cluster_don->width);
+
+
+	lidar_utility_msgs::objectInfo msg;
+
+	msg.headerstamp = ros::Time::now();
+	msg.id = j;
+	msg.xLoc=xLoc;
+	msg.yLoc=yLoc;
+	msg.zLoc=zLoc;
+	msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
+	msg.heading=0;
+	msg.xMax=0;
+	msg.xMin=0;
+	msg.yMax=0;
+	msg.yMin=0;
+	msg.zMax=0;
+	msg.zMin=0;
+	msg.type="s";
+	//msg_pub.publish(msg);
 			markerArray.markers.push_back(marker);
 
 			switch(cloudNum){
@@ -562,6 +559,8 @@ marker=markerBuilder(j,xLoc,yLoc,zLoc,xScale,yScale,zScale,0,cloud_cluster_don->
 //for(cloudNum;cloudNum<=lastMarkerMax;cloudNum++){
 //markerArray.markers.push_back(markerBuilder(cloudNum,0,0,0,0,0,0,0));
 //}
+
+
 		vis_pub.publish(markerArray);
 		ROS_INFO("%s: Out of callback",nodeName.c_str());
 	lastMarkerMax=cloudNum;
@@ -652,6 +651,8 @@ main (int argc, char** argv)
 	//pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+
+	msg_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_msg", 1);
 
 	ros::Subscriber sub3 = nh.subscribe("plane_segmented_msg", 1, road_cb);
 
