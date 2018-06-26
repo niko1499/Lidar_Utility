@@ -76,8 +76,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	if(mode==1){//road
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.2, 7.0);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)//SETTING
-		pass.setFilterLimitsNegative (true);
+		pass.setFilterLimits (-4, -1.2);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)//SETTING
+		pass.setFilterLimitsNegative (false);
 
 		pass.filter (cloud_filtered);
 
@@ -90,7 +90,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	}else if (mode==2){//objects
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.65,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()//SETTING
+		pass.setFilterLimits (-1.7,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()//SETTING
 		pass.setFilterLimitsNegative (false);
 
 		pass.filter (cloud_filtered);
@@ -130,9 +130,11 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		ptfilter.setFilterLimits (yMinf,yMaxf);
 		ptfilter.filter (*cloud_filtered_xy);
 
+	//float zMid = zMaxf -((zMaxf-zMinf)/2);
+
 		ptfilter.setInputCloud(cloud_filtered_xy);
 		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (zMaxf,1.2);//SETTING
+		ptfilter.setFilterLimits (zMaxf-.1,1.2);//SETTING
 		ptfilter.setNegative (false);
 		ptfilter.filter (*cloud_filtered_xyz);
 

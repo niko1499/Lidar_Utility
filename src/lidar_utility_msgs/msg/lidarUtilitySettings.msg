@@ -31,3 +31,4 @@ float32 donThreshold
 float32 donSegradius
 float32 objDetectDoNMinClusterSize
 float32 objDetectDoNMaxClusterSize
+float32 planeSegThreshold

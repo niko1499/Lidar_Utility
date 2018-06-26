@@ -37,8 +37,7 @@ Panels:
     Help Height: 75
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /MarkerArray1
+      Expanded: ~
       Splitter Ratio: 0.5
     Tree Height: 719
 Visualization Manager:
@@ -184,9 +183,9 @@ Visualization Manager:
       Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 255
+      Max Intensity: 237.999985
       Min Color: 0; 0; 0
-      Min Intensity: 0.580456138
+      Min Intensity: 0.677165151
       Name: Outlier Filter Pass2 - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -214,9 +213,9 @@ Visualization Manager:
       Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 214.957504
+      Max Intensity: 255
       Min Color: 0; 0; 0
-      Min Intensity: 0.635477901
+      Min Intensity: 0.767564535
       Name: Road Pass Through - PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -321,6 +320,36 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 85; 0
+      Color Transformer: Intensity
+      Decay Time: 3
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 255
+      Min Color: 0; 0; 0
+      Min Intensity: 0.581084311
+      Name: Important Points 1 - PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.150000006
+      Style: Boxes
+      Topic: /adv_obj
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -676,25 +705,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 30.580061
+      Distance: 47.5997543
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 6.4318676
-        Y: -2.64787793
-        Z: -0.719918847
+        X: 1.74888229
+        Y: -6.78362846
+        Z: -1.95338726
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.0097971
+      Pitch: 1.20479667
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.48733044
+      Yaw: 3.17233038
     Saved: ~
 Window Geometry:
   Displays:

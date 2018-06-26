@@ -87,8 +87,8 @@ static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 static int lastMarkerMax=0;
 
 class XYZ{
-public:
-float x,y,z;
+	public:
+		float x,y,z;
 };
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
@@ -111,6 +111,31 @@ void road_cb (const lidar_utility_msgs::roadInfo& data)
 	zMaxRoad = data.zMax;	
 }
 
+visualization_msgs::Marker markerBuilder(int id){
+	visualization_msgs::Marker marker;
+	marker.header.frame_id = "base_link";
+	marker.header.stamp = ros::Time();
+	marker.ns = "my_namespace";
+	marker.id = id;
+	marker.type = visualization_msgs::Marker::CUBE;
+	marker.action = visualization_msgs::Marker::ADD;
+	marker.pose.position.x = 0;
+	marker.pose.position.y = 0;
+	marker.pose.position.z = 0;
+	marker.pose.orientation.x = 0.0;
+	marker.pose.orientation.y = 0.0;
+	marker.pose.orientation.z = 0.0;
+	marker.pose.orientation.w = 1.0;
+	marker.scale.x = 0;
+	marker.scale.y = 0;
+	marker.scale.z = 0;
+	marker.color.a = 0; // Don't forget to set the alpha!
+	marker.color.r = 0;
+	marker.color.g = 0;
+	marker.color.b = 0;
+	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+	return marker;
+}
 visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headding,int size){
 	float xLoc=loc.x;
 	float yLoc=loc.y;
@@ -127,98 +152,97 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 	float locMultiplier;
 	std::string type;
 	if(abs(xLoc)<=2.35){//close to center of x
-	locMultiplier=1.25;
-	if(yLoc<0){
-	yLoc=yLoc-1;
-	}else{
-	yLoc=yLoc+1;
-	}
+		locMultiplier=1.25;
+		if(yLoc<0){
+			yLoc=yLoc-1;
+		}else{
+			yLoc=yLoc+1;
+		}
 	}else if (abs(xLoc)<=1.35){//very close to center of x
-	locMultiplier=2;
-	if(yLoc<0){
-	yLoc=yLoc-1.9;
-	}else{
-	yLoc=yLoc+1.9;
-	}
+		locMultiplier=2;
+		if(yLoc<0){
+			yLoc=yLoc-1.9;
+		}else{
+			yLoc=yLoc+1.9;
+		}
 	}else if (abs(yLoc)<=1.5){//close to center of y
-	locMultiplier=1.3;
-	if(xLoc<0){
-	xLoc=xLoc-.25;
-	}else{
-	xLoc=xLoc+.25;
-	}
+		locMultiplier=1.3;
+		if(xLoc<0){
+			xLoc=xLoc-.25;
+		}else{
+			xLoc=xLoc+.25;
+		}
 	}else if (abs(yLoc)<=.75){//very close to center of y
-	locMultiplier=1.6;
-	if(xLoc<0){
-	xLoc=xLoc-.5;
+		locMultiplier=1.6;
+		if(xLoc<0){
+			xLoc=xLoc-.5;
+		}else{
+			xLoc=xLoc+.5;
+		}
 	}else{
-	xLoc=xLoc+.5;
-	}
-	}else{
-	locMultiplier=1;
+		locMultiplier=1;
 	}
 
-float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
+	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
 	size=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
 	//size=800;
 
-for(int i=0; i<3;i++){
-	if(size<=100){//person: green
-		r=0.0;
-		g=1.0;
-		b=0.0;
-		xScaleResult=.75;
-		yScaleResult=.75;
-		zScaleResult=1.25;
-		type="person";
-	}else if(size<=150){//bike||motorcycle: blue/green
-		r=0.0;
-		g=1.0;
-		b=1.0;
-		xScaleResult=.75;
-		yScaleResult=1.9;
-		zScaleResult=1.25;
-		type="bike";
-	}else if(size<=300){//car: blue
-		r=0.0;
-		g=0.0;
-		b=1.0;
-		xScaleResult=2.3;
-		yScaleResult=6;
-		zScaleResult=2;
-		type="car";
-	}else if(size<=600){//large car: blue/red
-		r=1.0;
-		g=0.0;
-		b=1.0;
-		xScaleResult=2.5;
-		yScaleResult=8;
-		zScaleResult=2.5;
-		type="car";
-	}else if(size<=700){//truck||large vehicle: red
-		r=1.0; 
-		g=0.0;
-		b=0.0;
-		xScaleResult=3;
-		yScaleResult=10;
-		zScaleResult=3;
-		type="truck";
-	}else{//type unknown: white
-		r=1.0;
-		g=1.0;
-		b=1.0;
-		xScaleResult=5;
-		yScaleResult=5;
-		zScaleResult=3;
+	for(int i=0; i<3;i++){
+		if(size<=100){//person: green
+			r=0.0;
+			g=1.0;
+			b=0.0;
+			xScaleResult=.75;
+			yScaleResult=.75;
+			zScaleResult=1.25;
+			type="person";
+		}else if(size<=150){//bike||motorcycle: blue/green
+			r=0.0;
+			g=1.0;
+			b=1.0;
+			xScaleResult=.75;
+			yScaleResult=1.9;
+			zScaleResult=1.25;
+			type="bike";
+		}else if(size<=300){//car: blue
+			r=0.0;
+			g=0.0;
+			b=1.0;
+			xScaleResult=2.3;
+			yScaleResult=6;
+			zScaleResult=2;
+			type="car";
+		}else if(size<=600){//large car: blue/red
+			r=1.0;
+			g=0.0;
+			b=1.0;
+			xScaleResult=2.5;
+			yScaleResult=8;
+			zScaleResult=2.5;
+			type="car";
+		}else if(size<=700){//truck||large vehicle: red
+			r=1.0; 
+			g=0.0;
+			b=0.0;
+			xScaleResult=3;
+			yScaleResult=10;
+			zScaleResult=3;
+			type="truck";
+		}else{//type unknown: white
+			r=1.0;
+			g=1.0;
+			b=1.0;
+			xScaleResult=5;
+			yScaleResult=5;
+			zScaleResult=3;
+		}
+		if(xScaleResult<=xScale){
+			size=size+(size/2);
+		}
 	}
-	if(xScaleResult<=xScale){
-	size=size+(size/2);
-}
-
-}
 	zLoc=zMidRoad+(zScaleResult/2);//set z same
 
-//create msg
+	//create msg
 	visualization_msgs::Marker marker;
 	marker.header.frame_id = "base_link";
 	marker.header.stamp = ros::Time();
@@ -269,8 +293,8 @@ for(int i=0; i<3;i++){
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	if(canContinue){
-		
-pcl::PCDWriter writer;
+
+		pcl::PCDWriter writer;
 		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 
@@ -297,7 +321,6 @@ pcl::PCDWriter writer;
 		{
 			tree.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
 		}
-
 		// Set the input pointcloud for the search tree
 		tree->setInputCloud (cloud);
 
@@ -306,7 +329,6 @@ pcl::PCDWriter writer;
 			ROS_INFO("Error: Large scale must be > small scale!");
 			exit (EXIT_FAILURE);
 		}
-
 		pcl::removeNaNFromPointCloud(*cloud, *cloud, indicies);
 
 		// Compute normals using both small and large scales at each point
@@ -402,9 +424,9 @@ pcl::PCDWriter writer;
 		int j = 0;
 		int markerID=0;
 
-for(int k=0;k<9;k++){
-//markerArray.markers.push_back(markerBuilder(k,0,0,0,0,0,0,0));
-}
+		for(int k=0;k<9;k++){
+		markerArray.markers.push_back(markerBuilder(k));
+		}
 
 		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
 		{
@@ -423,7 +445,7 @@ for(int k=0;k<9;k++){
 			//publish mini clusters
 			sensor_msgs::PointCloud2 output;//create output container
 			pcl::PCLPointCloud2 temp_output;//create PCLPC2
-		
+
 			pcl::PointCloud<pcl::PointXYZ>::Ptr temX (new pcl::PointCloud<pcl::PointXYZ>);
 
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
@@ -468,104 +490,105 @@ for(int k=0;k<9;k++){
 			pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 			pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
-//box
+			//box
 
-float xScale=abs(pMax.x-pMin.x);
-float yScale=abs(pMax.y-pMin.y);
-float zScale=(pMax.z-pMin.z);
+			float xScale=abs(pMax.x-pMin.x);
+			float yScale=abs(pMax.y-pMin.y);
+			float zScale=(pMax.z-pMin.z);
 
-float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
-float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
-float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
-//Discard bad clusters
-if((zLoc-.1<zMaxRoad)){
-ROS_INFO("Discarding Cluster: Too low");
-}else if(zScale<.4){
-ROS_INFO("Discarding Cluster: Too short");
-}else{
+			float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
+			float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
+			float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
+			//Discard bad clusters
+			if((zLoc-.1<zMaxRoad)){
+				ROS_INFO("Discarding Cluster: Too low");
+			}else if(zScale<.4){
+				ROS_INFO("Discarding Cluster: Too short");
+			}else if (yScale>7*xScale){
+				ROS_INFO("Discarding Cluster: Too narrow");
+			}else if (xScale>7*yScale){
+				ROS_INFO("Discarding Cluster: Too wide");
+			}else if(zLoc-2>zMaxRoad){
+				ROS_INFO("Discarding Cluster: Too high off ground");			
+			}else{
 
-XYZ loc;
-XYZ scale;
-loc.x=xLoc;
-loc.y=yLoc;
-loc.z=zLoc;
-scale.x=xScale;
-scale.y=yScale;
-scale.z=zScale;
-//rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
-marker=markerBuilder(j,loc,scale,0,cloud_cluster_don->width);
+				XYZ loc;
+				XYZ scale;
+				loc.x=xLoc;
+				loc.y=yLoc;
+				loc.z=zLoc;
+				scale.x=xScale;
+				scale.y=yScale;
+				scale.z=zScale;
+				//rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
+				marker=markerBuilder(j,loc,scale,0,cloud_cluster_don->width);
 
 
-	lidar_utility_msgs::objectInfo msg;
+				lidar_utility_msgs::objectInfo msg;
 
-	msg.headerstamp = ros::Time::now();
-	msg.id = j;
-	msg.xLoc=xLoc;
-	msg.yLoc=yLoc;
-	msg.zLoc=zLoc;
-	msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
-	msg.heading=0;
-	msg.xMax=0;
-	msg.xMin=0;
-	msg.yMax=0;
-	msg.yMin=0;
-	msg.zMax=0;
-	msg.zMin=0;
-	msg.type="s";
-	//msg_pub.publish(msg);
-			markerArray.markers.push_back(marker);
+				msg.headerstamp = ros::Time::now();
+				msg.id = j;
+				msg.xLoc=xLoc;
+				msg.yLoc=yLoc;
+				msg.zLoc=zLoc;
+				msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
+				msg.heading=0;
+				msg.xMax=0;
+				msg.xMin=0;
+				msg.yMax=0;
+				msg.yMin=0;
+				msg.zMax=0;
+				msg.zMin=0;
+				msg.type="s";
+				//msg_pub.publish(msg);
+				markerArray.markers.push_back(marker);
 
-			switch(cloudNum){
-				case 0:
-					cl0_pub.publish (output);
-					break;
-				case 1:
-					cl1_pub.publish (output);
-					break;
-				case 2:
-					cl2_pub.publish (output);
-					break;
-				case 3:
-					cl3_pub.publish (output);
-					break;
-				case 4:
-					cl4_pub.publish (output);
-					break;
-				case 5:
-					cl5_pub.publish (output);
-					break;
-				case 6:
-					cl6_pub.publish (output);
-					break;
-				case 7:
-					cl7_pub.publish (output);
-					break;
-				case 8:
-					cl8_pub.publish (output);
-					break;
-				case 9:
-					cl9_pub.publish (output);
-					break;
-				default:
-					ROS_INFO("ERR: More clusters than available pc2 topics.");
-					cloudNum=-1;
-					break;
+				switch(cloudNum){
+					case 0:
+						cl0_pub.publish (output);
+						break;
+					case 1:
+						cl1_pub.publish (output);
+						break;
+					case 2:
+						cl2_pub.publish (output);
+						break;
+					case 3:
+						cl3_pub.publish (output);
+						break;
+					case 4:
+						cl4_pub.publish (output);
+						break;
+					case 5:
+						cl5_pub.publish (output);
+						break;
+					case 6:
+						cl6_pub.publish (output);
+						break;
+					case 7:
+						cl7_pub.publish (output);
+						break;
+					case 8:
+						cl8_pub.publish (output);
+						break;
+					case 9:
+						cl9_pub.publish (output);
+						break;
+					default:
+						ROS_INFO("ERR: More clusters than available pc2 topics.");
+						cloudNum=-1;
+						break;
+				}
+				cloudNum++;
 			}
-			cloudNum++;
-		}
-		if(mode==1){
-		}
-		//publih
-//for(cloudNum;cloudNum<=lastMarkerMax;cloudNum++){
-//markerArray.markers.push_back(markerBuilder(cloudNum,0,0,0,0,0,0,0));
-//}
+			if(mode==1){
+			}
 
-
-		vis_pub.publish(markerArray);
-		ROS_INFO("%s: Out of callback",nodeName.c_str());
-	lastMarkerMax=cloudNum;
+			vis_pub.publish(markerArray);
+			ROS_INFO("%s: Out of callback",nodeName.c_str());
+			lastMarkerMax=cloudNum;
+		}
 	}
-}
 }
 	int
 main (int argc, char** argv)

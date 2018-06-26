@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
 // PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
@@ -53,12 +54,18 @@
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
 static std::string nodeName("plane_filter");
-
+static float setDistanceThreshold_setting=.2;
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
 ros::Publisher pc2_pub;
 ros::Publisher msg_pub;
-	void 
+	
+void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
+{
+
+	setDistanceThreshold_setting=data.planeSegThreshold;
+}
+void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 
@@ -105,7 +112,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::Poi
 		// Mandatory
 		seg.setModelType (pcl::SACMODEL_PLANE);
 		seg.setMethodType (pcl::SAC_RANSAC);
-		seg.setDistanceThreshold (0.01);//SETTING
+		seg.setDistanceThreshold (setDistanceThreshold_setting);//SETTING
 
 		seg.setInputCloud (cloud_filtered);
 		seg.segment (*inliers, *coefficients);
