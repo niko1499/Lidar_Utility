@@ -85,7 +85,7 @@ static double setMaxClusterSize_setting=40000;
 static bool canContinue=false;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 static int lastMarkerMax=0;
-
+	static	int markerID=0;
 class XYZ{
 	public:
 		float x,y,z;
@@ -118,7 +118,7 @@ visualization_msgs::Marker markerBuilder(int id){
 	marker.ns = "my_namespace";
 	marker.id = id;
 	marker.type = visualization_msgs::Marker::CUBE;
-	marker.action = visualization_msgs::Marker::ADD;
+	marker.action = visualization_msgs::Marker::DELETE;
 	marker.pose.position.x = 0;
 	marker.pose.position.y = 0;
 	marker.pose.position.z = 0;
@@ -151,6 +151,11 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 	float constantMultiplier=.025;
 	float locMultiplier;
 	std::string type;
+	if(yLoc>0){
+		yLoc=yLoc+1;
+	}else{
+		yLoc=yLoc-1;
+	}
 	if(abs(xLoc)<=2.35){//close to center of x
 		locMultiplier=1.25;
 		if(yLoc<0){
@@ -422,12 +427,14 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		ec.extract (cluster_indices);
 		int cloudNum=0;
 		int j = 0;
-		int markerID=0;
 
+if(lastMarkerMax!=markerID){
+
+lastMarkerMax=markerID;
 		for(int k=0;k<9;k++){
 		markerArray.markers.push_back(markerBuilder(k));
 		}
-
+}
 		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
 		{
 			pcl::PointCloud<pcl::PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<pcl::PointNormal>);
@@ -503,12 +510,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 			float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
 			float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
 			//Discard bad clusters
-			bool filterBadClouds=false;			
-
-			if((zLoc-.1<zMaxRoad && filterBadClouds)){
+			bool filterBadClouds=true;			
+	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
+			if((zLoc+0.0<zMidRoad && filterBadClouds)){
 				ROS_INFO("Discarding Cluster: Too low");
 			}else if(zScale<.4 && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too short");
+				printf("Zscale: %f, ZMid: %f",zScale,zMidRoad);
 			}else if (yScale>7*xScale && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too narrow");
 			}else if (xScale>7*yScale && filterBadClouds){
@@ -591,7 +599,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 			vis_pub.publish(markerArray);
 			ROS_INFO("%s: Out of callback",nodeName.c_str());
-			lastMarkerMax=cloudNum;
+			markerID=cloudNum;
 		}
 	}
 }

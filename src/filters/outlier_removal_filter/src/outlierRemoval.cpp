@@ -22,7 +22,7 @@ int mode =1;//fix this later
 static std::string nodeName("outlier_removal_filter");
 //This node subscribes to a PointCloud2 topic, peforms a statistical outlier filter, and republishes the point cloud. 
 
-ros::Publisher pub;
+ros::Publisher pc2_pub;
 
 static float setMeanK_setting=75;
 static float setStddevMulThresh_setting=.9;
@@ -40,46 +40,59 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	//Callback for filtering and republishing recived data
 	//Comment out as needed. Useful for debuging
 	ROS_INFO("%s: In Callback",nodeName.c_str());
+
+
+	//OUTLIER REMOVAL
+	if(mode==1){//Statistical
+
 	// Create a container for the data and filtered data.
 	pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
 	pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-	pcl::PCLPointCloud2 cloud_filtered;
+
 
 	// Do data processing here...
 
 	//Convert to PCL data type
 	pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-	//OUTLIER REMOVAL
-	if(mode==1){//Statistical
+	pcl::PCLPointCloud2 cloud_filtered;
 		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 		pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
 		sor.setMeanK (setMeanK_setting);//SETTING
 		sor.setStddevMulThresh (setStddevMulThresh_setting);//SETTING
 		sor.filter (cloud_filtered);
+//convert to ROS data type
+	sensor_msgs::PointCloud2 output;
+	//pcl_conversions::fromPCl(cloud_filtered,output);
+	pcl_conversions::fromPCL(cloud_filtered,output);
+	// Publish the data.
+	pc2_pub.publish (output);
 	}else if (mode==2){//radial
-		//Convert PointCloud2 to PointXYZ
+		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 
-		pcl::PCLPointCloud2 temp;
-		pcl_conversions::toPCL(*cloud_msg,temp);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ(new pcl::PointCloud<pcl::PointXYZ>);
-		pcl::fromPCLPointCloud2(temp,*cloudXYZ);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+		std::vector<int> indicies;
+		pcl::fromPCLPointCloud2(pcl_pc2, *in_cloud);
+		pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+		pcl::removeNaNFromPointCloud(*in_cloud, *cloud, indicies);
 
 
+		cloud->is_dense = false;
 		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-		// build the filter
-		outrem.setInputCloud(cloudXYZ);
-		outrem.setRadiusSearch(setRadiusSearch_setting);//SETTING
-		outrem.setMinNeighborsInRadius (setMinNeighborsInRadius_setting);//SETTING
-		//setup xyzholder
-
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
-		// apply filter
-		outrem.filter (*cloud_filteredXYZ);
-		//convert bask
-		//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
-		//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
+	    // build the filter
+	    outrem.setInputCloud(cloud);
+	    outrem.setRadiusSearch(setRadiusSearch_setting);
+	    outrem.setMinNeighborsInRadius (setMinNeighborsInRadius_setting);
+	    // apply filter
+	    outrem.filter (*cloud_filtered);
+sensor_msgs::PointCloud2 output;//create output container
+	pcl::PCLPointCloud2 temp_output;//create PCLPC2
+	pcl::toPCLPointCloud2(*cloud_filtered,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+	pc2_pub.publish (output);// Publish the data.
 
 	}else if (mode==3){//conditional
 /*
@@ -99,12 +112,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		condrem.filter (cloud_filtered);
 			    */
 	}
-	//convert to ROS data type
-	sensor_msgs::PointCloud2 output;
-	//pcl_conversions::fromPCl(cloud_filtered,output);
-	pcl_conversions::fromPCL(cloud_filtered,output);
-	// Publish the data.
-	pub.publish (output);
+	
 }
 
 	int
@@ -182,7 +190,7 @@ main (int argc, char** argv)
 
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
+	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 	
 	ros::Subscriber sub2 = nh.subscribe("lidar_utility_settings", 1, settings_cb);

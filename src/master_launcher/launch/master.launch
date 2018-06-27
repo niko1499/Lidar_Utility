@@ -46,10 +46,17 @@
     <arg name="publisher" value="upper_points" />
     <arg name="mode" value="objects" />
   </include>
+ <!--performs first pass outlier removal filter-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_radial" />
+    <arg name="subscriber" value="lower_points" />
+    <arg name="publisher" value="outliers_removed_radial" />
+    <arg name="mode" value="radial" />
+  </include>
  <!--performs plane segmentation-->
 <include file="$(find plane_filter)/launch/plane_filter_slave.launch">
     <arg name="name" value="plane_filter1" />
-    <arg name="subscriber" value="lower_points" />
+    <arg name="subscriber" value="outliers_removed_radial" />
     <arg name="publisher" value="plane_segmented" />
     <arg name="mode" value="segmentation" />
   </include>
