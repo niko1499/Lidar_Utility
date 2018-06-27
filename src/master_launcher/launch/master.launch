@@ -91,7 +91,7 @@
  <!--performs object detection-->
   <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
     <arg name="name" value="object_detective_don" />
-    <arg name="subscriber" value="adv_obj_filtered" />
+    <arg name="subscriber" value="adv_obj" />
     <arg name="publisher" value="objects_don" />
     <arg name="mode" value="u" />
   </include>

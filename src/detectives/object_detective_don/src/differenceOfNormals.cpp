@@ -136,7 +136,7 @@ visualization_msgs::Marker markerBuilder(int id){
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 	return marker;
 }
-visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headding,int size){
+visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ max, float headding,int size){
 	float xLoc=loc.x;
 	float yLoc=loc.y;
 	float zLoc=loc.z;	
@@ -152,9 +152,9 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 	float locMultiplier;
 	std::string type;
 	if(yLoc>0){
-		yLoc=yLoc+1;
+		yLoc=yLoc+.75;
 	}else{
-		yLoc=yLoc-1;
+		yLoc=yLoc-.75;
 	}
 	if(abs(xLoc)<=2.35){//close to center of x
 		locMultiplier=1.25;
@@ -192,7 +192,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 	size=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
 	//size=800;
 
-	for(int i=0; i<3;i++){
+	for(int i=0; i<4;i++){
 		if(size<=100){//person: green
 			r=0.0;
 			g=1.0;
@@ -225,7 +225,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 			yScaleResult=8;
 			zScaleResult=2.5;
 			type="car";
-		}else if(size<=700){//truck||large vehicle: red
+		}else if(size<=900){//truck||large vehicle: red
 			r=1.0; 
 			g=0.0;
 			b=0.0;
@@ -244,6 +244,10 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale, float headdin
 		if(xScaleResult<=xScale){
 			size=size+(size/2);
 		}
+		if((yLoc+(yScaleResult/2))<max.y){
+		       yLoc=yLoc+1;
+		}
+
 	}
 	zLoc=zMidRoad+(zScaleResult/2);//set z same
 
@@ -527,14 +531,22 @@ lastMarkerMax=markerID;
 
 				XYZ loc;
 				XYZ scale;
+				XYZ min;
+				XYZ max;
 				loc.x=xLoc;
 				loc.y=yLoc;
 				loc.z=zLoc;
 				scale.x=xScale;
 				scale.y=yScale;
 				scale.z=zScale;
+				min.x=pMax.x;
+				min.y=pMax.y;
+				min.z=pMax.z;
+				max.x=pMax.x;
+				max.y=pMax.y;
+				max.z=pMax.z;				
 				//rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
-				marker=markerBuilder(j,loc,scale,0,cloud_cluster_don->width);
+				marker=markerBuilder(j,loc,scale,min,max,0,cloud_cluster_don->width);
 
 
 				lidar_utility_msgs::objectInfo msg;
