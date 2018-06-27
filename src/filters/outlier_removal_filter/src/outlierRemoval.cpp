@@ -11,7 +11,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
-
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33"
@@ -24,6 +24,17 @@ static std::string nodeName("outlier_removal_filter");
 
 ros::Publisher pub;
 
+static float setMeanK_setting=75;
+static float setStddevMulThresh_setting=.9;
+static float setRadiusSearch_setting=.8;
+static float setMinNeighborsInRadius_setting=2;
+void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
+{
+	setMeanK_setting=data.outlierRemovalMeanK;
+	setStddevMulThresh_setting=data.outlierRemovalStdDev;
+	setRadiusSearch_setting=data.outlierRemovalSearchRadius;
+	setMinNeighborsInRadius_setting=data.outlierRemovalMinNeighborsInRadius;
+}
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
 	//Callback for filtering and republishing recived data
@@ -40,14 +51,14 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 	pcl_conversions::toPCL(*cloud_msg, *cloud);
 
 	//OUTLIER REMOVAL
-	if(mode==1){
+	if(mode==1){//Statistical
 		//pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
 		pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2> sor;
 		sor.setInputCloud (cloudPtr);
-		sor.setMeanK (75);//THE NUMBER OF NEIGHBORS TO ANALIZE FOR EACH POINT 50 defaulet//SETTING
-		sor.setStddevMulThresh (.9);//STD DEV MULTIPLIER 1.0 default//SETTING
+		sor.setMeanK (setMeanK_setting);//SETTING
+		sor.setStddevMulThresh (setStddevMulThresh_setting);//SETTING
 		sor.filter (cloud_filtered);
-	}else if (mode==2){
+	}else if (mode==2){//radial
 		//Convert PointCloud2 to PointXYZ
 
 		pcl::PCLPointCloud2 temp;
@@ -59,8 +70,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
 		// build the filter
 		outrem.setInputCloud(cloudXYZ);
-		outrem.setRadiusSearch(0.8);//SETTING
-		outrem.setMinNeighborsInRadius (2);//SETTING
+		outrem.setRadiusSearch(setRadiusSearch_setting);//SETTING
+		outrem.setMinNeighborsInRadius (setMinNeighborsInRadius_setting);//SETTING
 		//setup xyzholder
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filteredXYZ (new pcl::PointCloud<pcl::PointXYZ>);
@@ -70,7 +81,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		//		pcl::toPCLPointCloud2(*cloud_filteredXYZ,*cloud_filtered);
 		//pcl_conversions::toPPCLPointCloud2(cloud_filteredXYZ,cloud_filtered);
 
-	}else if (mode==3){/*
+	}else if (mode==3){//conditional
+/*
 		// build the condition
 		pcl::ConditionAnd<pcl::PCLPointCloud2>::Ptr range_cond (new
 		pcl::ConditionAnd<pcl::PCLPointCloud2> ());
@@ -172,6 +184,8 @@ main (int argc, char** argv)
 	// Create a ROS publisher for the output point cloud
 	pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+	
+	ros::Subscriber sub2 = nh.subscribe("lidar_utility_settings", 1, settings_cb);
 
 	// Spin
 	ros::spin ();

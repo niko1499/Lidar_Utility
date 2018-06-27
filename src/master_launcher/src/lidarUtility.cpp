@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <ros/master.h>
+
 // PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
@@ -43,27 +44,26 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 void timer_cb (const ros::TimerEvent& event){
 	//custom msg
 	lidar_utility_msgs::lidarUtilitySettings msg;
-
+	//all distances in meters
 	msg.headerstamp = ros::Time::now();
 	msg.permissionToContinue=true;
 	msg.header.frame_id = "/world";
-	msg.downSampleLeafSize_A = 00;
-	msg.downSampleLeafSize_B = 0.01;
-	msg.planeDistanceThreshold = 00;
-	msg.lowestRoadPoint = 00;
-	msg.highestRoadPoint = 00;
-	msg.lowestObjectPoint = 00;
-	msg.highestObjectPoint = 00;
-	msg.outlierMeanK = 00;
-	msg.outlierStdDev = 00;
-	msg.outlierRadius = 00;
-	msg.outlierMinumNeighbors = 00;
-	msg.intensityMinimum_A = 00;
-	msg.intensityMaximum_A = 00;
-	msg.intensityMinimum_B = 00;
-	msg.intensityMaximum_B = 00;
+	msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+	msg.outlierRemovalStdDev=.4;//STD DEV multiplier//was 1
+	msg.outlierRemovalSearchRadius=.8;//Search radius for radial outlier removal//was.8
+	msg.outlierRemovalMinNeighborsInRadius=2;//Minum number of neighbors a point must have to be kept in radial outlier removal
+msg.passThroughRoadMin=-4;
+msg.passThroughRoadMax=-1.2;
+msg.passThroughObjectMin=-1.7;
+msg.passThroughObjectMax=1.25;
+msg.passThroughBoxMargin=.2;
+	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
+	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
+	msg.intensityMinimum_A = 00;//placeholder
+	msg.intensityMaximum_A = 00;//placeholder
+	msg.intensityMinimum_B = 00;//placeholder
+	msg.intensityMaximum_B = 00;//placeholder
 	msg.planeSegMaxIterations = 00;
-	msg.planeSegDistThresh = 00;
 	msg.objDetectMaxIterations = 100;
 	msg.objDetectDistThresh = 0.02;
 	msg.objDetectClusterTolerance = 0.325;//a

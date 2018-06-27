@@ -1,7 +1,16 @@
 Header header
 time headerstamp
 bool permissionToContinue
-float32 downSampleLeafSize_A 
+float32 outlierRemovalMeanK 
+float32 outlierRemovalStdDev
+float32 outlierRemovalSearchRadius
+float32 outlierRemovalMinNeighborsInRadius
+float32 passThroughRoadMin
+float32 passThroughRoadMax
+float32 passThroughObjectMin
+float32 passThroughObjectMax
+float32 passThroughBoxMargin
+float32 downSampleLeafSize 
 float32 downSampleLeafSize_B
 float32 planeDistanceThreshold
 float32 lowestRoadPoint

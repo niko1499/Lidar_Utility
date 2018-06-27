@@ -55,6 +55,7 @@
 static int mode =1;//fix this later
 static std::string nodeName("plane_filter");
 static float setDistanceThreshold_setting=.2;
+static float setLeafSize_setting=.01;
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 
 ros::Publisher pc2_pub;
@@ -64,6 +65,7 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 {
 
 	setDistanceThreshold_setting=data.planeSegThreshold;
+	setLeafSize_setting==data.downSampleLeafSize;
 }
 void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)

@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+#include <lidar_utility_msgs/roadInfo.h>
 // PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
@@ -8,8 +10,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
-#include <lidar_utility_msgs/lidarUtilitySettings.h>
-#include <lidar_utility_msgs/roadInfo.h>
+
 
 #include <pcl/filters/extract_indices.h>
 
@@ -28,12 +29,24 @@
 static int mode =1;//fix this later
 static std::string nodeName("pass_through_filter");
 static 	float xMinf, xMaxf, yMinf, yMaxf, zMinf, zMaxf;
-bool called = false;
+static bool called = false;
+
+static float roadMin_setting=-4;
+static float roadMax_setting=-1.2;
+static float objectMin_setting=-1.7;
+static float objectMax_setting=1.25;
+static float boxMargin=.2;
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
-
 ros::Publisher pc2_pub;
-
+void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
+{
+ roadMin_setting=data.passThroughRoadMin;
+ roadMax_setting=data.passThroughRoadMax;
+ objectMin_setting=data.passThroughObjectMin;
+ objectMax_setting=data.passThroughObjectMax;
+ boxMargin=data.passThroughBoxMargin;
+}
 
 void message_cb (const lidar_utility_msgs::roadInfo& data)
 {
@@ -76,7 +89,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	if(mode==1){//road
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-4, -1.2);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)//SETTING
+		pass.setFilterLimits (roadMin_setting, roadMax_setting);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD (-1.5,7.0)//SETTING
 		pass.setFilterLimitsNegative (false);
 
 		pass.filter (cloud_filtered);
@@ -90,7 +103,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	}else if (mode==2){//objects
 		pass.setFilterFieldName ("z");
-		pass.setFilterLimits (-1.7,1.25);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()//SETTING
+		pass.setFilterLimits (objectMin_setting,objectMax_setting);//FOR VELODYNE +Z is DOWN VALUDES FOR VELODYNE PCD ()//SETTING
 		pass.setFilterLimitsNegative (false);
 
 		pass.filter (cloud_filtered);
@@ -122,12 +135,12 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
 		ptfilter.setInputCloud (temp_cloud);
 		ptfilter.setFilterFieldName ("x");
-		ptfilter.setFilterLimits (xMinf, xMaxf);
+		ptfilter.setFilterLimits (xMinf+boxMargin, xMaxf-boxMargin);
 		ptfilter.filter (*cloud_filtered_x);
 
 		ptfilter.setInputCloud(cloud_filtered_x);
 		ptfilter.setFilterFieldName ("y");
-		ptfilter.setFilterLimits (yMinf,yMaxf);
+		ptfilter.setFilterLimits (yMinf+boxMargin,yMaxf-boxMargin);
 		ptfilter.filter (*cloud_filtered_xy);
 
 	//float zMid = zMaxf -((zMaxf-zMinf)/2);
@@ -225,7 +238,8 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
-	ros::Subscriber sub2 = nh.subscribe("plane_segmented_msg", 1, message_cb);
+	ros::Subscriber sub2 = nh.subscribe("lidar_utility_settings", 1, settings_cb);
+	ros::Subscriber sub3 = nh.subscribe("plane_segmented_msg", 1, message_cb);
 
 	ros::spin();
 }		

@@ -492,23 +492,28 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 			//box
 
-			float xScale=abs(pMax.x-pMin.x);
-			float yScale=abs(pMax.y-pMin.y);
+			float xScale=(pMax.x-pMin.x);
+			float yScale=(pMax.y-pMin.y);
 			float zScale=(pMax.z-pMin.z);
+			abs(xScale);
+			abs(yScale);
+			abs(zScale);
 
 			float xLoc= ((pMax.x-pMin.x)/2)+pMin.x;
 			float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
 			float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
 			//Discard bad clusters
-			if((zLoc-.1<zMaxRoad)){
+			bool filterBadClouds=false;			
+
+			if((zLoc-.1<zMaxRoad && filterBadClouds)){
 				ROS_INFO("Discarding Cluster: Too low");
-			}else if(zScale<.4){
+			}else if(zScale<.4 && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too short");
-			}else if (yScale>7*xScale){
+			}else if (yScale>7*xScale && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too narrow");
-			}else if (xScale>7*yScale){
+			}else if (xScale>7*yScale && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too wide");
-			}else if(zLoc-2>zMaxRoad){
+			}else if(zLoc-2>zMaxRoad && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too high off ground");			
 			}else{
 
