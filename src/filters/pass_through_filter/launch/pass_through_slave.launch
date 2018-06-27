@@ -4,11 +4,13 @@
   <arg name="subscriber"/>
   <arg name="publisher"/>
   <arg name="mode"/>
+  <arg name="msgSubscriber"/>
 
   <node name="$(arg name)" pkg="pass_through_filter" type="passThrough" output="screen">
     <param name="subscriber" value="$(arg subscriber)"/>
     <param name="publisher" value="$(arg publisher)"/>
     <param name="mode" value="$(arg mode)"/>
+    <param name="msgSubscriber" value="$(arg msgSubscriber)"/>
   </node>
 
 </launch>

@@ -36,6 +36,7 @@
   <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
     <arg name="name" value="pass_through_road" />
     <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="lower_points" />
     <arg name="mode" value="road" />
   </include>
@@ -43,6 +44,7 @@
   <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
     <arg name="name" value="pass_through_objects" />
     <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="upper_points" />
     <arg name="mode" value="objects" />
   </include>
@@ -63,7 +65,8 @@
  <!--creates road visualization-->
 <include file="$(find road_detective)/launch/road_detective_slave.launch">
     <arg name="name" value="road_detective" />
-    <arg name="subscriber" value="plane_segmented" />
+    <arg name="subscriber" value="plane_segmented_pts" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="road" />
     <arg name="mode" value="f" />
   </include>
@@ -71,6 +74,7 @@
   <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
     <arg name="name" value="pass_through_objects_advanced" />
     <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="adv_obj" />
     <arg name="mode" value="advObjects" />
   </include>
@@ -88,10 +92,11 @@
     <arg name="publisher" value="objects" />
     <arg name="mode" value="u" />
   </include>
- <!--performs object detection-->
+ <!--performs object detection DoN-->
   <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
     <arg name="name" value="object_detective_don" />
     <arg name="subscriber" value="adv_obj" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="objects_don" />
     <arg name="mode" value="u" />
   </include>

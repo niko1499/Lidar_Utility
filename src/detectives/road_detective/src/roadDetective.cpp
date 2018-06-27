@@ -2,7 +2,8 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "nav_msgs/OccupancyGrid.h"
-
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+#include <lidar_utility_msgs/roadInfo.h>
 // PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
@@ -78,7 +79,16 @@ static std::string nodeName("road_detective");
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
 ros::Publisher grid_pub;
-
+static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
+void road_cb (const lidar_utility_msgs::roadInfo& data)
+{
+	xMinRoad = data.xMin;
+	xMaxRoad = data.xMax;
+	yMinRoad = data.yMin;
+	yMaxRoad = data.yMax;
+	zMinRoad = data.zMin;
+	zMaxRoad = data.zMax;	
+}
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
 	float alpha=.5;
@@ -136,112 +146,17 @@ nav_msgs::OccupancyGrid OgridBuilder(){
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-	//https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
 	ROS_INFO("ObjectDetective: In Callback");
 	
 
-	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-
-	visualization_msgs::MarkerArray markerArray;
-	visualization_msgs::Marker marker;
-
-
-//pcl::CentroidPoint<pcl::PointXYZ> centroid;
-//Eigen::Matrix<Scalar,4,1> centroid;
-
- //Eigen::Vector4f centroid;
-//********************************************************
-//	pcl::CentroidPoint<pcl::PointXYZ> centroid;
-	//pcl::Centroid<pcl::PointXYZ> centroid;
-//	 pcl::compute3DCentroid(temp_cloud,centroid);
-		pcl::PointXYZ c1;
-//	centroid.get (c1);
-
-float xMin=0,xMax=0,yMin=0,yMax=0,zMin=0,zMax=0;
-/*
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-	tree->setInputCloud (temp_cloud);
-	std::vector<pcl::PointIndices> cluster_indices;
-	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance (0.1); // 2cm
-	ec.setMinClusterSize (50);
-	ec.setMaxClusterSize (250000);
-	ec.setSearchMethod (tree);
-	ec.setInputCloud (temp_cloud);
-	ec.extract (cluster_indices);
-*/
-/*
-for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-	{
-if(temp_cloud->points[*it].x>xMax){
-xMax=temp_cloud->points[*it];
-}else if (temp_cloud->points[*it].x<xMin){
-xMin=temp_cloud->points[*it].x;
-}
- if(temp_cloud->points[*it].y>yMax){
-yMax=temp_cloud->points[*it];
-}else if (temp_cloud->points[*it].y<yMin){
-yMin=temp_cloud->points[*it].y;
-}
-if(temp_cloud->points[*it].z>zMax){
-zMax=temp_cloud->points[*it];
-}else if (temp_cloud->points[*it].z<zMin){
-zMin=temp_cloud->points[*it].z;
-}
-}
-
-*/
-/*
-
-for (size_t i = 0; i < temp_cloud.size(); ++i)
-    {//find min and max
-if(temp_cloud[i].x>xMax){
-xMax=temp_cloud[i];
-}else if (temp_cloud[i].x<xMin){
-xMin=temp_cloud[i];
-}
- if(temp_cloud[i].y>yMax){
-yMax=temp_cloud[i];
-}else if (temp_cloud[i].y<yMin){
-yMin=temp_cloud[i];
-}
-if(temp_cloud[i].z>zMax){
-zMax=temp_cloud[i];
-}else if (temp_cloud[i].z<zMin){
-zMin=temp_cloud[i];
-}
-   }
-
-*/
-float xScale=abs(xMax)-abs(xMin);
-float yScale=abs(yMax)-abs(yMin);
-float zScale=abs(zMax)-abs(zMin);
-
- xScale=10;
- yScale=10;
- zScale=.5;
-			marker=markerBuilder(1,c1.x,c1.y,c1.z,xScale,yScale,zScale,1);
-			markerArray.markers.push_back(marker);
-		
-	
-	//publih
-	vis_pub.publish(markerArray);
-
-	sensor_msgs::PointCloud2 output;//create output container
-	pcl::PCLPointCloud2 temp_output;//create PCLPC2
-
-	pcl::toPCLPointCloud2(*temp_cloud,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
-	pc2_pub.publish (output);// Publish the data.
 }
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("road_points");
-	const std::string defaultPublisher("road");//dynamic name ending See belows
+	const std::string defaultSubscriber2("plane_segmented_msg");
+	const std::string defaultPublisher("road");//dynamic name ending See below
 	const std::string defaultMode("f");
 
 	// Initialize ROS
@@ -252,17 +167,18 @@ main (int argc, char** argv)
 
 	//set parameters on new name
 	const std::string subscriberParamName(nodeName + "/subscriber");
+	const std::string subscriberParamName2(nodeName + "/msgSubscriber");
 	const std::string publisherParamName(nodeName + "/publisher");
 	const std::string modeParamName(nodeName + "/mode");
 	printf(COLOR_BLUE BAR COLOR_RST);
 	ROS_INFO("Node Name: %s",nodeName.c_str());
 	//Create variables that control the topic names
 	std::string sTopic;
+	std::string sTopic2;
 	std::string pTopic;
 	std::string myMode;
 
-	//Check if the user specified a subscription topic
-	if(nh.hasParam(subscriberParamName)){
+	if(nh.hasParam(subscriberParamName)){//Check if the user specified a subscription topic
 		nh.getParam(subscriberParamName,sTopic);
 		printf(COLOR_GREEN BAR COLOR_RST);
 		ROS_INFO("%s: A param has been set **%s** \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
@@ -272,8 +188,17 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber to: %s",nodeName.c_str(),subscriberParamName.c_str(), sTopic.c_str());
 	}
 
-	//Check if the user specified a publishing topic
-	if(nh.hasParam(publisherParamName)){
+	if(nh.hasParam(subscriberParamName2)){//Check if the user specified a subscription topic for msgs
+		nh.getParam(subscriberParamName2,sTopic2);
+		printf(COLOR_GREEN BAR COLOR_RST);
+		ROS_INFO("%s: A param has been set **%s** \nSetting subsceiber2 to: %s",nodeName.c_str(),subscriberParamName2.c_str(), sTopic2.c_str());
+	}else{
+		sTopic2=defaultSubscriber2;//set to default if not specified
+		printf(COLOR_RED BAR COLOR_RST);
+		ROS_INFO("%s: No param set **%s**  \nSetting subsceiber2 to: %s",nodeName.c_str(),subscriberParamName2.c_str(), sTopic2.c_str());
+	}
+
+	if(nh.hasParam(publisherParamName)){//Check if the user specified a publishing topic
 		printf(COLOR_GREEN BAR COLOR_RST);
 		nh.getParam(publisherParamName,pTopic);
 		ROS_INFO("%s: A param has been set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
@@ -282,8 +207,7 @@ main (int argc, char** argv)
 		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
 
-	//Check if the user specified a mode
-	if(nh.hasParam(modeParamName)){
+	if(nh.hasParam(modeParamName)){	//Check if the user specified a mode
 		nh.getParam(modeParamName,myMode);
 		printf(COLOR_GREEN BAR COLOR_RST);
 		ROS_INFO("%s: A param has been set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
@@ -291,13 +215,13 @@ main (int argc, char** argv)
 		myMode=defaultMode;//set to default if not specified
 		printf(COLOR_RED BAR COLOR_RST);
 		ROS_INFO("%s: No param set **%s** \nSetting mode to: %s",nodeName.c_str(),modeParamName.c_str(), myMode.c_str());
-		ROS_INFO("%s: Mode options for parameter %s are: ""filtered"", ""unfiltered"", ""l"" for statistical, radial, and conditional",nodeName.c_str(),modeParamName.c_str());
 	}
 
 	//Clears the assigned parameter. Without this default will never be used but instead the last spefified topic
 	nh.deleteParam(subscriberParamName);
 	nh.deleteParam(publisherParamName);
 	nh.deleteParam(modeParamName);
+	nh.deleteParam(subscriberParamName2);
 
 	if(myMode=="f"||myMode=="F"||myMode=="filtered"){
 		mode=1;
@@ -323,6 +247,8 @@ main (int argc, char** argv)
 
 	grid_pub = nh.advertise<nav_msgs::OccupancyGrid> (pTopic+"_detective_grid", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+
+	ros::Subscriber sub2 = nh.subscribe(sTopic2.c_str(), 1, road_cb);
 
 	// Spin
 	ros::spin ();
