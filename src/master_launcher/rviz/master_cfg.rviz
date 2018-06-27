@@ -261,11 +261,11 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/Polygon
       Color: 25; 255; 0
-      Enabled: false
+      Enabled: true
       Name: Road Plane - Polygon
-      Topic: ""
+      Topic: "road_bounds\n"
       Unreliable: false
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: objects_visualized
@@ -720,10 +720,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.05479681
+      Pitch: 0.949797034
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.82050443
+      Yaw: 4.81051922
     Saved: ~
 Window Geometry:
   Displays:

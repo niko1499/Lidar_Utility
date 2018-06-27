@@ -2,6 +2,9 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include "geometry_msgs/Point32.h"
+#include "geometry_msgs/PolygonStamped.h"
+#include "geometry_msgs/Polygon.h"
 #include <lidar_utility_msgs/lidarUtilitySettings.h>
 #include <lidar_utility_msgs/roadInfo.h>
 // PCL specific includes
@@ -79,15 +82,46 @@ static std::string nodeName("road_detective");
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
 ros::Publisher grid_pub;
+ros::Publisher poly_pub;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 void road_cb (const lidar_utility_msgs::roadInfo& data)
 {
+	ROS_INFO("%s: In msg Callback",nodeName.c_str());
 	xMinRoad = data.xMin;
 	xMaxRoad = data.xMax;
 	yMinRoad = data.yMin;
 	yMaxRoad = data.yMax;
 	zMinRoad = data.zMin;
 	zMaxRoad = data.zMax;	
+	
+	geometry_msgs::Point32 p1;
+	geometry_msgs::Point32 p2;
+	geometry_msgs::Point32 p3;
+	geometry_msgs::Point32 p4;
+
+	p1.x=xMinRoad;
+	p1.y=yMinRoad;
+	p1.z=zMaxRoad;
+	p2.x=xMinRoad;
+	p2.y=yMaxRoad;
+	p2.z=zMaxRoad;
+	p3.x=xMaxRoad;
+	p3.y=yMinRoad;
+	p3.z=zMaxRoad;
+	p4.x=xMaxRoad;
+	p4.y=yMaxRoad;
+	p4.z=zMaxRoad;
+	
+
+	geometry_msgs::PolygonStamped polygon;
+	polygon.header.stamp = ros::Time();
+	polygon.polygon.points.reserve(4);
+	polygon.polygon.points[0]=p1;
+	polygon.polygon.points[1]=p2;
+	polygon.polygon.points[2]=p3;
+	polygon.polygon.points[3]=p4;
+	
+				poly_pub.publish(polygon);
 }
 visualization_msgs::Marker markerBuilder(int i,float xLoc,float yLoc, float zLoc, float xScale, float yScale, float zScale,int type){
 	float r,g,b;
@@ -246,6 +280,7 @@ main (int argc, char** argv)
 
 
 	grid_pub = nh.advertise<nav_msgs::OccupancyGrid> (pTopic+"_detective_grid", 1);
+	poly_pub = nh.advertise<geometry_msgs::PolygonStamped> (pTopic+"_bounds", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	ros::Subscriber sub2 = nh.subscribe(sTopic2.c_str(), 1, road_cb);
