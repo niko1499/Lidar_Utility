@@ -66,8 +66,10 @@ roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
 - [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros) Not working...
 ```
-roslaunch hesai_lidar pandora_ros.launch
+roslaunch pandar_pointcloud Pandar40_points.launch
 ```
+Note: when goint to step 2 use pandar.launch instead of master.launch
+This will bring up a .rviz file that is more suited for the Pandar40.
 - .pcd file: Below are examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file numbers. 
 
 ```

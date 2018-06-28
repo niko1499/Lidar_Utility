@@ -48,15 +48,18 @@ void timer_cb (const ros::TimerEvent& event){
 	msg.headerstamp = ros::Time::now();
 	msg.permissionToContinue=true;
 	msg.header.frame_id = "/world";
-	msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+	
+
+	if(mode==1){
+msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
 	msg.outlierRemovalStdDev=.4;//STD DEV multiplier//was 1
 	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
 	msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
-msg.passThroughRoadMin=-4;
-msg.passThroughRoadMax=-1.2;
-msg.passThroughObjectMin=-1.7;
-msg.passThroughObjectMax=1.25;
-msg.passThroughBoxMargin=.5;
+	msg.passThroughRoadMin=-4;
+	msg.passThroughRoadMax=-1.2;
+	msg.passThroughObjectMin=-1.7;
+	msg.passThroughObjectMax=1.25;
+	msg.passThroughBoxMargin=.5;
 	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
 	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
 	msg.intensityMinimum_A = 00;//placeholder
@@ -76,13 +79,37 @@ msg.passThroughBoxMargin=.5;
 	msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
 	msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
 	msg.planeSegThreshold=.2;
-
-	if(mode==1){
-
 	}else if (mode==2){
 
 	}else if (mode==3){
-
+	msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+	msg.outlierRemovalStdDev=2;//STD DEV multiplier//was 1
+	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
+	msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
+	msg.passThroughRoadMin=-4;
+	msg.passThroughRoadMax=-1.2;
+	msg.passThroughObjectMin=-1.7;
+	msg.passThroughObjectMax=1.25;
+	msg.passThroughBoxMargin=.5;
+	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
+	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
+	msg.intensityMinimum_A = 00;//placeholder
+	msg.intensityMaximum_A = 00;//placeholder
+	msg.intensityMinimum_B = 00;//placeholder
+	msg.intensityMaximum_B = 00;//placeholder
+	msg.planeSegMaxIterations = 00;
+	msg.objDetectMaxIterations = 100;
+	msg.objDetectDistThresh = 0.02;
+	msg.objDetectClusterTolerance = 0.325;//a
+	msg.objDetectMinClusterSize = 100;
+	msg.objDetectMaxClusterSize = 40000;
+	msg.donScale1=.3;
+	msg.donScale2=20;
+	msg.donThreshold=0.05;
+	msg.donSegradius=1;//Segmentation radiius for DoN
+	msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
+	msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
+	msg.planeSegThreshold=.05;
 	}else if (mode==4){
 
 	}else{
