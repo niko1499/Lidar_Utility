@@ -37,7 +37,8 @@ Panels:
     Help Height: 75
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Important Points 2 - PointCloud21
       Splitter Ratio: 0.5
     Tree Height: 719
 Visualization Manager:
@@ -345,7 +346,7 @@ Visualization Manager:
       Size (Pixels): 5
       Size (m): 0.150000006
       Style: Boxes
-      Topic: /adv_obj
+      Topic: /adv_obj_filtered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -375,7 +376,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.150000006
       Style: Points
-      Topic: /adv_obj_filtered
+      Topic: /adv_obj
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -705,25 +706,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 33.4305496
+      Distance: 27.3608532
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.6583674
-        Y: 3.09836626
-        Z: -2.90371704
+        X: 3.87278962
+        Y: 1.55932391
+        Z: -1.74150884
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.949797034
+      Pitch: 1.11479712
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.81051922
+      Yaw: 3.34051299
     Saved: ~
 Window Geometry:
   Displays:

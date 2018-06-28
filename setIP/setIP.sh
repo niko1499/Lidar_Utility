@@ -12,10 +12,6 @@
 #要运行脚本类型“sudo ./setIP.sh”
 #如果你在这方面遇到麻烦，请确保文件属性/权限允许它是可改变的。
 
-
-#this is the IP address of the rslidar
-staticIP=192.168.1.102
-
 #location of ipconfig file
 file='/etc/network/interfaces'
 
@@ -25,20 +21,25 @@ tput setaf 1
 echo 以上是当前的ip配置
 echo Above is the current ip configuration
 tput setaf 2
-echo 为静态输入1，为动态输入2
-read -p "Enter 1 for Static and 2 for Dynamic: " input
+echo 输入0为动态 --- 1为RSLIDAR --- 2为PANAR 
+read -p "Enter 0 for Dynamic --- 1 for rsLidar --- 2 for pandar: " input
 
 tput setaf 7 
 case $input in
-	1) 
-	echo \ 
-	echo setting static IP...
-	sudo cp -f staticIP.txt /etc/network/interfaces
-	;;
-	2) 
+	0) 
 	echo \ 
 	echo setting dynamic IP...
 	sudo cp -f dynamicIP.txt /etc/network/interfaces
+	;;
+	1) 
+	echo \ 
+	echo setting static IP rsLidar...
+	sudo cp -f rsLidar.txt /etc/network/interfaces
+	;;
+	2) 
+	echo \ 
+	echo setting static IP pandar40...
+	sudo cp -f pandar40.txt /etc/network/interfaces
 	;;
 	
 	*)echo error

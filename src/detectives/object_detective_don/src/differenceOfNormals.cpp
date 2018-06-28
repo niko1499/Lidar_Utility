@@ -514,11 +514,11 @@ lastMarkerMax=markerID;
 			float yLoc= ((pMax.y-pMin.y)/2)+pMin.y;
 			float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
 			//Discard bad clusters
-			bool filterBadClouds=true;			
+			bool filterBadClouds=true;//for debug purposes		
 	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
 			if((zLoc+0.0<zMidRoad && filterBadClouds)){
 				ROS_INFO("Discarding Cluster: Too low");
-			}else if(zScale<.4 && filterBadClouds){
+			}else if(zScale<.23 && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too short");
 				printf("Zscale: %f, ZMid: %f",zScale,zMidRoad);
 			}else if (yScale>7*xScale && filterBadClouds){
