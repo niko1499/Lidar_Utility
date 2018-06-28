@@ -78,7 +78,15 @@ rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/28
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 ```
-
+- rosbag
+First cd into the bag directory. For example:
+```
+cd ~/Lidar_Utility/PointCloudData/rosbag/SAIC_campus
+```
+Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. 
+```
+rosbag play -l -r .6 veh5.bag
+```
 - OTHER
 Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
 data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
