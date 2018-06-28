@@ -1,5 +1,4 @@
 # Lidar_Utility
-#### 6/4/18
 #### Nikolas Xarles Gamarra
 
 ## Description 
@@ -9,9 +8,12 @@ This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering 
 [ROSWIKI/PCL](wiki.ros.org/pcl_ros#pcd_to_pointcloud) Useful documentation on using PCL in ROS
 
 [PCL/Tutorials](http://pointclouds.org/documentation/tutorials/). Useful tutorials for how to use PCL library in your own projects. Some conversions will be required for using ros PointCloud2 messages. 
-[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples. 
+
+[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples.
+ 
 [Wireshark](https://www.wireshark.org/) Usefull for debuging IP issues with your lidar communication and checking the IP of connected devices. 
-# Here is an overview of the directories
+
+## Directory overview
 - /build: 
 ROS generated excutables
 - /devel: 
@@ -40,11 +42,11 @@ Recorded point cloud data for offline testing in multiple formats
 - /rviz: 
 RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory. Note this is not the location of the main rviz config file. The primary rviz config exists in the maser_launcher node. These are just alternate configs that may be useful. 
 - /PCL_testspace: A place to test C++ PCL code before trying to integrate it into a ROS node. 
-# To download the project:
+## To download the project:
 ```
 git clone https://github.com/niko1499/Lidar_Utility.git
 ```
-# To compile the project:
+## To compile the project:
 ```
 cd ~/Lidar_Utility
 ```
@@ -56,7 +58,7 @@ source devel/setup.bash
 catkin_make
 ```
 
-# To Run the project
+## To Run the project
 There are several ways to run different parts of the project however one main launch files is provided which wil launch the many nodes that are needed for this program to work properly. 
 
 1. **Select the source of your lidar data and launch it:**
@@ -106,7 +108,7 @@ roslaunch master_launcher master.launch _subscriber:="your_topic"
 The Lidar_Utility.launch will launch other launch files with the nameing convention node_name_core.launch these launch files contain important parameters and sometimes launch multiple instance with different setting of the same node. 
 
 The main purpose of this launch file is to search for all the possib
-# Parameters
+## Parameters
 There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these.
 
 subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file
