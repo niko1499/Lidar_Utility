@@ -526,7 +526,9 @@ lastMarkerMax=markerID;
 			}else if (xScale>7*yScale && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too wide");
 			}else if(zLoc-2>zMaxRoad && filterBadClouds){
-				ROS_INFO("Discarding Cluster: Too high off ground");			
+				ROS_INFO("Discarding Cluster: Too high off ground");		
+			}else if ((zScale>3*yScale || zScale>3*xScale )&& filterBadClouds){
+				ROS_INFO("Discarding Cluster: Too tall");	
 			}else{
 
 				XYZ loc;

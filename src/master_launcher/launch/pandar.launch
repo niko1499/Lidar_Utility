@@ -10,11 +10,18 @@
   </node>
 
  <!--Launch other nodes-->
-
+ <!--performs pass through filter cut non forward-->
+  <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
+    <arg name="name" value="pass_through_forward" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="msgSubscriber" value="N/A"/>
+    <arg name="publisher" value="forward_points" />
+    <arg name="mode" value="road" />
+  </include>
  <!--performs first pass outlier removal filter-->
   <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
     <arg name="name" value="outlier_removal_pass1" />
-    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="subscriber" value="forward_points" />
     <arg name="publisher" value="outliers_removed_pass1" />
     <arg name="mode" value="statistical" />
   </include>
@@ -43,7 +50,7 @@
 <!--performs pass through filter to cut out objects not on road -->
   <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
     <arg name="name" value="pass_through_objects_advanced" />
-    <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
     <arg name="msgSubscriber" value="plane_segmented_msg"/>
     <arg name="publisher" value="adv_obj" />
     <arg name="mode" value="advObjects" />

@@ -69,6 +69,7 @@ case $inputTwo in
 	exit
 	;;
 esac
+
 #这些是依赖文件。 删除：''评论并另存为.txt
 #These are the dependent files. Remove :' ' comment and save as .txt
 #-----------------staticIP.txt------------------------

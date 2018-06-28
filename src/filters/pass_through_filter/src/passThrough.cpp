@@ -156,6 +156,46 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 		pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 		pc2_pub.publish (output);// Publish the data.
+	}else if(mode==4){
+pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+		pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+		pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
+
+
+		pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
+		pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
+
+		///pcl::PCLPointX cloud_filtered_x;
+		//pcl::PCLPointCloud2 cloud_filtered_xz;
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
+		ptfilter.setInputCloud (temp_cloud);
+		ptfilter.setFilterFieldName ("x");
+		ptfilter.setFilterLimits (-10,10);
+		ptfilter.filter (*cloud_filtered_x);
+
+		ptfilter.setInputCloud(cloud_filtered_x);
+		ptfilter.setFilterFieldName ("y");
+		ptfilter.setFilterLimits (-1,15);
+		ptfilter.filter (*cloud_filtered_xy);
+
+	//float zMid = zMaxf -((zMaxf-zMinf)/2);
+
+		ptfilter.setInputCloud(cloud_filtered_xy);
+		ptfilter.setFilterFieldName ("z");
+		ptfilter.setFilterLimits (-3,3);//SETTING
+		ptfilter.setNegative (false);
+		ptfilter.filter (*cloud_filtered_xyz);
+
+		sensor_msgs::PointCloud2 output;//create output container
+		pcl::PCLPointCloud2 temp_output;//create PCLPC2
+		pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+		pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+		pc2_pub.publish (output);// Publish the data.
 	}
 }
 	int
@@ -237,6 +277,8 @@ main (int argc, char** argv)
 		mode=2;
 	}else if(myMode=="3"||myMode=="C"||myMode=="advObjects"){
 		mode=3;
+	}else if(myMode=="4"||myMode=="F"||myMode=="forwardFaceing"){
+		mode=4;
 	}
 
 	// Create a ROS subscriber for the input point cloud
