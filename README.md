@@ -6,20 +6,16 @@ This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering 
 
 ## To download and compile the project:
 ```
+mkdir -p Lidar_Utility
+cd Lidar_Utility
 git clone https://github.com/niko1499/Lidar_Utility.git
-
-cd ~/Lidar_Utility
-
 source devel/setup.bash 
-
 catkin_make
 ```
 ## To Run the project
-There are several ways to run different parts of the project however one main launch files is provided which wil launch the many nodes that are needed for this program to work properly. 
+1. **Select the source of your lidar data and launch it (you may need to launch roscore first):**
 
-1. **Select the source of your lidar data and launch it:**
-
-- rslidar: Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. 
+- **rslidar:** Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. 
 ```
 roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
