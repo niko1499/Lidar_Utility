@@ -1,6 +1,6 @@
-## Lidar_Utility
-## 6/4/18
-## Nikolas Xarles Gamarra
+### Lidar_Utility
+# 6/4/18
+# Nikolas Xarles Gamarra
 
 # Description 
 This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
