@@ -1,25 +1,19 @@
 # Lidar_Utility
 Nikolas Xarles Gamarra - nxgamarra@gmail.com
-
+https://github.com/niko1499/Lidar_Utility
 ## Description 
 This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
 
-### To download the project:
+## To download and compile the project:
 ```
 git clone https://github.com/niko1499/Lidar_Utility.git
-```
-### To compile the project:
-```
+
 cd ~/Lidar_Utility
-```
-```
+
 source devel/setup.bash 
-```
-*(or add your workspace to your bashrc)
-```
+
 catkin_make
 ```
-
 ## To Run the project
 There are several ways to run different parts of the project however one main launch files is provided which wil launch the many nodes that are needed for this program to work properly. 
 
