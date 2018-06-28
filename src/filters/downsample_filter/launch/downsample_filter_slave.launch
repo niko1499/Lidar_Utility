@@ -1,0 +1,14 @@
+<!--This Launch file must be launched by another(lidar_utility.launch) or with arguements-->
+<launch>
+  <arg name="name"/>
+  <arg name="subscriber"/>
+  <arg name="publisher"/>
+  <arg name="mode"/>
+
+  <node name="$(arg name)" pkg="downsample_filter" type="downsampleFilter" output="screen">
+    <param name="subscriber" value="$(arg subscriber)"/>
+    <param name="publisher" value="$(arg publisher)"/>
+    <param name="mode" value="$(arg mode)"/>
+  </node>
+
+</launch>
