@@ -1,0 +1,113 @@
+<!--Launch file to use when using live data from pandar 40-->
+<!--see readme section on launch files for details on how to use file-->
+<!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
+
+<launch>
+  <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
+    <!--commented out so program uses defaults or searches for available topic-->
+    <!--param name="subscriber" value="cloud_pcd"/-->
+    <!--param name="publisher" value="lidar_utility_points"/-->
+  </node>
+
+ <!--Launch other nodes-->
+
+ <!--publishes a marker for the lidar location-->
+  <include file="$(find vehicle_visualization)/launch/vehicle_visualization_slave.launch">
+    <arg name="name" value="vehicle_visualization" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="self_visualized" />
+    <arg name="mode" value="car" />
+  </include>
+ <!--performs first pass outlier removal filter-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass1" />
+    <arg name="subscriber" value="lidar_utility_points" />
+    <arg name="publisher" value="outliers_removed_pass1" />
+    <arg name="mode" value="statistical" />
+  </include>
+ <!--performs second pass outlier removal filter-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass2" />
+    <arg name="subscriber" value="outliers_removed_pass1" />
+    <arg name="publisher" value="outliers_removed_pass2" />
+    <arg name="mode" value="statistical" />
+  </include>
+ <!--performs pass through filter to cut objects above a height-->
+  <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
+    <arg name="name" value="pass_through_road" />
+    <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
+    <arg name="publisher" value="lower_points" />
+    <arg name="mode" value="road" />
+  </include>
+ <!--performs pass through filter to cut objects below a height-->
+  <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
+    <arg name="name" value="pass_through_objects" />
+    <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
+    <arg name="publisher" value="upper_points" />
+    <arg name="mode" value="objects" />
+  </include>
+ <!--performs first pass outlier removal filter-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_radial" />
+    <arg name="subscriber" value="lower_points" />
+    <arg name="publisher" value="outliers_removed_radial" />
+    <arg name="mode" value="radial" />
+  </include>
+ <!--performs plane segmentation-->
+<include file="$(find plane_filter)/launch/plane_filter_slave.launch">
+    <arg name="name" value="plane_filter1" />
+    <arg name="subscriber" value="outliers_removed_radial" />
+    <arg name="publisher" value="plane_segmented" />
+    <arg name="mode" value="segmentation" />
+  </include>
+ <!--creates road visualization-->
+<include file="$(find road_detective)/launch/road_detective_slave.launch">
+    <arg name="name" value="road_detective" />
+    <arg name="subscriber" value="plane_segmented_pts" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
+    <arg name="publisher" value="road" />
+    <arg name="mode" value="f" />
+  </include>
+<!--performs pass through filter to cut out objects not on road -->
+  <include file="$(find pass_through_filter)/launch/pass_through_slave.launch">
+    <arg name="name" value="pass_through_objects_advanced" />
+    <arg name="subscriber" value="outliers_removed_pass2" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
+    <arg name="publisher" value="adv_obj" />
+    <arg name="mode" value="advObjects" />
+  </include>
+<!--performs outlier removal filter on the adv_obj-->
+  <include file="$(find outlier_removal_filter)/launch/outlier_removal_slave.launch">
+    <arg name="name" value="outlier_removal_pass3" />
+    <arg name="subscriber" value="adv_obj" />
+    <arg name="publisher" value="adv_obj_filtered" />
+    <arg name="mode" value="statistical" />
+  </include>
+ <!--performs object detection-->
+  <include file="$(find object_detective_euclidean)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective_euclidean" />
+    <arg name="subscriber" value="adv_obj_filtered" />
+    <arg name="publisher" value="objects" />
+    <arg name="mode" value="u" />
+  </include>
+ <!--performs object detection DoN-->
+  <include file="$(find object_detective_don)/launch/object_detective_slave.launch">
+    <arg name="name" value="object_detective_don" />
+    <arg name="subscriber" value="adv_obj" />
+    <arg name="msgSubscriber" value="plane_segmented_msg"/>
+    <arg name="publisher" value="objects_don" />
+    <arg name="mode" value="u" />
+  </include>
+ <!--Making a costmmap_2d-->
+
+<node name="static_tf0" pkg="tf" type="static_transform_publisher" args="2 0 0 0 0 0 /map /base_link 100"/>
+
+<rosparam file="$(find master_launcher)/launch/minimal.yaml" command="load" ns="/costmap_node/costmap" />
+
+
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/pandar_cfg.rviz" />
+
+</launch>

@@ -94,6 +94,8 @@ msg.passThroughBoxMargin=.5;
 	int
 main (int argc, char** argv)
 {
+//ROS_INFO("Waiting to ensure drivers are ready...");
+//sleep(1500);
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("lidar_utility");
