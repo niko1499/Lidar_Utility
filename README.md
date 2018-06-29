@@ -1,6 +1,5 @@
 # Lidar_Utility
-Nikolas Xarles Gamarra - nxgamarra@gmail.com
-https://github.com/niko1499/Lidar_Utility
+Nikolas Xarles Gamarra -- nxgamarra@gmail.com -- https://github.com/niko1499/Lidar_Utility
 ## Description 
 This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
 
@@ -19,36 +18,31 @@ catkin_make
 ```
 roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
-- [pandalidar](https://github.com/HesaiTechnology/HesaiLidar-ros) Not working...
+- **Pandar40:** Below is the roslaunch command to launch the [Pandar40](http://www.hesaitech.com/en/index.html) driver that is included in this workspace. It has been modified slightly from its origional form.
 ```
 roslaunch pandar_pointcloud Pandar40_points.launch
 ```
-Note: when goint to step 2 use pandar.launch instead of master.launch
-This will bring up a .rviz file that is more suited for the Pandar40.
-- .pcd file: Below are examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file numbers. 
+- **.pcd file:** Below are examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file numbers. 
 
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
-```
-```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 ```
-- rosbag
-First cd into the bag directory. For example:
+- **rosbag:**
+First cd into the bag directory. Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. 
 ```
 cd ~/Lidar_Utility/PointCloudData/rosbag/SAIC_campus
-```
-Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. 
-```
 rosbag play -l -r .6 veh5.bag
 ```
-- OTHER
+- **OTHER:**
 Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
 data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
 
 2. **Launch the Lidar_Utility**	
 
 This is the main launch file. It will launch multiple nodes and rviz. To launch individual nodes you can use rosrun or roslaunch after exploring the directors. Most nodes contain a launch directory.
+Note: when goint to step 2 use pandar.launch instead of master.launch
+This will bring up a .rviz file that is more suited for the Pandar40.
 '''
 roslaunch master_launcher master.launch
 '''
@@ -100,7 +94,7 @@ Recorded point cloud data for offline testing in multiple formats
 RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory. Note this is not the location of the main rviz config file. The primary rviz config exists in the maser_launcher node. These are just alternate configs that may be useful. 
 - /PCL_testspace: A place to test C++ PCL code before trying to integrate it into a ROS node. 
 
-## Parameters
+## Parameters overview
 There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these.
 
 subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file
