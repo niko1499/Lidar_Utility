@@ -175,19 +175,19 @@ pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
 		ptfilter.setInputCloud (temp_cloud);
 		ptfilter.setFilterFieldName ("x");
-		ptfilter.setFilterLimits (-10,10);
+		ptfilter.setFilterLimits (-1,23);
 		ptfilter.filter (*cloud_filtered_x);
 
 		ptfilter.setInputCloud(cloud_filtered_x);
 		ptfilter.setFilterFieldName ("y");
-		ptfilter.setFilterLimits (-1,15);
+		ptfilter.setFilterLimits (-12,12);
 		ptfilter.filter (*cloud_filtered_xy);
 
 	//float zMid = zMaxf -((zMaxf-zMinf)/2);
 
 		ptfilter.setInputCloud(cloud_filtered_xy);
 		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (-3,3);//SETTING
+		ptfilter.setFilterLimits (-3,4);//SETTING
 		ptfilter.setNegative (false);
 		ptfilter.filter (*cloud_filtered_xyz);
 
@@ -277,7 +277,7 @@ main (int argc, char** argv)
 		mode=2;
 	}else if(myMode=="3"||myMode=="C"||myMode=="advObjects"){
 		mode=3;
-	}else if(myMode=="4"||myMode=="F"||myMode=="forwardFaceing"){
+	}else if(myMode=="4"||myMode=="F"||myMode=="forward"){
 		mode=4;
 	}
 
@@ -288,10 +288,11 @@ main (int argc, char** argv)
 	// Create a ROS publisher for the output point cloud
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic, 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
-
+	//if(mode==3){
 	ros::Subscriber sub2 = nh.subscribe(sTopic2.c_str(), 1, message_cb);
+	//}
 	ros::Subscriber sub3 = nh.subscribe("lidar_utility_settings", 1, settings_cb);
-
+	
 	ros::spin();
 }		
 

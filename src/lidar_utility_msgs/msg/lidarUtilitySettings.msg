@@ -1,6 +1,8 @@
 Header header
 time headerstamp
 bool permissionToContinue
+string frame_id
+string forwardAxis
 float32 outlierRemovalMeanK 
 float32 outlierRemovalStdDev
 float32 outlierRemovalSearchRadius
@@ -41,3 +43,11 @@ float32 donSegradius
 float32 objDetectDoNMinClusterSize
 float32 objDetectDoNMaxClusterSize
 float32 planeSegThreshold
+float32 personSize
+float32 bikeSize
+float32 carSize
+float32 truckSize
+float32[3] personScale
+float32[3] bikeScale
+float32[3] carScale
+float32[3] truckScale

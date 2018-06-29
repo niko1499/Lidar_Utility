@@ -50,8 +50,10 @@ void timer_cb (const ros::TimerEvent& event){
 	msg.header.frame_id = "/world";
 	
 
-	if(mode==1){
+	if(mode==1){//setting for velodyne .pcd
 msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+	msg.frame_id="base_link";
+	msg.forwardAxis="y";		
 	msg.outlierRemovalStdDev=.4;//STD DEV multiplier//was 1
 	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
 	msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
@@ -79,9 +81,27 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
 	msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
 	msg.planeSegThreshold=.2;
-	}else if (mode==2){
+	msg.personSize=100;
+	msg.bikeSize=150;
+	msg.carSize=300;
+	msg.truckSize=900;
+	msg.personScale[0]=.75;
+	msg.personScale[1]=.75;
+	msg.personScale[2]=1.25;
+	msg.bikeScale[0]=.75;
+	msg.bikeScale[1]=1.9;
+	msg.bikeScale[2]=1.25;
+	msg.carScale[0]=2.3;
+	msg.carScale[1]=6;
+	msg.carScale[2]=2;
+	msg.truckScale[0]=3;
+	msg.truckScale[1]=10;
+	msg.truckScale[2]=3;
+	}else if (mode==2){//settings for rslidar
 
-	}else if (mode==3){
+	}else if (mode==3){//settings for Pandar40
+	msg.frame_id="pandar";
+	msg.forwardAxis="x";
 	msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
 	msg.outlierRemovalStdDev=2;//STD DEV multiplier//was 1
 	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
@@ -107,9 +127,25 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.donScale2=20;
 	msg.donThreshold=0.1;
 	msg.donSegradius=1;//Segmentation radiius for DoN
-	msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
-	msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
+	msg.objDetectDoNMinClusterSize = 200;//Min cluster size for DoN clusters
+	msg.objDetectDoNMaxClusterSize = 1000;//Max cluster size for DoN clusters
 	msg.planeSegThreshold=.05;
+	msg.personSize=1000;
+	msg.bikeSize=1500;
+	msg.carSize=2300;
+	msg.truckSize=3000;
+	msg.personScale[0]=.75;
+	msg.personScale[1]=.75;
+	msg.personScale[2]=1.25;
+	msg.bikeScale[0]=1.9;
+	msg.bikeScale[1]=.75;
+	msg.bikeScale[2]=1.25;
+	msg.carScale[0]=6;
+	msg.carScale[1]=2.3;
+	msg.carScale[2]=2;
+	msg.truckScale[0]=10;
+	msg.truckScale[1]=3;
+	msg.truckScale[2]=3;
 	}else if (mode==4){
 
 	}else{

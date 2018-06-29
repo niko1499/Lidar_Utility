@@ -86,6 +86,24 @@ static bool canContinue=false;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 static int lastMarkerMax=0;
 	static	int markerID=0;
+static std::string frame_id("base_link");
+static std::string forwardAxis("x");
+static float personSize=100;
+static float bikeSize=150;
+static float carSize=300;
+static float truckSize=900;
+static float personScaleX=.75;
+static float personScaleY=.75;
+static float personScaleZ=1.25;
+static float bikeScaleX=.75;
+static float bikeScaleY=1.9;
+static float bikeScaleZ=1.25;
+static float carScaleX=2.3;
+static float carScaleY=6;
+static float carScaleZ=2;
+static float truckScaleX=3;
+static float truckScaleY=10;
+static float truckScaleZ=3;
 class XYZ{
 	public:
 		float x,y,z;
@@ -100,6 +118,26 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	segradius = data.donSegradius;
 	setMinClusterSize_setting=data.objDetectDoNMinClusterSize;
 	setMaxClusterSize_setting=data.objDetectDoNMaxClusterSize;
+	frame_id=data.frame_id;
+	personSize=data.personSize;
+	bikeSize=data.bikeSize;
+	carSize=data.carSize;
+	truckSize=data.truckSize;
+	personScaleX=data.personScale[0];
+	personScaleY=data.personScale[1];
+	personScaleZ=data.personScale[2];
+	bikeScaleX=data.bikeScale[0];
+	bikeScaleY=data.bikeScale[1];
+	bikeScaleZ=data.bikeScale[2];
+	carScaleX=data.carScale[0];
+	carScaleY=data.carScale[1];
+	carScaleZ=data.carScale[2];
+	truckScaleX=data.truckScale[0];
+	truckScaleY=data.truckScale[1];
+	truckScaleZ=data.truckScale[2];
+	forwardAxis=data.forwardAxis;
+;	
+	ROS_INFO("Settings are set");
 }
 void road_cb (const lidar_utility_msgs::roadInfo& data)
 {
@@ -113,7 +151,7 @@ void road_cb (const lidar_utility_msgs::roadInfo& data)
 
 visualization_msgs::Marker markerBuilder(int id){
 	visualization_msgs::Marker marker;
-	marker.header.frame_id = "base_link";
+	marker.header.frame_id = frame_id;
 	marker.header.stamp = ros::Time();
 	marker.ns = "my_namespace";
 	marker.id = id;
@@ -187,51 +225,51 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 	}else{
 		locMultiplier=1;
 	}
-
+	
 	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
-	size=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
+	float sizeResult=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
 	//size=800;
-
+	printf("Modified size: %f \n",sizeResult);
 	for(int i=0; i<4;i++){
-		if(size<=100){//person: green
+		if(sizeResult<=personSize){//person: green
 			r=0.0;
 			g=1.0;
 			b=0.0;
-			xScaleResult=.75;
-			yScaleResult=.75;
-			zScaleResult=1.25;
+			xScaleResult=personScaleX;
+			yScaleResult=personScaleY;
+			zScaleResult=personScaleZ;
 			type="person";
-		}else if(size<=150){//bike||motorcycle: blue/green
+		}else if(sizeResult<=bikeSize){//bike||motorcycle: blue/green
 			r=0.0;
 			g=1.0;
 			b=1.0;
-			xScaleResult=.75;
-			yScaleResult=1.9;
-			zScaleResult=1.25;
+			xScaleResult=bikeScaleX;
+			yScaleResult=bikeScaleY;
+			zScaleResult=bikeScaleZ;
 			type="bike";
-		}else if(size<=300){//car: blue
+		}else if(sizeResult<=carSize){//car: blue
 			r=0.0;
 			g=0.0;
 			b=1.0;
-			xScaleResult=2.3;
-			yScaleResult=6;
-			zScaleResult=2;
+			xScaleResult=carScaleX;
+			yScaleResult=carScaleY;
+			zScaleResult=carScaleZ;
 			type="car";
-		}else if(size<=600){//large car: blue/red
+		}else if(sizeResult<=(carSize+((truckSize-carSize)/2))){//large car: blue/red
 			r=1.0;
 			g=0.0;
 			b=1.0;
-			xScaleResult=2.5;
-			yScaleResult=8;
-			zScaleResult=2.5;
+			xScaleResult=carScaleX+.1;
+			yScaleResult=carScaleY+.2;
+			zScaleResult=carScaleZ+.6;
 			type="car";
-		}else if(size<=900){//truck||large vehicle: red
+		}else if(sizeResult<=truckSize){//truck||large vehicle: red
 			r=1.0; 
 			g=0.0;
 			b=0.0;
-			xScaleResult=3;
-			yScaleResult=10;
-			zScaleResult=3;
+			xScaleResult=truckScaleX;
+			yScaleResult=truckScaleY;
+			zScaleResult=truckScaleZ;
 			type="truck";
 		}else{//type unknown: white
 			r=1.0;
@@ -242,7 +280,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 			zScaleResult=3;
 		}
 		if(xScaleResult<=xScale){
-			size=size+(size/2);
+			sizeResult=sizeResult+(sizeResult/2);
 		}
 		if((yLoc+(yScaleResult/2))<max.y){
 		       yLoc=yLoc+1;
@@ -253,7 +291,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 
 	//create msg
 	visualization_msgs::Marker marker;
-	marker.header.frame_id = "base_link";
+	marker.header.frame_id = frame_id;
 	marker.header.stamp = ros::Time();
 	marker.ns = "my_namespace";
 	marker.id = id;
@@ -301,6 +339,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+	ros::Time begin = ros::Time::now();
 	if(canContinue){
 
 		pcl::PCDWriter writer;
@@ -527,8 +566,10 @@ lastMarkerMax=markerID;
 				ROS_INFO("Discarding Cluster: Too wide");
 			}else if(zLoc-2>zMaxRoad && filterBadClouds){
 				ROS_INFO("Discarding Cluster: Too high off ground");		
-			}else if ((zScale>3*yScale || zScale>3*xScale )&& filterBadClouds){
-				ROS_INFO("Discarding Cluster: Too tall");	
+			}else if ((zScale>2*yScale || zScale>2*xScale )&& filterBadClouds){
+				ROS_INFO("Discarding Cluster: Too tall");
+			}else if ((abs(xLoc)<1.5 && abs(yLoc)<1.5 )&& filterBadClouds){
+				ROS_INFO("Discarding Cluster: Too close");	
 			}else{
 
 				XYZ loc;
@@ -612,14 +653,20 @@ lastMarkerMax=markerID;
 			}
 
 			vis_pub.publish(markerArray);
-			ROS_INFO("%s: Out of callback",nodeName.c_str());
+
+			
+
 			markerID=cloudNum;
 		}
 	}
+			ros::Time end =ros::Time::now();
+			float duration=end.toSec() - begin.toSec();
+			ROS_INFO("%s: Out of callback. Duration: %f",nodeName.c_str(),duration);
+			//ROS_INFO(duration);
 }
 	int
 main (int argc, char** argv)
-{
+{	
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("object_points1");
 		const std::string defaultSubscriber2("plane_segmented_msg");
