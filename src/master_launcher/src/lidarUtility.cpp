@@ -10,9 +10,17 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/common/eigen.h>
 
 #include <lidar_utility_msgs/lidarUtilitySettings.h>
 
+#include <pcl/registration/boost.h>
+#include <pcl/correspondence.h>
+#include <pcl/common/common.h>
+
+#include <pcl/common/projection_matrix.h>
+//#include <pcl/common/impl/transforms.hpp>
+#include <pcl/common/transforms.h>
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33m"
@@ -33,9 +41,35 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 	// Create a container for the data.
 	sensor_msgs::PointCloud2 output;
+	
+	if(mode==1){
 
-	// Do data processing here...
+//http://www.mamicode.com/info-detail-1597219.html
+//http://docs.pointclouds.org/trunk/namespacepcl.html
 	output = *input;
+	}else if (mode==3){
+			pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+	pcl_conversions::toPCL(*input,pcl_pc2);//convert ROSPC2 to PCLPC2
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
+	
+	pcl::PointCloud<pcl::PointXYZ> temp_cloud2;
+	int theta =90;
+	Eigen::Matrix3f transform = Eigen::Matrix3f::Identity();
+	transform(0,0)= cos(theta);
+	transform(0,1)= -sin(theta);
+	transform(1,0)= sin(theta);
+	transform(1,1)= cos(theta);
+	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
+pcl::PointCloud<pcl::PointXYZ> cloud_transformed;
+	pcl::transformPointCloudWithNormals(temp_cloud2,cloud_transformed,transform,true);
+
+
+	pcl::PCLPointCloud2 temp_output;//create PCLPC2
+	pcl::toPCLPointCloud2(cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+
+	}
 
 	// Publish the data.
 	pc2_pub.publish (output);

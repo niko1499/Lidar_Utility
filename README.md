@@ -1,10 +1,11 @@
 # Lidar_Utility
-Nikolas Xarles Gamarra -- nxgamarra@gmail.com -- https://github.com/niko1499/Lidar_Utility
+Nikolas Xarles Gamarra -+- nxgamarra@gmail.com -+- https://github.com/niko1499/Lidar_Utility
 ## Description 
 This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
 
 ## To download and compile the project:
 ```
+cd ~/
 mkdir -p Lidar_Utility
 cd Lidar_Utility
 git clone https://github.com/niko1499/Lidar_Utility.git
@@ -22,33 +23,36 @@ roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
 roslaunch pandar_pointcloud Pandar40_points.launch
 ```
-- **.pcd file:** Below are examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file numbers. 
-
+- **.pcd file:** Below are a couple examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file names. 
+_
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 ```
 - **rosbag:**
-First cd into the bag directory. Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. 
+First cd into the bag directory. Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. See the pcd directory for more valid file names. 
 ```
 cd ~/Lidar_Utility/PointCloudData/rosbag/SAIC_campus
-rosbag play -l -r .6 veh5.bag
+rosbag play -l -r .3 veh5.bag
 ```
 - **OTHER:**
 Other sources should also work with the Lidar_Utility as long as they publish PointCloud2
-data as a ROS topic. See the next step for how to specify a subscription topic a launch time. 
+data as a ROS topic. See the next step for how to specify a subscription topic a launch time. Note you may need to change setting inside lidarUtility.cpp in order to get the program to work with the new data set.  
 
 2. **Launch the Lidar_Utility**	
 
-This is the main launch file. It will launch multiple nodes and rviz. To launch individual nodes you can use rosrun or roslaunch after exploring the directors. Most nodes contain a launch directory.
-Note: when goint to step 2 use pandar.launch instead of master.launch
-This will bring up a .rviz file that is more suited for the Pandar40.
+There are several launch files inside the master_launcher node. master.launch is the main one however depending on the source of data other launch files may work better. 
+For .pcd files:
+```
+roslaunch master_launcher pcd.launch
+```
+For Pandar 40:
+```
+roslaunch master_launcher pandar.launch
+```
+To manually set your main subscriber simply add the subscriber param as such
 '''
-roslaunch master_launcher master.launch
-'''
-To manually set your main subscriber simply use
-'''
-roslaunch master_launcher master.launch _subscriber:="your_topic"
+roslaunch master_launcher master.launch subscriber:="your_topic"
 '''
 
 The Lidar_Utility.launch will launch other launch files with the nameing convention node_name_core.launch these launch files contain important parameters and sometimes launch multiple instance with different setting of the same node. 
@@ -56,11 +60,11 @@ The Lidar_Utility.launch will launch other launch files with the nameing convent
 The main purpose of this launch file is to search for all the possib
 
 ## Useful Links
-[ROSWIKI/PCL](wiki.ros.org/pcl_ros#pcd_to_pointcloud) Useful documentation on using PCL in ROS
+[ROSWIKI/PCL](wiki.ros.org/pcl) Useful documentation on using PCL in ROS
 
 [PCL/Tutorials](http://pointclouds.org/documentation/tutorials/). Useful tutorials for how to use PCL library in your own projects. Some conversions will be required for using ros PointCloud2 messages. 
 
-[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples.
+[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples. ROS PointCloud2 sensor mesages will need to be converted to PCL PointCloud2 types and then possibly converted again to the PCL type used by the filter or alogrythem you want to implement. 
  
 [Wireshark](https://www.wireshark.org/) Usefull for debuging IP issues with your lidar communication and checking the IP of connected devices. 
 
