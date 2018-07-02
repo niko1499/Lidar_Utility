@@ -4,3 +4,6 @@
 /devel/share
 /temp
 /PointCloudData/rosbag
+/PointCloudData
+/photos
+/PCL_testspace

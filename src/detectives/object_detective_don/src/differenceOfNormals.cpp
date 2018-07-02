@@ -592,23 +592,23 @@ lastMarkerMax=markerID;
 				marker=markerBuilder(j,loc,scale,min,max,0,cloud_cluster_don->width);
 
 
-				lidar_utility_msgs::objectInfo msg;
+				lidar_utility_msgs::objectInfo obj_msg;
 
-				msg.headerstamp = ros::Time::now();
-				msg.id = j;
-				msg.xLoc=xLoc;
-				msg.yLoc=yLoc;
-				msg.zLoc=zLoc;
-				msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
-				msg.heading=0;
-				msg.xMax=0;
-				msg.xMin=0;
-				msg.yMax=0;
-				msg.yMin=0;
-				msg.zMax=0;
-				msg.zMin=0;
-				msg.type="s";
-				//msg_pub.publish(msg);
+				obj_msg.headerstamp = ros::Time::now();
+				obj_msg.id = j;
+				obj_msg.xLoc=xLoc;
+				obj_msg.yLoc=yLoc;
+				obj_msg.zLoc=zLoc;
+				obj_msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
+				obj_msg.heading=0;
+				obj_msg.xMax=0;
+				obj_msg.xMin=0;
+				obj_msg.yMax=0;
+				obj_msg.yMin=0;
+				obj_msg.zMax=0;
+				obj_msg.zMin=0;
+				obj_msg.type="s";
+				msg_pub.publish(obj_msg);
 				markerArray.markers.push_back(marker);
 
 				switch(cloudNum){
@@ -653,8 +653,6 @@ lastMarkerMax=markerID;
 			}
 
 			vis_pub.publish(markerArray);
-
-			
 
 			markerID=cloudNum;
 		}

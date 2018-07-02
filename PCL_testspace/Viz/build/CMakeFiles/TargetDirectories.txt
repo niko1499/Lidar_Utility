@@ -1,3 +1,0 @@
-/home/pc/Lidar_Utility/PCL_testspace/Viz/build/CMakeFiles/rebuild_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/Viz/build/CMakeFiles/edit_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/Viz/build/CMakeFiles/cloud_viewer.dir

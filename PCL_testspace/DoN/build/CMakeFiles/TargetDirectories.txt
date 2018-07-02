@@ -1,3 +1,0 @@
-/home/pc/Lidar_Utility/PCL_testspace/DoN/build/CMakeFiles/edit_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/DoN/build/CMakeFiles/rebuild_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/DoN/build/CMakeFiles/don_segmentation.dir
