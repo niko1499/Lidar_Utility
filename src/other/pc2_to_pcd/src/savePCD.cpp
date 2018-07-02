@@ -1,3 +1,4 @@
+//ROS
 #include <ros/ros.h>
 //C
 #include <string>
@@ -19,6 +20,7 @@
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
 static std::string nodeName("pass_through_filter");
+static std::string outputName("output");
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
@@ -101,14 +103,14 @@ pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
  pcl::PCDWriter writer;
 //stringstream ss;
 //ss << "don_cluster_" << j << ".pcd";
-    writer.write<pcl::PointXYZ> ("g", *cloud_filtered_xyz, false);
+    writer.write<pcl::PointXYZ> (outputName+".pcd", *cloud_filtered_xyz, false);
 }
 	int
 main (int argc, char** argv)
 {
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
-	const std::string defaultPublisher("passThrough_filtered");
+	const std::string defaultPublisher("output");
 	const std::string defaultMode("1");
 
 	// Initialize ROS
@@ -142,10 +144,10 @@ main (int argc, char** argv)
 
 	if(nh.hasParam(publisherParamName)){//Check if the user specified a publishing topic
 		printf(COLOR_GREEN BAR COLOR_RST);
-		nh.getParam(publisherParamName,pTopic);
+		nh.getParam(publisherParamName,outputName);
 		ROS_INFO("%s: A param has been set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}else{printf(COLOR_RED BAR COLOR_RST);
-		pTopic=defaultPublisher;//set to default if not specified
+		outputName=defaultPublisher;//set to default if not specified
 		ROS_INFO("%s: No param set **%s** \nSetting publisher to: %s",nodeName.c_str(),publisherParamName.c_str(), pTopic.c_str());
 	}
 

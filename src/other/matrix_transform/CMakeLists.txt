@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   roscpp
   sensor_msgs
-  lidar_utility_msgs
 )
 
 #test
