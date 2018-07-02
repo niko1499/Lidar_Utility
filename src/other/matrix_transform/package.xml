@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>master_launcher</name>
+  <name>matrix_transform</name>
   <version>0.0.0</version>
-  <description>A launcher to launch all launchers</description>
+  <description>transform the matrix</description>
   <maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer>
 
 
