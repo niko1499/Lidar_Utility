@@ -21,6 +21,14 @@
 #include <pcl/common/projection_matrix.h>
 //#include <pcl/common/impl/transforms.hpp>
 #include <pcl/common/transforms.h>
+
+#include <iostream>
+
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
+#include <pcl/common/transforms.h>                  //allows us to use pcl::transformPointCloud function
+#include <pcl/visualization/pcl_visualizer.h>
+
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_YELLOW "\033[1;33m"
@@ -48,25 +56,32 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 //http://docs.pointclouds.org/trunk/namespacepcl.html
 	output = *input;
 	}else if (mode==3){
-			pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+
+    	pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
+
+	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*input,pcl_pc2);//convert ROSPC2 to PCLPC2
-	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+
 	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 	
-	pcl::PointCloud<pcl::PointXYZ> temp_cloud2;
-	int theta =90;
-	Eigen::Matrix3f transform = Eigen::Matrix3f::Identity();
+	pcl::PointCloud<pcl::PointNormal> temp_cloud2;
+	float theta =M_PI/2;
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
 	transform(0,0)= cos(theta);
 	transform(0,1)= -sin(theta);
 	transform(1,0)= sin(theta);
 	transform(1,1)= cos(theta);
 	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
-pcl::PointCloud<pcl::PointXYZ> cloud_transformed;
-	pcl::transformPointCloudWithNormals(temp_cloud2,cloud_transformed,transform,true);
+
+    printf ("Transform: Matrix4f\n");
+    std::cout << transform << std::endl;
+
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointNormal> ());
+	pcl::transformPointCloudWithNormals(*temp_cloud,*cloud_transformed,transform);
 
 
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
-	pcl::toPCLPointCloud2(cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl::toPCLPointCloud2(*cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 	}
