@@ -311,28 +311,12 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 	marker.color.r = r;
 	marker.color.g = g;
 	marker.color.b = b;
-	marker.text = "test";
+	marker.text = type;
 	//marker.lifetime = 1.0;
 	//only if using a MESH_RESOURCE marker type:
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 
-	lidar_utility_msgs::objectInfo msg;
 
-	msg.headerstamp = ros::Time::now();
-	msg.id = id;
-	msg.xLoc=xLoc;
-	msg.yLoc=yLoc;
-	msg.zLoc=zLoc;
-	msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
-	msg.heading=0;
-	msg.xMax=0;
-	msg.xMin=0;
-	msg.yMax=0;
-	msg.yMin=0;
-	msg.zMax=0;
-	msg.zMin=0;
-	msg.type=type;
-	//msg_pub.publish(msg);
 
 	return marker;
 }
@@ -592,6 +576,9 @@ lastMarkerMax=markerID;
 				marker=markerBuilder(j,loc,scale,min,max,0,cloud_cluster_don->width);
 
 
+			
+				markerArray.markers.push_back(marker);
+
 				lidar_utility_msgs::objectInfo obj_msg;
 
 				obj_msg.headerstamp = ros::Time::now();
@@ -601,15 +588,14 @@ lastMarkerMax=markerID;
 				obj_msg.zLoc=zLoc;
 				obj_msg.distance= sqrt((xLoc*xLoc)+(yLoc*yLoc));
 				obj_msg.heading=0;
-				obj_msg.xMax=0;
-				obj_msg.xMin=0;
-				obj_msg.yMax=0;
-				obj_msg.yMin=0;
-				obj_msg.zMax=0;
-				obj_msg.zMin=0;
-				obj_msg.type="s";
+				obj_msg.xMax=max.x;
+				obj_msg.xMin=min.x;
+				obj_msg.yMax=max.y;
+				obj_msg.yMin=min.y;
+				obj_msg.zMax=max.z;
+				obj_msg.zMin=min.z;
+				obj_msg.type=marker.text;
 				msg_pub.publish(obj_msg);
-				markerArray.markers.push_back(marker);
 
 				switch(cloudNum){
 					case 0:
@@ -758,7 +744,7 @@ main (int argc, char** argv)
 	pc2_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_points", 1);
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
-	msg_pub = nh.advertise<sensor_msgs::PointCloud2> (pTopic+"_msg", 1);
+	msg_pub = nh.advertise<lidar_utility_msgs::objectInfo> (pTopic+"_msg", 1);
 
 	ros::Subscriber sub2 = nh.subscribe(sTopic2.c_str(), 1, road_cb);
 	ros::Subscriber sub3 = nh.subscribe("lidar_utility_settings", 1, settings_cb);
