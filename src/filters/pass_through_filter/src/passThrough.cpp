@@ -36,6 +36,7 @@ static float roadMax_setting=-1.2;
 static float objectMin_setting=-1.7;
 static float objectMax_setting=1.25;
 static float boxMargin=.2;
+static float yRangeBoost=0;
 
 //This node subscribes to a PointCloud2 topic, peforms a pass through filter, and republishes the point cloud. 
 ros::Publisher pc2_pub;
@@ -46,6 +47,7 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
  objectMin_setting=data.passThroughObjectMin;
  objectMax_setting=data.passThroughObjectMax;
  boxMargin=data.passThroughBoxMargin;
+ yRangeBoost=data.passThroughRangeBoost;
 }
 
 void message_cb (const lidar_utility_msgs::roadInfo& data)
@@ -140,7 +142,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 		ptfilter.setInputCloud(cloud_filtered_x);
 		ptfilter.setFilterFieldName ("y");
-		ptfilter.setFilterLimits (yMinf+boxMargin,yMaxf-boxMargin);
+		ptfilter.setFilterLimits (yMinf+boxMargin,yMaxf-boxMargin+yRangeBoost);
 		ptfilter.filter (*cloud_filtered_xy);
 
 	//float zMid = zMaxf -((zMaxf-zMinf)/2);
@@ -174,12 +176,12 @@ pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
 		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
 		ptfilter.setInputCloud (temp_cloud);
-		ptfilter.setFilterFieldName ("x");
+		ptfilter.setFilterFieldName ("y");
 		ptfilter.setFilterLimits (-1,23);
 		ptfilter.filter (*cloud_filtered_x);
 
 		ptfilter.setInputCloud(cloud_filtered_x);
-		ptfilter.setFilterFieldName ("y");
+		ptfilter.setFilterFieldName ("x");
 		ptfilter.setFilterLimits (-12,12);
 		ptfilter.filter (*cloud_filtered_xy);
 

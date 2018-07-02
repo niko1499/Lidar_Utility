@@ -12,6 +12,7 @@ float32 passThroughRoadMax
 float32 passThroughObjectMin
 float32 passThroughObjectMax
 float32 passThroughBoxMargin
+float32 passThroughRangeBoost
 float32 downSampleLeafSize 
 float32 downSampleLeafSize_B
 float32 planeDistanceThreshold

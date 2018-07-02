@@ -111,6 +111,7 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.passThroughObjectMin=-1.7;
 	msg.passThroughObjectMax=1.25;
 	msg.passThroughBoxMargin=.5;
+	msg.passThroughRangeBoost=0;
 	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
 	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
 	msg.intensityMinimum_A = 00;//placeholder
@@ -146,6 +147,7 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.truckScale[0]=3;
 	msg.truckScale[1]=10;
 	msg.truckScale[2]=3;
+ 
 	}else if (mode==2){//settings for rslidar
 
 	}else if (mode==3){//settings for Pandar40
@@ -160,6 +162,7 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.passThroughObjectMin=-1.7;
 	msg.passThroughObjectMax=1.25;
 	msg.passThroughBoxMargin=.5;
+	msg.passThroughRangeBoost=5;
 	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
 	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
 	msg.intensityMinimum_A = 00;//placeholder
@@ -177,7 +180,7 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.donThreshold=0.1;
 	msg.donSegradius=1;//Segmentation radiius for DoN
 	msg.objDetectDoNMinClusterSize = 200;//Min cluster size for DoN clusters
-	msg.objDetectDoNMaxClusterSize = 1000;//Max cluster size for DoN clusters
+	msg.objDetectDoNMaxClusterSize = 1500;//Max cluster size for DoN clusters
 	msg.planeSegThreshold=.05;
 	msg.personSize=1000;
 	msg.bikeSize=1500;
@@ -186,14 +189,14 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	msg.personScale[0]=.75;
 	msg.personScale[1]=.75;
 	msg.personScale[2]=1.25;
-	msg.bikeScale[0]=1.9;
-	msg.bikeScale[1]=.75;
+	msg.bikeScale[0]=.75;
+	msg.bikeScale[1]=1.9;
 	msg.bikeScale[2]=1.25;
-	msg.carScale[0]=6;
-	msg.carScale[1]=2.3;
+	msg.carScale[0]=2.3;
+	msg.carScale[1]=6;
 	msg.carScale[2]=2;
-	msg.truckScale[0]=10;
-	msg.truckScale[1]=3;
+	msg.truckScale[0]=3;
+	msg.truckScale[1]=10;
 	msg.truckScale[2]=3;
 	}else if (mode==4){
 

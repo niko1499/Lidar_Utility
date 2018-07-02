@@ -644,7 +644,7 @@ lastMarkerMax=markerID;
 						break;
 					default:
 						ROS_INFO("ERR: More clusters than available pc2 topics.");
-						cloudNum=-1;
+						//cloudNum=-1;
 						break;
 				}
 				cloudNum++;
