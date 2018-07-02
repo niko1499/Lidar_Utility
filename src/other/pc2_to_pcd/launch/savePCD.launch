@@ -1,0 +1,9 @@
+<!--Save PCD-->
+<launch>
+  <arg name="subscriber"/>
+
+  <node name="savePCD" pkg="pc2_to_pcd" type="savePCD" output="screen">
+    <param name="subscriber" value="$(arg subscriber)"/>
+  </node>
+
+</launch>
