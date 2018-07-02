@@ -1,8 +1,8 @@
-<!--Save PCD-->
+<!--transform matrix-->
 <launch>
   <arg name="subscriber"/>
   <arg name="publisher"/>
-  <node name="save_pcd" pkg="pc2_to_pcd" type="savePCD" output="screen">
+  <node name="transform_matrix" pkg="matrix_transform" type="matrixTransform" output="screen">
     <param name="subscriber" value="$(arg subscriber)"/>
     <param name="publisher" value="$(arg publisher)"/>
   </node>

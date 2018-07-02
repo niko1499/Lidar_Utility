@@ -19,7 +19,7 @@
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
-static std::string nodeName("pass_through_filter");
+static std::string nodeName("save");
 static std::string outputName("output");
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
@@ -103,7 +103,9 @@ pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
  pcl::PCDWriter writer;
 //stringstream ss;
 //ss << "don_cluster_" << j << ".pcd";
-    writer.write<pcl::PointXYZ> (outputName+".pcd", *cloud_filtered_xyz, false);
+//writer.write<pcl::PointXYZ> (outputName+".pcd", *cloud_filtered_xyz, false);
+
+writer.write<pcl::PointXYZ> ("testA.pcd", *cloud_filtered_xyz, false);
 }
 	int
 main (int argc, char** argv)
@@ -178,11 +180,10 @@ main (int argc, char** argv)
 
 	// Create a ROS subscriber for the input point cloud
 	ros::Subscriber sub = nh.subscribe (sTopic.c_str(), 1, cloud_cb);
-
 	ROS_INFO("%s: Subscribing to %s",nodeName.c_str(),sTopic.c_str());
 	// Create a ROS publisher for the output point cloud
 
-	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
+	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),outputName.c_str());
 
 	ros::spin();
 }		

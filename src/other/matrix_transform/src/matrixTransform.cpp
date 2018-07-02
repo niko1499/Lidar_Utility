@@ -34,7 +34,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 	ROS_INFO("%s: In Callback",nodeName.c_str());
 
-
+    // Define a rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
 
     	pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
 
@@ -44,15 +44,16 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 	
 	pcl::PointCloud<pcl::PointNormal> temp_cloud2;
-	float theta =M_PI/2;
+	//float theta =M_PI/2;
+	float theta = 0;// define rotation
     Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
 	transform(0,0)= cos(theta);
 	transform(0,1)= -sin(theta);
 	transform(1,0)= sin(theta);
 	transform(1,1)= cos(theta);
 
-   // Define a translation of 2.5 meters on the x axis.
-    transform (0,3) = 2.5;
+   
+    transform (0,3) = 2.5;// Define a translation of 2.5 meters on the x axis.
 
 	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
 
