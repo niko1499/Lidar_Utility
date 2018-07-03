@@ -6,11 +6,14 @@ This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering 
 ## To download and compile the project:
 ```
 cd ~/
-mkdir -p Lidar_Utility
-cd Lidar_Utility
 git clone https://github.com/niko1499/Lidar_Utility.git
+cd Lidar_Utility
 source devel/setup.bash 
 catkin_make
+```
+For PX2 use the PX2 branch instead
+```
+git clone -b PX2 https://github.com/niko1499/Lidar_Utility.git
 ```
 ## To Run the project
 1. **Select the source of your lidar data and launch it (you may need to launch roscore first):**
