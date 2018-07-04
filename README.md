@@ -1,7 +1,7 @@
 # Lidar_Utility
 Nikolas Xarles Gamarra -+- nxgamarra@gmail.com -+- https://github.com/niko1499/Lidar_Utility
 ## Description 
-This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is required to understand the nodes and topics that make this project work. 
+This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is recommended for being able to understand the nodes and topics that make this project work. This porject can be used with any source of data that publishes a point cloud to a ROS PointCloud2 topic. 
 
 ## To download and compile the project:
 ```
@@ -11,29 +11,29 @@ cd Lidar_Utility
 source devel/setup.bash 
 catkin_make
 ```
-For PX2 use the PX2 branch instead
+To install without any suplimental files or point cloud data use:
 ```
 git clone -b PX2 https://github.com/niko1499/Lidar_Utility.git
 ```
 ## To Run the project
 1. **Select the source of your lidar data and launch it (you may need to launch roscore first):**
 
-- **rslidar:** Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. 
+- **rslidar:** Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. It is recommended you use the setIP script before launching the driver to configure your static IP. 
 ```
 roslaunch rslidar_pointcloud rs_lidar_16.launch
 ```
-- **Pandar40:** Below is the roslaunch command to launch the [Pandar40](http://www.hesaitech.com/en/index.html) driver that is included in this workspace. It has been modified slightly from its origional form.
+- **Pandar40:** Below is the roslaunch command to launch the [Pandar40](http://www.hesaitech.com/en/index.html) driver that is included in this workspace. It has been modified slightly from its origional form. It is recommended you use the setIP script before launching the driver to configure your static IP. 
 ```
 roslaunch pandar_pointcloud Pandar40_points.launch
 ```
-- **.pcd file:** Below are a couple examples of how to use ROS to publis a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file names. 
+- **.pcd file:** Below are a couple examples of how to use ROS to publish a .pcd as a ros PointCloud2 topic. See the pcd directory for more valid file names. 
 _
 ```
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2826laser.pcd .1
 rosrun pcl_ros pcd_to_pointcloud ~/Lidar_Utility/PointCloudData/pcd/velodyne1/2321laser.pcd .1
 ```
 - **rosbag:**
-First cd into the bag directory. Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. See the pcd directory for more valid file names. 
+First cd into the bag directory. Then run rosbag. The -l loops the file. The -r specifies a rate multiplier. See the rosbag directory for more valid file names. *Note: Bag files only in local repo. Too large to upload to Git. 
 ```
 cd ~/Lidar_Utility/PointCloudData/rosbag/SAIC_campus
 rosbag play -l -r .3 veh3.bag
@@ -44,30 +44,38 @@ data as a ROS topic. See the next step for how to specify a subscription topic a
 
 2. **Launch the Lidar_Utility**	
 
-There are several launch files inside the master_launcher node. master.launch is the main one however depending on the source of data other launch files may work better. 
+There are several launch files inside the master_launcher node. 
 For .pcd files:
 ```
 roslaunch master_launcher pcd.launch
 ```
-For Pandar 40:
+For Pandar 40(bag or live data):
 ```
 roslaunch master_launcher pandar.launch
 ```
+For sources without a specific launch file:
+```
+roslaunch master_launcher master.launch
+```
+or configure your own launch file based on master.launch as an example.
+
+
 To manually set your main subscriber simply add the subscriber param as such
 '''
 roslaunch master_launcher master.launch subscriber:="your_topic"
 '''
 
-The Lidar_Utility.launch will launch other launch files with the nameing convention node_name_core.launch these launch files contain important parameters and sometimes launch multiple instance with different setting of the same node. 
+The master.launch will launch other launch files with the nameing convention node_name_slave.launch.
 
-The main purpose of this launch file is to search for all the possib
+The master_launcher node (lidarUtility.cpp) will search for expected PointCloud2 topic and automatically subscribe to the first one it finds. 
+
 
 ## Useful Links
 [ROSWIKI/PCL](wiki.ros.org/pcl) Useful documentation on using PCL in ROS
 
-[PCL/Tutorials](http://pointclouds.org/documentation/tutorials/). Useful tutorials for how to use PCL library in your own projects. Some conversions will be required for using ros PointCloud2 messages. 
+[PCL/Tutorials](http://pointclouds.org/documentation/tutorials/). Useful tutorials for how to use PCL library in your own projects. Some conversions will be required for to convert the ROS PointCloud2 sensor messages into PCL types. 
 
-[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples. ROS PointCloud2 sensor mesages will need to be converted to PCL PointCloud2 types and then possibly converted again to the PCL type used by the filter or alogrythem you want to implement. 
+[ROSWIKI/PCL/Tutorials](http://wiki.ros.org/pcl/Tutorials) Useful tutorial on getting PCL tutorials to work in ROS. If you get stuck look at some of the filters in this project for complete examples. 
  
 [Wireshark](https://www.wireshark.org/) Usefull for debuging IP issues with your lidar communication and checking the IP of connected devices. 
 
@@ -102,16 +110,17 @@ RVIZ configuration files for a number of useful configurations. Named appropriat
 - /PCL_testspace: A place to test C++ PCL code before trying to integrate it into a ROS node. 
 
 ## Parameters overview
-There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these.
+There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these. Note that when using the master_launcher launch files all parameters will need to be set and defaults can't be used. This is the prefered method for launching this project as it would be unreasonable to launch all these nodes in seperate terminals. 
 
-subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file
-publisher: sets publisher, if one isn't specified a default will be used as defined in the cpp file
+subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file.
+
+publisher: sets publisher, if one isn't specified a default will be used as defined in the cpp file. If the node has multiple publishers the paramater will be used as a prefix for other automatically named topics. 
+
 mode: sets mode, if one isn't specified a default will be used as defined in the cpp file
-For ease of use the mode can be set by a capital letter, lower case letter, or lowercase single word.
-Modes are typically things like filtered vs unfiltered, radial vs statistical ect... Look at the cpp file for a node to see available modes. 
+Check the cpp file for valid modes.
 
 to set a parameter at launch include the arguement: ```parameter_name:="your_setting"```
-to set a parameter in a launch file see this [ROS documentation]()
+to set a parameter in a launch file see this [ROS documentation](http://wiki.ros.org/roslaunch/) or se master.launch for examples. 
 
 
 
