@@ -1,7 +1,7 @@
 # Lidar_Utility
 Nikolas Xarles Gamarra -+- nxgamarra@gmail.com -+- https://github.com/niko1499/Lidar_Utility
 ## Description 
-This "Lidar_Utility" is a coclection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is recommended for being able to understand the nodes and topics that make this project work. This porject can be used with any source of data that publishes a point cloud to a ROS PointCloud2 topic. 
+This "Lidar_Utility" is a collection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is recommended for being able to understand the nodes and topics that make this project work. This project can be used with any source of data that publishes a point cloud to a ROS PointCloud2 topic. 
 
 ## To download and compile the project:
 ```
@@ -11,7 +11,7 @@ cd Lidar_Utility
 source devel/setup.bash 
 catkin_make
 ```
-To install without any suplimental files or point cloud data use:
+To install without any supplemental files or point cloud data use:
 ```
 git clone -b PX2 https://github.com/niko1499/Lidar_Utility.git
 ```
@@ -65,7 +65,7 @@ To manually set your main subscriber simply add the subscriber param as such
 roslaunch master_launcher master.launch subscriber:="your_topic"
 '''
 
-The master.launch will launch other launch files with the nameing convention node_name_slave.launch.
+The master.launch will launch other launch files with the naming convention node_name_slave.launch.
 
 The master_launcher node (lidarUtility.cpp) will search for expected PointCloud2 topic and automatically subscribe to the first one it finds. 
 
@@ -80,49 +80,50 @@ The master_launcher node (lidarUtility.cpp) will search for expected PointCloud2
 [Wireshark](https://www.wireshark.org/) Usefull for debuging IP issues with your lidar communication and checking the IP of connected devices. 
 
 ## Directory overview
-- /build: 
-ROS generated excutables
-- /devel: 
+- **/build:** 
+ROS generated executables
+- **/devel:** 
 ROS generated scripts
-- /src: 
+- **/src:** 
 Where all the code goes
-- 	/src/drivers: 
-ROS Lidar Drivers Provided by manufacturers. See included README for more info on how to use. These are the drivers and versions for the hardware I used while at SAIC Motor. Some modifications to the drivers had to be made. 
-- 	/src/master_launcher: 
+- **/src/drivers:** 
+ROS Lidar Drivers Provided by manufacturers. See local directory README for more info on how to use. Some modifications to the drivers had to be to get them to work with the hardware I was using. 
+- **/src/master_launcher:** 
 Node and launch files for organizing entire project together. Subscribes automatically or manually to the raw PointCloud2 topic and republishes it for use by other nodes. Also publishes a topic of settings to be read by other nodes. The settings that are published can be automatically changed for the source of lidar data. 
--	/src/my_pcl_tutorial: 
+- **/src/my_pcl_tutorial:** 
 Partial implementation of [this](http://wiki.ros.org/pcl/Tutorials) tutorial. Useful as a skeleton for other code. Simply subscribes on a topic and echos what it hears to a publisher. See [link](http://www.pointclouds.org/documentation/tutorials/) for ways to add to the skeleton code. Note that appropriate conversions between ROS and PCL may will need to be made. 
--	/src/filters: 
-A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another ROS topic. Each one has a default topic and the ability to change the topics via parameters specified after rosrun or in a launch file.
--	/src/detectives: 
-A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or an objects location/type and then publish the data for visuilization or to be used my other more advanced nodes.
-- 	src/lidar_utility_msgs:
-Files defining custom message types. Used to send settings to nodes all sub-nodes and metadata between worker nodes. 
--	/src/SLAM: 
-Put slam here when implemented.
--	/src/master_launcher: 
-- /setIP: 
-A script and two .txt files that are usefult for configuring a static or dynamic IP address that are needed when connecting to the rslidar. This is useful when connecting back and forth between internet and an ethernet connected lidar with static IP. For details on how to use it see the comments in the setIP.sh file.
-- /data:
+- **/src/filters:** 
+A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another PointCloud2 topic. Each one has a default topic and the ability to change the topics via parameters specified after rosrun or in a launch file.
+- **/src/detectives:** 
+A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or an objects location/type and then publish the data for visualization or to be used my other more advanced nodes.
+- **src/lidar_utility_msgs:**
+Files defining custom message types. Used to send settings from the master_launcher node to nodes all worker nodes and meta data between worker nodes. 
+-**/src/SLAM:** 
+Put slam here if/when implemented.
+- **/setIP:** 
+A script and .txt files that are useful for configuring a static or dynamic IP address. This is useful when connecting back and forth between internet and an ethernet connected lidar with static IP. For details on how to use it see the comments in the setIP.sh file.
+- **/PointCloudData:**
 Recorded point cloud data for offline testing in multiple formats
-- /rviz: 
+- **/rviz:** 
 RVIZ configuration files for a number of useful configurations. Named appropriately. Also a script to easily transfer them between the default rviz configuration file directory. Note this is not the location of the main rviz config file. The primary rviz config exists in the maser_launcher node. These are just alternate configs that may be useful. 
-- /PCL_testspace: A place to test C++ PCL code before trying to integrate it into a ROS node. 
+- **/PCL_testspace:**
+ A place to test C++ PCL code before trying to integrate it into a ROS node. Also a set of useful programs for doing simple manipulations to point clouds from the command line. 
 
 ## Parameters overview
-There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these. Note that when using the master_launcher launch files all parameters will need to be set and defaults can't be used. This is the prefered method for launching this project as it would be unreasonable to launch all these nodes in seperate terminals. 
+There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these. Note that when using the master_launcher launch files all parameters will need to be set and defaults can't be used. This is the preferred method for launching this project as it would be unreasonable to launch all these nodes in separate terminals. 
 
-subscriber: sets subsccriber, if one isn't specified a default will be used as defined in the cpp file.
+- **subscriber:** sets subscriber, if one isn't specified a default will be used as defined in the cpp file.
 
-publisher: sets publisher, if one isn't specified a default will be used as defined in the cpp file. If the node has multiple publishers the paramater will be used as a prefix for other automatically named topics. 
+- **publisher:** sets publisher, if one isn't specified a default will be used as defined in the cpp file. If the node has multiple publishers the parameter will be used as a prefix for other automatically named topics. 
 
-mode: sets mode, if one isn't specified a default will be used as defined in the cpp file
+- **mode:** sets mode, if one isn't specified a default will be used as defined in the cpp file
 Check the cpp file for valid modes.
 
-to set a parameter at launch include the arguement: ```parameter_name:="your_setting"```
+
+- **msgSubscriber:** sets a topic to subscribe to for listening to custom messages that are defined in lidar_utility_msgs. Not all nodes have this parameter. 
+
+to set a parameter at launch include the argument: ```parameter_name:="your_setting"```
 to set a parameter in a launch file see this [ROS documentation](http://wiki.ros.org/roslaunch/) or se master.launch for examples. 
-
-
 
 
 
