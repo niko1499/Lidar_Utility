@@ -52,3 +52,9 @@ float32[3] personScale
 float32[3] bikeScale
 float32[3] carScale
 float32[3] truckScale
+float32 HVmodel_ss
+float32 HVscene_ss
+float32 HVrf_rad
+float32 HVdescr_rad
+float32 HVcg_size
+float32 HVcg_thresh

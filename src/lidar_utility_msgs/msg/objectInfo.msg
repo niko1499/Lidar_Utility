@@ -12,5 +12,5 @@ float32 yMax
 float32 yMin
 float32 zMax
 float32 zMin
+float32 speed
 string type
-

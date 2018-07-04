@@ -1,0 +1,16 @@
+<!--This Launch file must be launched by another(lidar_utility.launch) or with arguements-->
+<launch>
+  <arg name="name"/>
+  <arg name="subscriber"/>
+  <arg name="publisher"/>
+  <arg name="mode"/>
+  <arg name="msgSubscriber"/>
+  <node name="$(arg name)" pkg="object_detective_hypothesis_verification" type="hypVer" output="screen">
+    <param name="subscriber" value="$(arg subscriber)"/>
+    <param name="publisher" value="$(arg publisher)"/>
+    <param name="mode" value="$(arg mode)"/>
+    <param name="msgSubscriber" value="$(arg msgSubscriber)"/>
+  </node>
+
+</launch>
+

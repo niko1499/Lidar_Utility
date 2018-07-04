@@ -147,6 +147,13 @@ void timer_cb (const ros::TimerEvent& event){
 		msg.truckScale[0]=3;
 		msg.truckScale[1]=10;
 		msg.truckScale[2]=3;
+		msg.HVmodel_ss=.2;
+		msg.HVscene_ss=.6;
+		msg.HVrf_rad=.545;
+		msg.HVdescr_rad=.22;
+		msg.HVcg_size=3;
+		msg.HVcg_thresh=2;
+
 
 	}else if (mode==2){//settings for rslidar
 
@@ -198,6 +205,13 @@ void timer_cb (const ros::TimerEvent& event){
 		msg.truckScale[0]=3;
 		msg.truckScale[1]=10;
 		msg.truckScale[2]=3;
+		msg.HVmodel_ss=.2;
+		msg.HVscene_ss=.6;
+		msg.HVrf_rad=.545;
+		msg.HVdescr_rad=.22;
+		msg.HVcg_size=3;
+		msg.HVcg_thresh=2;
+
 	}else if (mode==4){
 
 	}else{

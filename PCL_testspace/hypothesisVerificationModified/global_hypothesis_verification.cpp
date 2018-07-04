@@ -381,6 +381,30 @@ main (int argc, char *argv[])
 		printf ("        t = < %0.3f, %0.3f, %0.3f >\n", translation (0), translation (1), translation (2));
 	}
 
+//rviz
+XYZ loc;
+				XYZ scale;
+				XYZ min;
+				XYZ max;
+				loc.x=translation (0);
+				loc.y=translation (1);
+				loc.z=translation (2);
+				scale.x=xScale;
+				scale.y=yScale;
+				scale.z=zScale;
+				min.x=pMax.x;
+				min.y=pMax.y;
+				min.z=pMax.z;
+				max.x=pMax.x;
+				max.y=pMax.y;
+				max.z=pMax.z;				
+				//rviz_visual_tools::RvizVisualTools.deleteAllMarkers();
+				marker=markerBuilder(j,loc,scale,min,max,0,cloud_cluster_don->width);
+
+
+
+
+
 	//
 	//  Visualization
 	//
