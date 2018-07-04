@@ -34,36 +34,36 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 	ROS_INFO("%s: In Callback",nodeName.c_str());
 
-    // Define a rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
+	// Define a rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
 
-    	pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
+	pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
 
 	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
 	pcl_conversions::toPCL(*input,pcl_pc2);//convert ROSPC2 to PCLPC2
 
 	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-	
+
 	pcl::PointCloud<pcl::PointNormal> temp_cloud2;
 	//float theta =M_PI/2;
 	float theta = 0;// define rotation
-    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
 	transform(0,0)= cos(theta);
 	transform(0,1)= -sin(theta);
 	transform(1,0)= sin(theta);
 	transform(1,1)= cos(theta);
 
-   
-    transform (0,3) = 2.5;// Define a translation of 2.5 meters on the x axis.
+
+	transform (0,3) = 2.5;// Define a translation of 2.5 meters on the x axis.
 
 	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
 
-    printf ("Transform: Matrix4f\n");
-    std::cout << transform << std::endl;
+	printf ("Transform: Matrix4f\n");
+	std::cout << transform << std::endl;
 
-    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointNormal> ());
+	pcl::PointCloud<pcl::PointNormal>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointNormal> ());
 	pcl::transformPointCloudWithNormals(*temp_cloud,*cloud_transformed,transform);
 
-		sensor_msgs::PointCloud2 output;//create output container
+	sensor_msgs::PointCloud2 output;//create output container
 	pcl::PCLPointCloud2 temp_output;//create PCLPC2
 	pcl::toPCLPointCloud2(*cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
@@ -77,7 +77,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 	int
 main (int argc, char** argv)
 {
-//initialize default topics for subscribing and publishing
+	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("output");
 	const std::string defaultMode("1");
@@ -153,4 +153,4 @@ main (int argc, char** argv)
 	ROS_INFO("%s: Publishing to %s",nodeName.c_str(),pTopic.c_str());
 
 	ros::spin();
-	}
+}

@@ -49,40 +49,40 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 	// Create a container for the data.
 	sensor_msgs::PointCloud2 output;
-	
+
 	if(mode==1){
 
-//http://www.mamicode.com/info-detail-1597219.html
-//http://docs.pointclouds.org/trunk/namespacepcl.html
-	output = *input;
+		//http://www.mamicode.com/info-detail-1597219.html
+		//http://docs.pointclouds.org/trunk/namespacepcl.html
+		output = *input;
 	}else if (mode==3){
 
-    	pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
+		pcl::PointCloud<pcl::PointNormal>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointNormal> ());
 
-	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-	pcl_conversions::toPCL(*input,pcl_pc2);//convert ROSPC2 to PCLPC2
+		pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+		pcl_conversions::toPCL(*input,pcl_pc2);//convert ROSPC2 to PCLPC2
 
-	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-	
-	pcl::PointCloud<pcl::PointNormal> temp_cloud2;
-	float theta =M_PI/2;
-    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
-	transform(0,0)= cos(theta);
-	transform(0,1)= -sin(theta);
-	transform(1,0)= sin(theta);
-	transform(1,1)= cos(theta);
-	//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
+		pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 
-    printf ("Transform: Matrix4f\n");
-    std::cout << transform << std::endl;
+		pcl::PointCloud<pcl::PointNormal> temp_cloud2;
+		float theta =M_PI/2;
+		Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+		transform(0,0)= cos(theta);
+		transform(0,1)= -sin(theta);
+		transform(1,0)= sin(theta);
+		transform(1,1)= cos(theta);
+		//pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ> ());
 
-    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointNormal> ());
-	pcl::transformPointCloudWithNormals(*temp_cloud,*cloud_transformed,transform);
+		printf ("Transform: Matrix4f\n");
+		std::cout << transform << std::endl;
+
+		pcl::PointCloud<pcl::PointNormal>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointNormal> ());
+		pcl::transformPointCloudWithNormals(*temp_cloud,*cloud_transformed,transform);
 
 
-	pcl::PCLPointCloud2 temp_output;//create PCLPC2
-	pcl::toPCLPointCloud2(*cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+		pcl::PCLPointCloud2 temp_output;//create PCLPC2
+		pcl::toPCLPointCloud2(*cloud_transformed,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+		pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
 	}
 
@@ -97,107 +97,107 @@ void timer_cb (const ros::TimerEvent& event){
 	msg.headerstamp = ros::Time::now();
 	msg.permissionToContinue=true;
 	msg.header.frame_id = "/world";
-	
+
 
 	if(mode==1){//setting for velodyne .pcd
-msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
-	msg.frame_id="base_link";
-	msg.forwardAxis="y";		
-	msg.outlierRemovalStdDev=.4;//STD DEV multiplier//was 1
-	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
-	msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
-	msg.passThroughRoadMin=-4;
-	msg.passThroughRoadMax=-1.2;
-	msg.passThroughObjectMin=-1.7;
-	msg.passThroughObjectMax=1.25;
-	msg.passThroughBoxMargin=.5;
-	msg.passThroughRangeBoost=0;
-	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
-	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
-	msg.intensityMinimum_A = 00;//placeholder
-	msg.intensityMaximum_A = 00;//placeholder
-	msg.intensityMinimum_B = 00;//placeholder
-	msg.intensityMaximum_B = 00;//placeholder
-	msg.planeSegMaxIterations = 00;
-	msg.objDetectMaxIterations = 100;
-	msg.objDetectDistThresh = 0.02;
-	msg.objDetectClusterTolerance = 0.325;//a
-	msg.objDetectMinClusterSize = 100;
-	msg.objDetectMaxClusterSize = 40000;
-	msg.donScale1=.3;
-	msg.donScale2=20;
-	msg.donThreshold=0.05;
-	msg.donSegradius=1;//Segmentation radiius for DoN
-	msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
-	msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
-	msg.planeSegThreshold=.2;
-	msg.personSize=100;
-	msg.bikeSize=150;
-	msg.carSize=300;
-	msg.truckSize=900;
-	msg.personScale[0]=.75;
-	msg.personScale[1]=.75;
-	msg.personScale[2]=1.25;
-	msg.bikeScale[0]=.75;
-	msg.bikeScale[1]=1.9;
-	msg.bikeScale[2]=1.25;
-	msg.carScale[0]=2.3;
-	msg.carScale[1]=6;
-	msg.carScale[2]=2;
-	msg.truckScale[0]=3;
-	msg.truckScale[1]=10;
-	msg.truckScale[2]=3;
- 
+		msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+		msg.frame_id="base_link";
+		msg.forwardAxis="y";		
+		msg.outlierRemovalStdDev=.4;//STD DEV multiplier//was 1
+		msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
+		msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
+		msg.passThroughRoadMin=-4;
+		msg.passThroughRoadMax=-1.2;
+		msg.passThroughObjectMin=-1.7;
+		msg.passThroughObjectMax=1.25;
+		msg.passThroughBoxMargin=.5;
+		msg.passThroughRangeBoost=0;
+		msg.downSampleLeafSize = 0.01;//leaf size for downsampling
+		msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
+		msg.intensityMinimum_A = 00;//placeholder
+		msg.intensityMaximum_A = 00;//placeholder
+		msg.intensityMinimum_B = 00;//placeholder
+		msg.intensityMaximum_B = 00;//placeholder
+		msg.planeSegMaxIterations = 00;
+		msg.objDetectMaxIterations = 100;
+		msg.objDetectDistThresh = 0.02;
+		msg.objDetectClusterTolerance = 0.325;//a
+		msg.objDetectMinClusterSize = 100;
+		msg.objDetectMaxClusterSize = 40000;
+		msg.donScale1=.3;
+		msg.donScale2=20;
+		msg.donThreshold=0.05;
+		msg.donSegradius=1;//Segmentation radiius for DoN
+		msg.objDetectDoNMinClusterSize = 100;//Min cluster size for DoN clusters
+		msg.objDetectDoNMaxClusterSize = 40000;//Max cluster size for DoN clusters
+		msg.planeSegThreshold=.2;
+		msg.personSize=100;
+		msg.bikeSize=150;
+		msg.carSize=300;
+		msg.truckSize=900;
+		msg.personScale[0]=.75;
+		msg.personScale[1]=.75;
+		msg.personScale[2]=1.25;
+		msg.bikeScale[0]=.75;
+		msg.bikeScale[1]=1.9;
+		msg.bikeScale[2]=1.25;
+		msg.carScale[0]=2.3;
+		msg.carScale[1]=6;
+		msg.carScale[2]=2;
+		msg.truckScale[0]=3;
+		msg.truckScale[1]=10;
+		msg.truckScale[2]=3;
+
 	}else if (mode==2){//settings for rslidar
 
 	}else if (mode==3){//settings for Pandar40
-	msg.frame_id="pandar";
-	msg.forwardAxis="x";
-	msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
-	msg.outlierRemovalStdDev=2;//STD DEV multiplier//was 1
-	msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
-	msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
-	msg.passThroughRoadMin=-4;
-	msg.passThroughRoadMax=-1.2;
-	msg.passThroughObjectMin=-1.7;
-	msg.passThroughObjectMax=1.25;
-	msg.passThroughBoxMargin=.5;
-	msg.passThroughRangeBoost=5;
-	msg.downSampleLeafSize = 0.01;//leaf size for downsampling
-	msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
-	msg.intensityMinimum_A = 00;//placeholder
-	msg.intensityMaximum_A = 00;//placeholder
-	msg.intensityMinimum_B = 00;//placeholder
-	msg.intensityMaximum_B = 00;//placeholder
-	msg.planeSegMaxIterations = 00;
-	msg.objDetectMaxIterations = 100;
-	msg.objDetectDistThresh = 0.02;
-	msg.objDetectClusterTolerance = 0.325;//a
-	msg.objDetectMinClusterSize = 100;
-	msg.objDetectMaxClusterSize = 40000;
-	msg.donScale1=.3;
-	msg.donScale2=20;
-	msg.donThreshold=0.1;
-	msg.donSegradius=1;//Segmentation radiius for DoN
-	msg.objDetectDoNMinClusterSize = 200;//Min cluster size for DoN clusters
-	msg.objDetectDoNMaxClusterSize = 1500;//Max cluster size for DoN clusters
-	msg.planeSegThreshold=.05;
-	msg.personSize=1000;
-	msg.bikeSize=1500;
-	msg.carSize=2300;
-	msg.truckSize=3000;
-	msg.personScale[0]=.75;
-	msg.personScale[1]=.75;
-	msg.personScale[2]=1.25;
-	msg.bikeScale[0]=.75;
-	msg.bikeScale[1]=1.9;
-	msg.bikeScale[2]=1.25;
-	msg.carScale[0]=2.3;
-	msg.carScale[1]=6;
-	msg.carScale[2]=2;
-	msg.truckScale[0]=3;
-	msg.truckScale[1]=10;
-	msg.truckScale[2]=3;
+		msg.frame_id="pandar";
+		msg.forwardAxis="x";
+		msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//was 50
+		msg.outlierRemovalStdDev=2;//STD DEV multiplier//was 1
+		msg.outlierRemovalSearchRadius=.25;//Search radius for radial outlier removal//was.8
+		msg.outlierRemovalMinNeighborsInRadius=10;//Minum number of neighbors a point must have to be kept in radial outlier removal
+		msg.passThroughRoadMin=-4;
+		msg.passThroughRoadMax=-1.2;
+		msg.passThroughObjectMin=-1.7;
+		msg.passThroughObjectMax=1.25;
+		msg.passThroughBoxMargin=.5;
+		msg.passThroughRangeBoost=5;
+		msg.downSampleLeafSize = 0.01;//leaf size for downsampling
+		msg.downSampleLeafSize_B = 0.01;//leaf size for downsampling
+		msg.intensityMinimum_A = 00;//placeholder
+		msg.intensityMaximum_A = 00;//placeholder
+		msg.intensityMinimum_B = 00;//placeholder
+		msg.intensityMaximum_B = 00;//placeholder
+		msg.planeSegMaxIterations = 00;
+		msg.objDetectMaxIterations = 100;
+		msg.objDetectDistThresh = 0.02;
+		msg.objDetectClusterTolerance = 0.325;//a
+		msg.objDetectMinClusterSize = 100;
+		msg.objDetectMaxClusterSize = 40000;
+		msg.donScale1=.3;
+		msg.donScale2=20;
+		msg.donThreshold=0.1;
+		msg.donSegradius=1;//Segmentation radiius for DoN
+		msg.objDetectDoNMinClusterSize = 200;//Min cluster size for DoN clusters
+		msg.objDetectDoNMaxClusterSize = 1500;//Max cluster size for DoN clusters
+		msg.planeSegThreshold=.05;
+		msg.personSize=1000;
+		msg.bikeSize=1500;
+		msg.carSize=2300;
+		msg.truckSize=3000;
+		msg.personScale[0]=.75;
+		msg.personScale[1]=.75;
+		msg.personScale[2]=1.25;
+		msg.bikeScale[0]=.75;
+		msg.bikeScale[1]=1.9;
+		msg.bikeScale[2]=1.25;
+		msg.carScale[0]=2.3;
+		msg.carScale[1]=6;
+		msg.carScale[2]=2;
+		msg.truckScale[0]=3;
+		msg.truckScale[1]=10;
+		msg.truckScale[2]=3;
 	}else if (mode==4){
 
 	}else{
@@ -209,8 +209,8 @@ msg.outlierRemovalMeanK=75;//The number of neighbors to analize for each point//
 	int
 main (int argc, char** argv)
 {
-//ROS_INFO("Waiting to ensure drivers are ready...");
-//sleep(1500);
+	//ROS_INFO("Waiting to ensure drivers are ready...");
+	//sleep(1500);
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("cloud_pcd");
 	const std::string defaultPublisher("lidar_utility");

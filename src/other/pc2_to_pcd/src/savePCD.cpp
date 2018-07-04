@@ -50,62 +50,62 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 	pcl::PassThrough<pcl::PCLPointCloud2> pass;
 	pass.setInputCloud (cloudPtr);
-/*
-	if(mode==1){//road
-		
-	}else if (mode==2){//objects
-		
-	}else if (mode==3){//adv objects
+	/*
+	   if(mode==1){//road
 
-	}else if(mode==4){
-*/
-pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
-		pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
-		pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
-		pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
+	   }else if (mode==2){//objects
+
+	   }else if (mode==3){//adv objects
+
+	   }else if(mode==4){
+	 */
+	pcl::PCLPointCloud2 pcl_pc2;//create PCLPC2
+	pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
+	pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
+	pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
 
 
-		pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
-		pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
+	pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
+	pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
 
-		///pcl::PCLPointX cloud_filtered_x;
-		//pcl::PCLPointCloud2 cloud_filtered_xz;
+	///pcl::PCLPointX cloud_filtered_x;
+	//pcl::PCLPointCloud2 cloud_filtered_xz;
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
-		pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
-		ptfilter.setInputCloud (temp_cloud);
-		ptfilter.setFilterFieldName ("y");
-		ptfilter.setFilterLimits (-12,12);
-		ptfilter.filter (*cloud_filtered_x);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
+	pcl::PassThrough<pcl::PointXYZ> ptfilter (true); // Initializing with true will allow us to extract the removed indices
+	ptfilter.setInputCloud (temp_cloud);
+	ptfilter.setFilterFieldName ("y");
+	ptfilter.setFilterLimits (-12,12);
+	ptfilter.filter (*cloud_filtered_x);
 
-		ptfilter.setInputCloud(cloud_filtered_x);
-		ptfilter.setFilterFieldName ("x");
-		ptfilter.setFilterLimits (-12,12);
-		ptfilter.filter (*cloud_filtered_xy);
+	ptfilter.setInputCloud(cloud_filtered_x);
+	ptfilter.setFilterFieldName ("x");
+	ptfilter.setFilterLimits (-12,12);
+	ptfilter.filter (*cloud_filtered_xy);
 
 	//float zMid = zMaxf -((zMaxf-zMinf)/2);
 
-		ptfilter.setInputCloud(cloud_filtered_xy);
-		ptfilter.setFilterFieldName ("z");
-		ptfilter.setFilterLimits (-12,12);//SETTING
-		ptfilter.setNegative (false);
-		ptfilter.filter (*cloud_filtered_xyz);
+	ptfilter.setInputCloud(cloud_filtered_xy);
+	ptfilter.setFilterFieldName ("z");
+	ptfilter.setFilterLimits (-12,12);//SETTING
+	ptfilter.setNegative (false);
+	ptfilter.filter (*cloud_filtered_xyz);
 
-		sensor_msgs::PointCloud2 output;//create output container
-		pcl::PCLPointCloud2 temp_output;//create PCLPC2
-		pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
-		pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
+	sensor_msgs::PointCloud2 output;//create output container
+	pcl::PCLPointCloud2 temp_output;//create PCLPC2
+	pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
+	pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 
-//	}
+	//	}
 
- pcl::PCDWriter writer;
-//stringstream ss;
-//ss << "don_cluster_" << j << ".pcd";
-//writer.write<pcl::PointXYZ> (outputName+".pcd", *cloud_filtered_xyz, false);
+	pcl::PCDWriter writer;
+	//stringstream ss;
+	//ss << "don_cluster_" << j << ".pcd";
+	//writer.write<pcl::PointXYZ> (outputName+".pcd", *cloud_filtered_xyz, false);
 
-writer.write<pcl::PointXYZ> ("testA.pcd", *cloud_filtered_xyz, false);
+	writer.write<pcl::PointXYZ> ("testA.pcd", *cloud_filtered_xyz, false);
 }
 	int
 main (int argc, char** argv)

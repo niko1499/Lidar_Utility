@@ -85,7 +85,7 @@ static double setMaxClusterSize_setting=40000;
 static bool canContinue=false;
 static 	float xMinRoad, xMaxRoad, yMinRoad, yMaxRoad, zMinRoad, zMaxRoad;
 static int lastMarkerMax=0;
-	static	int markerID=0;
+static	int markerID=0;
 static std::string frame_id("base_link");
 static std::string forwardAxis("x");
 static float personSize=100;
@@ -136,7 +136,7 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	truckScaleY=data.truckScale[1];
 	truckScaleZ=data.truckScale[2];
 	forwardAxis=data.forwardAxis;
-;	
+	;	
 	ROS_INFO("Settings are set");
 }
 void road_cb (const lidar_utility_msgs::roadInfo& data)
@@ -225,7 +225,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 	}else{
 		locMultiplier=1;
 	}
-	
+
 	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
 	float sizeResult=size*distMultiplier*distMultiplier*constantMultiplier*locMultiplier;
 	//size=800;
@@ -283,7 +283,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 			sizeResult=sizeResult+(sizeResult/2);
 		}
 		if((yLoc+(yScaleResult/2))<max.y){
-		       yLoc=yLoc+1;
+			yLoc=yLoc+1;
 		}
 
 	}
@@ -455,13 +455,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 		int cloudNum=0;
 		int j = 0;
 
-if(lastMarkerMax!=markerID){
+		if(lastMarkerMax!=markerID){
 
-lastMarkerMax=markerID;
-		for(int k=0;k<9;k++){
-		markerArray.markers.push_back(markerBuilder(k));
+			lastMarkerMax=markerID;
+			for(int k=0;k<9;k++){
+				markerArray.markers.push_back(markerBuilder(k));
+			}
 		}
-}
 		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
 		{
 			pcl::PointCloud<pcl::PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<pcl::PointNormal>);
@@ -538,7 +538,7 @@ lastMarkerMax=markerID;
 			float zLoc= ((pMax.z-pMin.z)/2)+pMin.z;
 			//Discard bad clusters
 			bool filterBadClouds=true;//for debug purposes		
-	float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
+			float zMidRoad = zMaxRoad -((zMaxRoad-zMinRoad)/2);
 			if((zLoc+0.0<zMidRoad && filterBadClouds)){
 				ROS_INFO("Discarding Cluster: Too low");
 			}else if(zScale<.23 && filterBadClouds){
@@ -576,7 +576,7 @@ lastMarkerMax=markerID;
 				marker=markerBuilder(j,loc,scale,min,max,0,cloud_cluster_don->width);
 
 
-			
+
 				markerArray.markers.push_back(marker);
 
 				lidar_utility_msgs::objectInfo obj_msg;
@@ -640,22 +640,22 @@ lastMarkerMax=markerID;
 
 			vis_pub.publish(markerArray);
 
-			
+
 
 			markerID=cloudNum;
 		}
 	}
-			ros::Time end =ros::Time::now();
-			float duration=end.toSec() - begin.toSec();
-			ROS_INFO("%s: Out of callback. Duration: %f",nodeName.c_str(),duration);
-			//ROS_INFO(duration);
+	ros::Time end =ros::Time::now();
+	float duration=end.toSec() - begin.toSec();
+	ROS_INFO("%s: Out of callback. Duration: %f",nodeName.c_str(),duration);
+	//ROS_INFO(duration);
 }
 	int
 main (int argc, char** argv)
 {	
 	//initialize default topics for subscribing and publishing
 	const std::string defaultSubscriber("object_points1");
-		const std::string defaultSubscriber2("plane_segmented_msg");
+	const std::string defaultSubscriber2("plane_segmented_msg");
 	const std::string defaultPublisher("objects_");
 	const std::string defaultMode("f");
 

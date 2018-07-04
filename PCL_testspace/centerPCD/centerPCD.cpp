@@ -27,57 +27,57 @@
 using namespace pcl;
 using namespace std;
 
-int
+	int
 main (int argc, char *argv[])
 {
- 
 
-  if (argc < 3)
-  {
-    cerr << "usage: " << argv[0] << " inputfile.pcd outputfile.pcd" << endl;
-    exit (EXIT_FAILURE);
-  }
 
-  /// the file to read from.
-  string infile = argv[1];
-  string outfile =argv[2];
-  if(outfile=="same"||outfile=="overwrite"||outfile=="o"){
-outfile=infile;
+	if (argc < 3)
+	{
+		cerr << "usage: " << argv[0] << " inputfile.pcd outputfile.pcd" << endl;
+		exit (EXIT_FAILURE);
 	}
-  // Load cloud in blob format
-  pcl::PCLPointCloud2 blob;
-  pcl::io::loadPCDFile (infile.c_str (), blob);
-  pcl::PointCloud<PointNormal>::Ptr cloud (new pcl::PointCloud<PointNormal>);
-  pcl::fromPCLPointCloud2 (blob, *cloud);
 
-pcl::PointNormal pMin,pMax;
-pcl::getMinMax3D (*cloud,pMin,pMax);
+	/// the file to read from.
+	string infile = argv[1];
+	string outfile =argv[2];
+	if(outfile=="same"||outfile=="overwrite"||outfile=="o"){
+		outfile=infile;
+	}
+	// Load cloud in blob format
+	pcl::PCLPointCloud2 blob;
+	pcl::io::loadPCDFile (infile.c_str (), blob);
+	pcl::PointCloud<PointNormal>::Ptr cloud (new pcl::PointCloud<PointNormal>);
+	pcl::fromPCLPointCloud2 (blob, *cloud);
 
-float xCenter=(abs(pMax.x-pMin.x)/2)+pMin.x;
-float yCenter=(abs(pMax.y-pMin.y)/2)+pMin.y;
-float zCenter=(abs(pMax.z-pMin.z)/2)+pMin.z;
+	pcl::PointNormal pMin,pMax;
+	pcl::getMinMax3D (*cloud,pMin,pMax);
 
-//float theta =M_PI/2;
+	float xCenter=(abs(pMax.x-pMin.x)/2)+pMin.x;
+	float yCenter=(abs(pMax.y-pMin.y)/2)+pMin.y;
+	float zCenter=(abs(pMax.z-pMin.z)/2)+pMin.z;
+
+	//float theta =M_PI/2;
 	float theta = 0;// define rotation
-    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
 	transform(0,0)= cos(theta);
 	transform(0,1)= -sin(theta);
 	transform(1,0)= sin(theta);
 	transform(1,1)= cos(theta);
 
-   
-    transform (0,3) = -xCenter; // x shift.
-	transform(1,3)=-yCenter; //y shift
-    printf ("Transform: Matrix4f\n");
-    std::cout << transform << std::endl;
 
-  pcl::PointCloud<PointNormal>::Ptr result (new pcl::PointCloud<PointNormal>);
+	transform (0,3) = -xCenter; // x shift.
+	transform(1,3)=-yCenter; //y shift
+	printf ("Transform: Matrix4f\n");
+	std::cout << transform << std::endl;
+
+	pcl::PointCloud<PointNormal>::Ptr result (new pcl::PointCloud<PointNormal>);
 
 	pcl::transformPointCloudWithNormals(*cloud,*result,transform);
 
-  pcl::PCDWriter writer;
-  writer.write<pcl::PointNormal> (outfile, *result, false); 
+	pcl::PCDWriter writer;
+	writer.write<pcl::PointNormal> (outfile, *result, false); 
 
-  
+
 }
 
