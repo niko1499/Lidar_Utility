@@ -1,3 +1,0 @@
-/home/pc/Lidar_Utility/PCL_testspace/mergePCD/build/CMakeFiles/edit_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/mergePCD/build/CMakeFiles/rebuild_cache.dir
-/home/pc/Lidar_Utility/PCL_testspace/mergePCD/build/CMakeFiles/mergePCD.dir
