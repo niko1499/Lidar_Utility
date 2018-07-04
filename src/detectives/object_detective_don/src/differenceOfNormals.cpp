@@ -1,3 +1,9 @@
+/*differenceOfNormals.cpp -+- Nikolas Gamarra
+ *This program is an implementation of the below PCL tutorial inside of ROS.
+ *URL: http://www.pointclouds.org/documentation/tutorials/don_segmentation.php#don-segmentation
+ *Description: scale-based segmentation of unorganized point clouds
+ *Use: detect objects on the road
+ */
 //ROS:
 #include <ros/ros.h>
 #include "visualization_msgs/Marker.h"
@@ -38,7 +44,6 @@
 #include <pcl/features/don.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/project_inliers.h>
-// PCL specific includes
 #include <pcl/filters/passthrough.h>
 
 #define COLOR_RED "\033[1;31m"
@@ -49,8 +54,6 @@
 #define BAR "----------------------------------------------------------------------------\n"
 static int mode =1;//fix this later
 static std::string nodeName("object_detective");
-
-//This node subscribes to a PointCloud2 topic, searches for the road, and publishes xxx. 
 
 ros::Publisher pc2_pub;
 ros::Publisher vis_pub;
@@ -65,16 +68,6 @@ ros::Publisher cl7_pub;
 ros::Publisher cl8_pub;
 ros::Publisher cl9_pub;
 ros::Publisher msg_pub;
-
-//Settings. Note will get overwritten by setting_cb 
-/*
-   static float leaf_setting=0.01;
-   static float setMaxIterations_setting=100;
-   static float setDistanceThreshold_setting=.02;
-   static float setClusterTolerance_setting=.325;
-   static float setMinClusterSize_setting=100;
-   static float setMaxClusterSize_setting=40000;
- */
 
 static double scale1=10;//The smallest scale to use in the DoN filter.
 static double scale2=20;  //The largest scale to use in the DoN filter.
@@ -110,7 +103,7 @@ class XYZ{
 };
 
 void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
-{
+{//set local static settings. Gets settings topic gets published once by lidarUtility.cpp at launch.
 	canContinue=data.permissionToContinue;
 	scale1 = data.donScale1;
 	scale2 = data.donScale2;
@@ -136,11 +129,10 @@ void settings_cb (const lidar_utility_msgs::lidarUtilitySettings& data)
 	truckScaleY=data.truckScale[1];
 	truckScaleZ=data.truckScale[2];
 	forwardAxis=data.forwardAxis;
-	;	
 	ROS_INFO("Settings are set");
 }
 void road_cb (const lidar_utility_msgs::roadInfo& data)
-{
+{//set local variables to keep track of the road bounds. 
 	xMinRoad = data.xMin;
 	xMaxRoad = data.xMax;
 	yMinRoad = data.yMin;
@@ -149,7 +141,7 @@ void road_cb (const lidar_utility_msgs::roadInfo& data)
 	zMaxRoad = data.zMax;	
 }
 
-visualization_msgs::Marker markerBuilder(int id){
+visualization_msgs::Marker markerBuilder(int id){//used to clear marker array
 	visualization_msgs::Marker marker;
 	marker.header.frame_id = frame_id;
 	marker.header.stamp = ros::Time();
@@ -174,7 +166,7 @@ visualization_msgs::Marker markerBuilder(int id){
 	marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 	return marker;
 }
-visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ max, float headding,int size){
+visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ max, float headding,int size){//used to create markers to be placed in a marker array. performs some error adjustment
 	float xLoc=loc.x;
 	float yLoc=loc.y;
 	float zLoc=loc.z;	
@@ -322,7 +314,7 @@ visualization_msgs::Marker markerBuilder(int id,XYZ loc,XYZ scale,XYZ min,XYZ ma
 }
 	void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
-{
+{//Main callback, activates when a new cloud is published to the subscription topic.
 	ros::Time begin = ros::Time::now();
 	if(canContinue){
 

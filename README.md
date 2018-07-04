@@ -1,5 +1,7 @@
 # Lidar_Utility
-Nikolas Xarles Gamarra -+- nxgamarra@gmail.com -+- https://github.com/niko1499/Lidar_Utility
+Nikolas Xarles Gamarra -+- nxgamarra@gmail.com 
+
+https://github.com/niko1499/Lidar_Utility
 ## Description 
 This "Lidar_Utility" is a collection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is recommended for being able to understand the nodes and topics that make this project work. This project can be used with any source of data that publishes a point cloud to a ROS PointCloud2 topic. 
 
@@ -89,8 +91,10 @@ Where all the code goes
 - **/src/drivers:** 
 ROS Lidar Drivers Provided by manufacturers. See local directory README for more info on how to use. Some modifications to the drivers had to be to get them to work with the hardware I was using. 
 - **/src/master_launcher:** 
-Node and launch files for organizing entire project together. Subscribes automatically or manually to the raw PointCloud2 topic and republishes it for use by other nodes. Also publishes a topic of settings to be read by other nodes. The settings that are published can be automatically changed for the source of lidar data. 
-- **/src/my_pcl_tutorial:** 
+Node and launch files for organizing entire project together. Subscribes automatically or manually to the raw PointCloud2 topic and republishes it for use by other nodes. Also publishes a topic of settings to be read by other nodes. The settings that are published can be automatically changed for the source of lidar data.
+- **/src/other:**
+Misc helper and test nodes. 
+- **/src/other/my_pcl_tutorial:** 
 Partial implementation of [this](http://wiki.ros.org/pcl/Tutorials) tutorial. Useful as a skeleton for other code. Simply subscribes on a topic and echos what it hears to a publisher. See [link](http://www.pointclouds.org/documentation/tutorials/) for ways to add to the skeleton code. Note that appropriate conversions between ROS and PCL may will need to be made. 
 - **/src/filters:** 
 A number of ROS nodes that subscribe to PointCloud2 topics filter it and republish it to another PointCloud2 topic. Each one has a default topic and the ability to change the topics via parameters specified after rosrun or in a launch file.
