@@ -61,9 +61,9 @@ or configure your own launch file based on master.launch as an example.
 
 
 To manually set your main subscriber simply add the subscriber param as such
-'''
+```
 roslaunch master_launcher master.launch subscriber:="your_topic"
-'''
+```
 
 The master.launch will launch other launch files with the naming convention node_name_slave.launch.
 
@@ -123,7 +123,7 @@ Check the cpp file for valid modes.
 - **msgSubscriber:** sets a topic to subscribe to for listening to custom messages that are defined in lidar_utility_msgs. Not all nodes have this parameter. 
 
 to set a parameter at launch include the argument: ```parameter_name:="your_setting"```
-to set a parameter in a launch file see this [ROS documentation](http://wiki.ros.org/roslaunch/) or se master.launch for examples. 
+to set a parameter in a launch file see this [ROS documentation](http://wiki.ros.org/roslaunch/) or see master.launch for examples. 
 
 
 
