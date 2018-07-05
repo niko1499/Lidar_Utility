@@ -134,7 +134,7 @@ void timer_cb (const ros::TimerEvent& event){
 		msg.personSize=100;
 		msg.bikeSize=150;
 		msg.carSize=300;
-		msg.truckSize=900;
+		msg.truckSize=2069;
 		msg.personScale[0]=.75;
 		msg.personScale[1]=.75;
 		msg.personScale[2]=1.25;

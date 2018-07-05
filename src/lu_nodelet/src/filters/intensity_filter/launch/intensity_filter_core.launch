@@ -1,0 +1,10 @@
+<launch>
+
+  <node name="intensity_filter" pkg="intensity_filter" type="intensityFilter" output="screen">
+    <param name="subscriber" value="outliers_removed_pass1"/>
+    <param name="publisher" value="high_intensity_points"/>
+    <param name="mode" value="l"/>
+  </node>
+
+
+</launch>

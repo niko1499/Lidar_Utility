@@ -17,7 +17,7 @@ To install without any supplemental files or point cloud data use:
 ```
 git clone -b PX2 https://github.com/niko1499/Lidar_Utility.git
 ```
-## To Run the project
+## To Run the project:
 1. **Select the source of your lidar data and launch it (you may need to launch roscore first):**
 
 - **rslidar:** Below is the roslaunch command to launch the [rslidar](http://www.robosense.ai/) driver that is included in this workspace. It has been modified slightly from its origional form. It is recommended you use the setIP script before launching the driver to configure your static IP. 
@@ -81,7 +81,7 @@ The master_launcher node (lidarUtility.cpp) will search for expected PointCloud2
  
 [Wireshark](https://www.wireshark.org/) Usefull for debuging IP issues with your lidar communication and checking the IP of connected devices. 
 
-## Directory overview
+## Directory overview:
 - **/build:** 
 ROS generated executables
 - **/devel:** 
@@ -113,7 +113,7 @@ RVIZ configuration files for a number of useful configurations. Named appropriat
 - **/PCL_testspace:**
  A place to test C++ PCL code before trying to integrate it into a ROS node. Also a set of useful programs for doing simple manipulations to point clouds from the command line. 
 
-## Parameters overview
+## Parameters overview:
 There are three parameters that all the nodes in this project have. They are: subscriber, publisher, and mode. Others may exist but at a minimum all the nodes have these. Note that when using the master_launcher launch files all parameters will need to be set and defaults can't be used. This is the preferred method for launching this project as it would be unreasonable to launch all these nodes in separate terminals. 
 
 - **subscriber:** sets subscriber, if one isn't specified a default will be used as defined in the cpp file.
