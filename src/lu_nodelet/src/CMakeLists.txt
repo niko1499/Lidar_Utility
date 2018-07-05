@@ -1,22 +1,16 @@
-add_library(rslidar_data rawdata.cc )
-target_link_libraries(rslidar_data
+add_library(my_nodelet MyNodeletClass.cc )
+target_link_libraries(my_nodelet
     ${catkin_LIBRARIES}
     ${libpcap_LIBRARIES})
 
-add_library(rslidar_point convert.cc )
-target_link_libraries(rslidar_point
-    rslidar_data
-    ${catkin_LIBRARIES})
 
-add_executable(cloud_node cloud_node.cc)
+add_executable(MyNodeletClass MyNodeletClass.cc)
 
 if(catkin_EXPORTED_TARGETS)
-  add_dependencies(rslidar_data ${catkin_EXPORTED_TARGETS})
+  add_dependencies(my_nodelet ${catkin_EXPORTED_TARGETS})
 endif()
 
-target_link_libraries(cloud_node
-    rslidar_point
-    rslidar_input
+target_link_libraries(my_nodelet
     ${catkin_LIBRARIES}
     ${libpcap_LIBRARIES}
     )

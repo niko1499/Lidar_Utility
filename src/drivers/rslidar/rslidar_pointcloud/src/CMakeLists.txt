@@ -14,7 +14,8 @@ if(catkin_EXPORTED_TARGETS)
   add_dependencies(rslidar_data ${catkin_EXPORTED_TARGETS})
 endif()
 
-target_link_libraries(cloud_node
+target_link_libraries(
+    cloud_node
     rslidar_point
     rslidar_input
     ${catkin_LIBRARIES}

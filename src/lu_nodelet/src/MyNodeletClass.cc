@@ -1,10 +1,12 @@
 // this should really be in the implementation (.cpp file)
 #include <pluginlib/class_list_macros.h>
-
+#include "ros/ros.h"
+#include "nodelet/nodelet.h"
+#include "MyNodeletClass.h"
 // watch the capitalization carefully
-PLUGINLIB_EXPORT_CLASS(example_pkg::MyNodeletClass, nodelet::Nodelet)
+PLUGINLIB_EXPORT_CLASS(my_nodelet::MyNodeletClass, nodelet::Nodelet)
 
-namespace example_pkg
+namespace my_nodelet
 {
     void MyNodeletClass::onInit()
     {

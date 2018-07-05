@@ -1,6 +1,6 @@
 #include <nodelet/nodelet.h>
 
-namespace example_pkg
+namespace my_nodelet
 {
 
     class MyNodeletClass : public nodelet::Nodelet
