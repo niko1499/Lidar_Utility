@@ -1,10 +1,8 @@
 # Lidar_Utility
-Nikolas Xarles Gamarra -+- nxgamarra@gmail.com 
+Nikolas Xarles Gamarra -+- nxgamarra@gmail.com -+- https://github.com/niko1499/Lidar_Utility
 
 ![alt text](https://github.com/niko1499/Lidar_Utility/blob/master/photos/046_DoN_truck_detection.png)
 
-
-https://github.com/niko1499/Lidar_Utility
 ## Description 
 This "Lidar_Utility" is a collection or ROS nodes that are useful for filtering and interpreting point cloud data. It depends on [ROS](http://wiki.ros.org/) and [PCL](http://pointclouds.org/documentation/). A basic understanding of ROS is recommended for being able to understand the nodes and topics that make this project work. This project can be used with any source of data that publishes a point cloud to a ROS PointCloud2 topic. 
 
