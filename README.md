@@ -102,7 +102,7 @@ A number of ROS nodes that subscribe to PointCloud2 topics filter it and republi
 A number of nodes that subscribe to ROS PointCloud2 topics interpret it in a in a viraty of ways such as detecting the road or an objects location/type and then publish the data for visualization or to be used my other more advanced nodes.
 - **src/lidar_utility_msgs:**
 Files defining custom message types. Used to send settings from the master_launcher node to nodes all worker nodes and meta data between worker nodes. 
--**/src/SLAM:** 
+- **/src/SLAM:** 
 Put slam here if/when implemented.
 - **/setIP:** 
 A script and .txt files that are useful for configuring a static or dynamic IP address. This is useful when connecting back and forth between internet and an ethernet connected lidar with static IP. For details on how to use it see the comments in the setIP.sh file.
