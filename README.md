@@ -71,6 +71,8 @@ The master.launch will launch other launch files with the naming convention node
 
 The master_launcher node (lidarUtility.cpp) will search for expected PointCloud2 topic and automatically subscribe to the first one it finds. 
 
+If you want to make modifications to this project the best way is to follow the 
+
 
 ## Useful Links
 [ROSWIKI/PCL](wiki.ros.org/pcl) Useful documentation on using PCL in ROS
