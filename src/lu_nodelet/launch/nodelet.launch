@@ -1,9 +1,19 @@
-<!--One launch file to rule them all-->
+<!--Launch file for nodelets-->
 <!--see readme section on launch files for details on how to use file-->
 <!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
 <launch>
-  <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
 
-  <node pkg="nodelet" type="nodelet" name="MyNodeletClass" args="load example_pkg/MyNodeletClass standalone_nodelet" output="screen">
+<!--Launch a node manager-->
+<node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager"/>
+
+<!--Pass through filter-->
+    <node pkg="nodelet" type="nodelet" 
+           name="passThroughFilter" 
+           args="standalone lu_nodelet/passThroughFilter">
+    <param name="subscriber" value="lidar_utility_points"/>
+    <param name="publisher" value="lower_points"/>
+    <param name="mode" value="road"/>
+    <param name="msgSubscriber" value="none"/>
   </node>
+
 </launch>

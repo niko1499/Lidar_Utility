@@ -1,0 +1,8 @@
+#define COLOR_RED "\033[1;31m"
+#define COLOR_GREEN "\033[1;32m"
+#define COLOR_YELLOW "\033[1;33"
+#define COLOR_BLUE "\033[1;34m"
+#define COLOR_RST "\033[0m"
+#define BAR "----------------------------------------------------------------------------\n"
+#define SHORT_BAR " ------------------------- "
+#define SIGNATURE "Nikolas Xarles Gamarra"

@@ -1,0 +1,12 @@
+
+<library path="lib/libpassThroughFilter">
+  <class name="lu_nodelet/passThroughFilter" 
+	 type="lu_nodelet::passThroughFilter" 
+	 base_class_type="nodelet::Nodelet">
+  <description>
+  PassThrough nodelet. 
+  </description>
+  </class>
+</library>
+
+
