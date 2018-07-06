@@ -1,5 +1,7 @@
 <library path="lib/libMyNodeletClass">
-  <class name="lu_nodelet/MyNodeletClass" type="lu_nodelet::MyNodeletClass" base_class_type="nodelet::Nodelet">
+  <class name="lu_nodelet/MyNodeletClass" 
+	 type="lu_nodelet::MyNodeletClass" 
+	 base_class_type="nodelet::Nodelet">
   <description>
   This is my nodelet.
   </description>

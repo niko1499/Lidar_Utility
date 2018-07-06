@@ -1,5 +1,5 @@
 #include <nodelet/nodelet.h>
-
+#include <string>
 namespace my_nodelet
 {
 

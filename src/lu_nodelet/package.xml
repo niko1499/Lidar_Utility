@@ -6,7 +6,7 @@
   conversion of Lidar_Utility to nodelet
   </description>
   <maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer>
-  <author>Yang Sheng</author>
+  <author>Nikolas Gamarra</author>
   <license>BSD</license>
   <url type="repository">https://github.com/niko1499/Lidar_Utility</url>
   <url type="bugtracker">https://github.com/niko1499/Lidar_Utility/issues</url>
@@ -22,7 +22,6 @@
   <build_depend>roslib</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>tf</build_depend>
-  <build_depend>pandar_msgs</build_depend>
   <build_depend>yaml-cpp</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>nodelet</build_depend>

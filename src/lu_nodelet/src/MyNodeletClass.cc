@@ -1,20 +1,39 @@
-#include "ros/ros.h"
+#include <ros/ros.h>
+#include <pluginlib/class_list_macros.h>
 #include "nodelet/nodelet.h"
+//#include "MyNodeletClass.h"
+#include <string>
+//ROS:
+#include <ros/ros.h>
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+#include <lidar_utility_msgs/lidarUtilitySettings.h>
+#include <lidar_utility_msgs/roadInfo.h>
+#include <lidar_utility_msgs/objectInfo.h>
+#include "std_msgs/String.h"
+//#include <pandar_pointcloud/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
 
-namespace ns1
+namespace lu_nodelet
 {
 
-  class @(NodeletClass) : public nodelet::Nodelet
+  class MyNodeletClass : public nodelet::Nodelet
   {
   public:
-  @(NodeletClass)();
+  MyNodeletClass();
 
   private:
   virtual void onInit(){
+  ros::NodeHandle nh;
+  ros::NodeHandle private_nh;
   nh = getNodeHandle();
   private_nh = getPrivateNodeHandle();
-  timer_ = nh.createTimer(ros::Duration(1.0), boost::bind(& @(NodeletClass)::timerCb, this, _1));
-  sub_ = nh.subscribe("incoming_chatter", 10, boost::bind(& @(NodeletClass)::messageCb, this, _1));
+  timer_ = nh.createTimer(ros::Duration(1.0), boost::bind(& MyNodeletClass::timerCb, this, _1));
+ // sub_ = nh.subscribe("incoming_chatter", 10, boost::bind(& MyNodeletClass::messageCb, this, _1));
+ sub_ = nh.subscribe("pandar_points", 10,
+                     &MyNodeletClass::messageCb, this,
+                     ros::TransportHints().tcpNoDelay(true));
   pub_ = private_nh.advertise<std_msgs::String>("outgoing_chatter", 10);
   };
 
@@ -30,7 +49,7 @@ namespace ns1
   pub_.publish(message);
 
   std_msgs::String new_message;
-  new_message.data = message.data + " fizz buzz";
+ // new_message.data = message.data + " fizz buzz";
   pub_.publish(new_message);
 
   // we can't modify any messages after they've been published, unless we want our subscribers to get VERY confused
@@ -44,7 +63,7 @@ namespace ns1
 
 } // namespace @(namespace)
 
-PLUGINLIB_DECLARE_CLASS(@(package), @(NodeletClass), @(namespace)::@(NamespaceClass), nodelet::Nodelet);
+PLUGINLIB_DECLARE_CLASS(lu_nodelet, MyNodeletClass, lu_nodelet::MyNodeletClass, nodelet::Nodelet);
 
 
 
