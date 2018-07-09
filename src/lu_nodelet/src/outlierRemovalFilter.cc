@@ -40,7 +40,7 @@ static float setMinNeighborsInRadius_setting=2;
 //nodelet
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
-//#include "passThroughFilter.h" //structured without headerfile
+
 namespace lu_nodelet
 {
 	class passThroughFilter : public nodelet::Nodelet
@@ -140,20 +140,12 @@ namespace lu_nodelet
 				//set up subscribers and publishers
 				pc2_sub = nh.subscribe(sTopic, 10,&passThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to point cloud
 
-				msg_sub = nh.subscribe(sTopic2, 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to msgs
+				//msg_sub = nh.subscribe(sTopic2, 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to msgs
 
 				pc2_pub = private_nh.advertise<sensor_msgs::PointCloud2>(pTopic, 10);
 
 			}
 
-			void message_cb(const lidar_utility_msgs::roadInfo& data){//callback to store data from msgs locally
-				xMinf = data.xMin;
-				xMaxf = data.xMax;
-				yMinf = data.yMin;
-				yMaxf = data.yMax;
-				zMinf = data.zMin;
-				zMaxf = data.zMax;	
-			}//msg callback
 
 
 			void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg){//callback to process cloud
@@ -237,8 +229,8 @@ sensor_msgs::PointCloud2 output;//create output container
 			//create subscribers and publishers
 			ros::NodeHandle nh;
 			ros::Subscriber pc2_sub;
-			ros::Subscriber msg_sub;
 			ros::Publisher pc2_pub;
+			//ros::Subscriber msg_sub;
 	};
 	PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
 }

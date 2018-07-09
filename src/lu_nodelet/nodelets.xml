@@ -1,10 +1,19 @@
-
 <library path="lib/libpassThroughFilter">
   <class name="lu_nodelet/passThroughFilter" 
 	 type="lu_nodelet::passThroughFilter" 
 	 base_class_type="nodelet::Nodelet">
   <description>
   PassThrough nodelet. 
+  </description>
+  </class>
+</library>
+
+<library path="lib/liboutlierRemovalFilter">
+  <class name="lu_nodelet/outlierRemovalFilter" 
+	 type="lu_nodelet::outlierRemovalFilter" 
+	 base_class_type="nodelet::Nodelet">
+  <description>
+  outlierRemovalFilter nodelet. 
   </description>
   </class>
 </library>

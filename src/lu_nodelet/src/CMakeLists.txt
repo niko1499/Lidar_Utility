@@ -5,21 +5,26 @@ target_link_libraries(passThroughFilter
     ${catkin_LIBRARIES}
     ${libpcap_LIBRARIES})
 
+add_library(outlierRemovalFilter outlierRemovalFilter.cc )
+target_link_libraries(outlierRemovalFilter
+    ${catkin_LIBRARIES}
+    ${libpcap_LIBRARIES})
+
 #add_executable(lu_node lu_node.cc)
 
 if(catkin_EXPORTED_TARGETS)
   add_dependencies(
-	
-	passThroughFilter		
+	passThroughFilter
+  outlierRemovalFilter		
 	${catkin_EXPORTED_TARGETS})
 endif()
 
 #target_link_libraries(
-	#lu_node
-
- #   ${catkin_LIBRARIES}
-  #  ${libpcap_LIBRARIES}
-   # )
+#   	passThroughFilter
+#    outlierRemovalFilter
+#    ${catkin_LIBRARIES}
+#    ${libpcap_LIBRARIES}
+#    )
 
 
 ## Mark the nodelet library for installations
