@@ -63,10 +63,7 @@ roslaunch master_launcher master.launch
 or configure your own launch file based on master.launch as an example.
 
 
-To manually set your main subscriber simply add the subscriber param as such
-```
-roslaunch master_launcher master.launch subscriber:="your_topic"
-```
+To manually set your main subscriber simply add the subscriber param as such instead of automatically finding one uncomment the subscriber pram in the launch file. 
 
 The master.launch will launch other launch files with the naming convention node_name_slave.launch.
 

@@ -3,6 +3,8 @@
 <!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
 <launch>
 
+rosparam load pandar.yaml /settings
+
 <!--Launch a node manager-->
   <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
 
@@ -24,6 +26,6 @@
   </node>
 
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find Lidar_Utility)/rviz/pandar_cfg.rviz" />
 
 </launch>

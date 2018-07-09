@@ -1,3 +1,10 @@
+/* passThroughFilter
+ * Nikolas Gamarra -+- nxgamarra@gmail.com
+ * Description: Filter and republish a cloud cut down to a smaller box in xyz coordinates using
+ * predefined bounds or ones supplied by a custom msg.
+ * Available modes: road, objects, advObjects, forward
+ */
+
 //C
 #include <pluginlib/class_list_macros.h>
 #include "nodelet/nodelet.h"
@@ -8,12 +15,11 @@
 #include <ros/ros.h>
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
-#include <lidar_utility_msgs/lidarUtilitySettings.h>
 #include <lidar_utility_msgs/roadInfo.h>
 #include <lidar_utility_msgs/objectInfo.h>
 #include "std_msgs/String.h"
 #include <lidar_utility_msgs/roadInfo.h>
-// PCL specific includes
+//PCL specific includes
 #include <iostream>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -21,6 +27,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
+//PCL local includes
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
 //decleare globals
@@ -35,52 +42,51 @@ static float boxMargin_setting=.2;
 static float yRangeBoost_setting=0;
 //nodelet
 #include <nodelet/nodelet.h>
-
-
-
 #include <pluginlib/class_list_macros.h>
-//#include "passThroughFilter.h"
-//PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
-
+//#include "passThroughFilter.h" //structured without headerfile
 namespace lu_nodelet
 {
-	
+	class passThroughFilter : public nodelet::Nodelet
+	{
+		public:
+			void onInit()
+			{
+				ROS_INFO("Initializing nodelet...");
 
-    class passThroughFilter : public nodelet::Nodelet
-    {
-        public:
-
-
-    void onInit()
-    {
-        NODELET_DEBUG_STREAM_COND(1==1,"Initializing nodelet...");
-
-				ros::NodeHandle private_nh;
+				ros::NodeHandle private_nh;//create node handles
 				nh = getNodeHandle();
 				private_nh = getPrivateNodeHandle();
 
+				//update settings
+				nh.getParam("settings/passThrough_RoadMin", roadMin_setting);
+				nh.getParam("settings/passThrough_RoadMax", roadMax_setting);
+				nh.getParam("settings/passThrough_ObjectMin", objectMin_setting);
+				nh.getParam("settings/passThrough_ObjectMax", objectMax_setting);
+				nh.getParam("settings/passThrough_BoxMargin", boxMargin_setting);
+				nh.getParam("settings/passThrough_RangeBoost", yRangeBoost_setting);
+
 				//initialize default topics for subscribing and publishing
 				const std::string defaultCloudSubscriber("cloud_in");
-				const std::string defaultMsgSubscriber("plane_segmented_msg");
 				const std::string defaultCloudPublisher("cloud_out");
 				const std::string defaultMode("r");
+				const std::string defaultMsgSubscriber("plane_segmented_msg");
 
-				nodeName = getName();//Update name
+				nodeName = getName();//Update nodelet name
 
 				//set parameters on new name
 				const std::string subscriberParamName(nodeName + "/subscriber");
-				const std::string subscriberParamName2(nodeName + "/msgSubscriber");
 				const std::string publisherParamName(nodeName + "/publisher");
 				const std::string modeParamName(nodeName + "/mode");
+				const std::string subscriberParamName2(nodeName + "/msgSubscriber");
 
 				printf(COLOR_BLUE BAR COLOR_RST);//Print a blue bar
 				ROS_INFO("Node Name: %s",nodeName.c_str());
 
 				//Create variables that control the topic names
 				std::string sTopic;
-				std::string sTopic2;
 				std::string pTopic;
 				std::string myMode;
+				std::string sTopic2;
 
 				if(nh.hasParam(subscriberParamName)){//Check if the user specified a subscription topic
 					nh.getParam(subscriberParamName,sTopic);
@@ -126,25 +132,26 @@ namespace lu_nodelet
 				nh.deleteParam(publisherParamName);
 				nh.deleteParam(modeParamName);
 				nh.deleteParam(subscriberParamName2);
-				if(myMode=="1"||myMode=="r"||myMode=="road"){
+				if(myMode=="1"||myMode=="r"||myMode=="road"){//interpret mode
 					mode=1;
 				}else if(myMode=="2"||myMode=="o"||myMode=="objects"){
 					mode=2;
-				}else if(myMode=="3"||myMode=="c"||myMode=="advObjects"){
+				}else if(myMode=="3"||myMode=="a"||myMode=="advObjects"){
 					mode=3;
 				}else if(myMode=="4"||myMode=="f"||myMode=="forward"){
 					mode=4;
 				}
 
-				msg_sub = nh.subscribe("pandar_points", 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));
+				//set up subscribers and publishers
+				pc2_sub = nh.subscribe(sTopic, 10,&passThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to point cloud
 
-				pc2_sub = nh.subscribe("lidar_utility_points", 10,&passThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));
+				msg_sub = nh.subscribe(sTopic2, 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to msgs
 
 				pc2_pub = private_nh.advertise<sensor_msgs::PointCloud2>(pTopic, 10);
 
-}
+			}
 
-void message_cb(const lidar_utility_msgs::roadInfo& data){  
+			void message_cb(const lidar_utility_msgs::roadInfo& data){//callback to store data from msgs locally
 				xMinf = data.xMin;
 				xMaxf = data.xMax;
 				yMinf = data.yMin;
@@ -153,29 +160,17 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 				zMaxf = data.zMax;	
 			}//msg callback
 
-			//---------------------cloud callback-----------------------
-			void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg){
-				//pcl::PCLPointCloud2 *cloud = new pcl::PCLPointCloud2;
 
-				//Callback for filtering and republishing recived data
+			void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg){//callback to process cloud
+				//Convert input
 				ROS_INFO("%s: In Callback",nodeName.c_str());
-				// Create a container for the data and filtered data.
-				pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
+				pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;//create cloud container
+				pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);//create ptr
+				pcl::PCLPointCloud2 cloud_filtered;//create filtered cloud container
+				pcl_conversions::toPCL(*cloud_msg, *cloud);//convert ROSPC2 to PCLPC2
+				pcl_conversions::toPCL(*cloud_msg, *cloud);//convert to PCL datatype
 
-				pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
-				pcl::PCLPointCloud2 cloud_filtered;
-				pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-				// Do data processing here...
-
-				//Convert to PCL data type
-				pcl_conversions::toPCL(*cloud_msg, *cloud);
-
-				// Do data processing here...
-
-				//Convert to PCL data type
-				//pcl_conversions::toPCL(*cloud_msg, *cloud);
-
+				//setup filter
 				pcl::PassThrough<pcl::PCLPointCloud2> pass;
 				pass.setInputCloud (cloudPtr);
 
@@ -213,13 +208,8 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					pcl_conversions::toPCL(*cloud_msg,pcl_pc2);//convert ROSPC2 to PCLPC2
 					pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);//create PCLXYZ
 					pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);//convert PCLPC2 to PCLXYZ
-
-
 					pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
 					pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
-
-					///pcl::PCLPointX cloud_filtered_x;
-					//pcl::PCLPointCloud2 cloud_filtered_xz;
 
 					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
 					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -234,8 +224,6 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					ptfilter.setFilterFieldName ("y");
 					ptfilter.setFilterLimits (yMinf+boxMargin_setting,yMaxf-boxMargin_setting+yRangeBoost_setting);
 					ptfilter.filter (*cloud_filtered_xy);
-
-					//float zMid = zMaxf -((zMaxf-zMinf)/2);
 
 					ptfilter.setInputCloud(cloud_filtered_xy);
 					ptfilter.setFilterFieldName ("z");
@@ -258,9 +246,6 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					pcl::PointIndices::Ptr indices_x (new pcl::PointIndices);
 					pcl::PointIndices::Ptr indices_xy (new pcl::PointIndices);
 
-					///pcl::PCLPointX cloud_filtered_x;
-					//pcl::PCLPointCloud2 cloud_filtered_xz;
-
 					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_x (new pcl::PointCloud<pcl::PointXYZ> ());
 					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xy (new pcl::PointCloud<pcl::PointXYZ> ());
 					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_xyz (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -275,8 +260,6 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					ptfilter.setFilterLimits (-12,12);
 					ptfilter.filter (*cloud_filtered_xy);
 
-					//float zMid = zMaxf -((zMaxf-zMinf)/2);
-
 					ptfilter.setInputCloud(cloud_filtered_xy);
 					ptfilter.setFilterFieldName ("z");
 					ptfilter.setFilterLimits (-3,4);//SETTING
@@ -290,11 +273,11 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					pc2_pub.publish (output);// Publish the data.
 				}
 			}//cloud callback
-   
-ros::NodeHandle nh;
-ros::Subscriber pc2_sub;
+			//create subscribers and publishers
+			ros::NodeHandle nh;
+			ros::Subscriber pc2_sub;
 			ros::Subscriber msg_sub;
 			ros::Publisher pc2_pub;
- };
-PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
+	};
+	PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
 }

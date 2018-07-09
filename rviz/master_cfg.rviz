@@ -38,6 +38,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Occupancy - Map1
         - /Important Points 2 - PointCloud21
       Splitter Ratio: 0.5
     Tree Height: 719
@@ -105,7 +106,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Occupancy - Map
-      Topic: ""
+      Topic: /road_detective_grid
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -706,25 +707,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 27.3608532
+      Distance: 26.9668579
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.87278962
-        Y: 1.55932391
-        Z: -1.74150884
+        X: 3.01413989
+        Y: 1.01780796
+        Z: -2.78157115
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.11479712
+      Pitch: 0.914797306
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.34051299
+      Yaw: 3.98551583
     Saved: ~
 Window Geometry:
   Displays:

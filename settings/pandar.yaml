@@ -1,0 +1,12 @@
+frame_id: 'pandar'
+outlierRemoval_MeanK: 75
+outlierRemoval_StdDev: 2
+outlierRemoval_SearchRadius: 25
+outlierRemoval_MinNeighborsInRadius: 10
+passThrough_RoadMin: -4
+passThrough_RoadMax: -1.2
+passThrough_ObjectMin: -1.7
+passThrough_ObjectMax: 1.25
+passThrough_BoxMargin: .5
+passThrough_RangeBoost: 5
+
