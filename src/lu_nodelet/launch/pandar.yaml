@@ -9,4 +9,5 @@ passThrough_ObjectMin: -1.7
 passThrough_ObjectMax: 1.25
 passThrough_BoxMargin: .5
 passThrough_RangeBoost: 5
-
+plane_DistThresh: .05
+plane_LeafSize: 0.01

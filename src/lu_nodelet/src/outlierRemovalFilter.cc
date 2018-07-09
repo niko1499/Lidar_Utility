@@ -43,7 +43,7 @@ static float setMinNeighborsInRadius_setting=2;
 
 namespace lu_nodelet
 {
-	class passThroughFilter : public nodelet::Nodelet
+	class outlierRemovalFilter : public nodelet::Nodelet
 	{
 		public:
 			void onInit()
@@ -51,6 +51,7 @@ namespace lu_nodelet
 				ROS_INFO("Initializing nodelet...");
 
 				ros::NodeHandle private_nh;//create node handles
+				ros::NodeHandle nh;
 				nh = getNodeHandle();
 				private_nh = getPrivateNodeHandle();
 
@@ -138,7 +139,7 @@ namespace lu_nodelet
 				}
 
 				//set up subscribers and publishers
-				pc2_sub = nh.subscribe(sTopic, 10,&passThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to point cloud
+				pc2_sub = nh.subscribe(sTopic, 10,&outlierRemovalFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to point cloud
 
 				//msg_sub = nh.subscribe(sTopic2, 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));//subscribe to msgs
 
@@ -224,13 +225,13 @@ sensor_msgs::PointCloud2 output;//create output container
 		// apply filter
 		condrem.filter (cloud_filtered);
 			    */
-	}
+	}//mode
 			}//cloud callback
 			//create subscribers and publishers
 			ros::NodeHandle nh;
 			ros::Subscriber pc2_sub;
 			ros::Publisher pc2_pub;
 			//ros::Subscriber msg_sub;
-	};
-	PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
-}
+	};//class
+	PLUGINLIB_EXPORT_CLASS(lu_nodelet::outlierRemovalFilter, nodelet::Nodelet)
+}//ns

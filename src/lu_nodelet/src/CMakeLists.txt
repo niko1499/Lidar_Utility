@@ -10,12 +10,16 @@ target_link_libraries(outlierRemovalFilter
     ${catkin_LIBRARIES}
     ${libpcap_LIBRARIES})
 
+add_library(planeFilter planeFilter.cc )
+target_link_libraries(planeFilter
+    ${catkin_LIBRARIES}
+    ${libpcap_LIBRARIES})
+
 #add_executable(lu_node lu_node.cc)
 
 if(catkin_EXPORTED_TARGETS)
   add_dependencies(
-	passThroughFilter
-  outlierRemovalFilter		
+
 	${catkin_EXPORTED_TARGETS})
 endif()
 

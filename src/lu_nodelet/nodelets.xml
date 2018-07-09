@@ -3,7 +3,7 @@
 	 type="lu_nodelet::passThroughFilter" 
 	 base_class_type="nodelet::Nodelet">
   <description>
-  PassThrough nodelet. 
+  passThroughFilter nodelet 
   </description>
   </class>
 </library>
@@ -13,9 +13,18 @@
 	 type="lu_nodelet::outlierRemovalFilter" 
 	 base_class_type="nodelet::Nodelet">
   <description>
-  outlierRemovalFilter nodelet. 
+  outlierRemovalFilter nodelet
   </description>
   </class>
 </library>
 
+<library path="lib/libplaneFilter">
+  <class name="lu_nodelet/planeFilter" 
+	 type="lu_nodelet::planeFilter" 
+	 base_class_type="nodelet::Nodelet">
+  <description>
+  planeFilter nodelet
+  </description>
+  </class>
+</library>
 

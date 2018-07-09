@@ -54,6 +54,7 @@ namespace lu_nodelet
 				ROS_INFO("Initializing nodelet...");
 
 				ros::NodeHandle private_nh;//create node handles
+				ros::NodeHandle nh;
 				nh = getNodeHandle();
 				private_nh = getPrivateNodeHandle();
 
@@ -271,13 +272,13 @@ namespace lu_nodelet
 					pcl::toPCLPointCloud2(*cloud_filtered_xyz,temp_output);//convert from PCLXYZ to PCLPC2 must be pointer input
 					pcl_conversions::fromPCL(temp_output,output);//convert to ROS data type
 					pc2_pub.publish (output);// Publish the data.
-				}
+				}//mode
 			}//cloud callback
 			//create subscribers and publishers
 			ros::NodeHandle nh;
 			ros::Subscriber pc2_sub;
 			ros::Subscriber msg_sub;
 			ros::Publisher pc2_pub;
-	};
+	};//class
 	PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
-}
+}//ns

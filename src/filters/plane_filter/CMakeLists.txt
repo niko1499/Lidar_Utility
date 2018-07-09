@@ -24,8 +24,8 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package()
 
 #PCL - niko
-add_executable(planeFilter src/planeFilter.cpp)
-target_link_libraries(planeFilter ${catkin_LIBRARIES})
+add_executable(planeFilterOLD src/planeFilter.cpp)
+target_link_libraries(planeFilterOLD ${catkin_LIBRARIES})
 
 
 ## System dependencies are found with CMake's conventions
