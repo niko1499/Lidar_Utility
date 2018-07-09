@@ -25,7 +25,7 @@
 #include <pcl/filters/extract_indices.h>
 //decleare globals
 static int mode =1;
-static std::string nodeName("passThroughFilter");
+static std::string nodeName("pass_through_filter");
 static 	float xMinf, xMaxf, yMinf, yMaxf, zMinf, zMaxf;
 static float roadMin_setting=-4;
 static float roadMax_setting=-1.2;
@@ -33,28 +33,19 @@ static float objectMin_setting=-1.7;
 static float objectMax_setting=1.25;
 static float boxMargin_setting=.2;
 static float yRangeBoost_setting=0;
-//nodelet
-#include <nodelet/nodelet.h>
-
-
-
-#include <pluginlib/class_list_macros.h>
-//#include "passThroughFilter.h"
-//PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
-
 namespace lu_nodelet
 {
-	
 
-    class passThroughFilter : public nodelet::Nodelet
-    {
-        public:
+	class PassThroughFilter : public nodelet::Nodelet
+	{
+		public:
+			PassThroughFilter();
 
+			//---------------------INIT-----------------------
+		private:
 
-    void onInit()
-    {
-        NODELET_DEBUG_STREAM_COND(1==1,"Initializing nodelet...");
-
+			virtual void onInit(){
+				ros::NodeHandle nh;
 				ros::NodeHandle private_nh;
 				nh = getNodeHandle();
 				private_nh = getPrivateNodeHandle();
@@ -65,7 +56,7 @@ namespace lu_nodelet
 				const std::string defaultCloudPublisher("cloud_out");
 				const std::string defaultMode("r");
 
-				nodeName = getName();//Update name
+				nodeName = ros::this_node::getName();//Update name
 
 				//set parameters on new name
 				const std::string subscriberParamName(nodeName + "/subscriber");
@@ -136,15 +127,17 @@ namespace lu_nodelet
 					mode=4;
 				}
 
-				msg_sub = nh.subscribe("pandar_points", 10,&passThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));
+				msg_sub = nh.subscribe("pandar_points", 10,&PassThroughFilter::message_cb, this,ros::TransportHints().tcpNoDelay(true));
 
-				pc2_sub = nh.subscribe("lidar_utility_points", 10,&passThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));
+				pc2_sub = nh.subscribe("lidar_utility_points", 10,&PassThroughFilter::cloud_cb, this,ros::TransportHints().tcpNoDelay(true));
 
 				pc2_pub = private_nh.advertise<sensor_msgs::PointCloud2>(pTopic, 10);
 
-}
 
-void message_cb(const lidar_utility_msgs::roadInfo& data){  
+			};//INIT
+
+			//---------------------msg callback-----------------------
+			void message_cb(const lidar_utility_msgs::roadInfo& data){  
 				xMinf = data.xMin;
 				xMaxf = data.xMax;
 				yMinf = data.yMin;
@@ -290,11 +283,13 @@ void message_cb(const lidar_utility_msgs::roadInfo& data){
 					pc2_pub.publish (output);// Publish the data.
 				}
 			}//cloud callback
-   
-ros::NodeHandle nh;
-ros::Subscriber pc2_sub;
+
+			ros::Subscriber pc2_sub;
 			ros::Subscriber msg_sub;
 			ros::Publisher pc2_pub;
- };
-PLUGINLIB_EXPORT_CLASS(lu_nodelet::passThroughFilter, nodelet::Nodelet)
-}
+
+	}; //class
+
+} // namespace
+
+PLUGINLIB_DECLARE_CLASS(lu_nodelet, PassThroughFilter, lu_nodelet::PassThroughFilter, nodelet::Nodelet);
