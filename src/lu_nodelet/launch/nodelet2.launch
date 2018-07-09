@@ -1,0 +1,44 @@
+<!--Launch file for nodelets-->
+<!--see readme section on launch files for details on how to use file-->
+<!--maintainer email="nxgamarra@gmail.com">Nikolas Gamarra</maintainer-->
+
+<launch>
+<!--Load settings as parameters from .yaml-->
+  <group ns="settings">
+    <rosparam command="load" file="$(find lu_nodelet)/launch/pandar.yaml" />
+  </group>
+
+<!--Launch a node manager-->
+  <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
+
+<!--Launch automatic subscriber-->
+  <node name="Lidar_Utility" pkg="master_launcher" type="lidarUtility" output="screen">
+    <!--commented out so program uses defaults or searches for available topic-->
+    <!--param name="subscriber" value="cloud_pcd"/-->
+    <!--param name="publisher" value="lidar_utility_points"/-->
+  </node>
+<!--Launch outlierRemovalFilter-->
+  <node pkg="nodelet" type="nodelet" 
+        name="outlierRemovalFilter" 
+        args="load lu_nodelet/outlierRemovalFilter standalone_nodelet"
+        output="screen">
+    <param name="subscriber" value="cloud_pcd"/>
+    <param name="publisher" value="test"/>
+    <param name="mode" value="road"/>
+    <param name="msgSubscriber" value="none"/>
+  </node>
+<!--Launch passThroughFilter-->
+  <node pkg="nodelet" type="nodelet" 
+        name="passThroughFilter1" 
+        args="load lu_nodelet/passThroughFilter standalone_nodelet"
+        output="screen">
+    <param name="subscriber" value="cloud_pcd"/>
+    <param name="publisher" value="test"/>
+    <param name="mode" value="road"/>
+    <param name="msgSubscriber" value="none"/>
+  </node>
+
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find master_launcher)/rviz/master_cfg.rviz" />
+
+</launch>

@@ -66,7 +66,7 @@ namespace lu_nodelet
 				//initialize default topics for subscribing and publishing
 				const std::string defaultCloudSubscriber("cloud_in");
 				const std::string defaultCloudPublisher("cloud_out");
-				const std::string defaultMode("r");
+				const std::string defaultMode("1");
 				//const std::string defaultMsgSubscriber("plane_segmented_msg");
 
 				nodeName = getName();//Update nodelet name

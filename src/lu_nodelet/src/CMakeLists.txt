@@ -15,6 +15,12 @@ target_link_libraries(planeFilter
     ${catkin_LIBRARIES}
     ${libpcap_LIBRARIES})
 
+add_library(differenceOfNormals differenceOfNormals.cc )
+target_link_libraries(differenceOfNormals
+    ${catkin_LIBRARIES}
+    ${libpcap_LIBRARIES})
+
+
 #add_executable(lu_node lu_node.cc)
 
 if(catkin_EXPORTED_TARGETS)

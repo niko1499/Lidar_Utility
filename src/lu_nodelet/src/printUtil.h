@@ -4,5 +4,5 @@
 #define COLOR_BLUE "\033[1;34m"
 #define COLOR_RST "\033[0m"
 #define BAR "----------------------------------------------------------------------------\n"
-#define SHORT_BAR " ------------------------- "
+#define SHORT_BAR " -------------------------"
 #define SIGNATURE "Nikolas Xarles Gamarra"

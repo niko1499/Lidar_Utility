@@ -28,3 +28,13 @@
   </class>
 </library>
 
+<library path="lib/libdifferenceOfNormals">
+  <class name="lu_nodelet/differenceOfNormals" 
+	 type="lu_nodelet::differenceOfNormals" 
+	 base_class_type="nodelet::Nodelet">
+  <description>
+  outlierRemovalFilter nodelet
+  </description>
+  </class>
+</library>
+

@@ -11,3 +11,10 @@ passThrough_BoxMargin: .5
 passThrough_RangeBoost: 5
 plane_DistThresh: .05
 plane_LeafSize: 0.01
+don_Scale1: .3
+don_Scale2: 20
+don_Threshold: .05
+don_Segradius: 1
+don_MinClusterSize: 200
+don_maxClusterSize: 2000
+

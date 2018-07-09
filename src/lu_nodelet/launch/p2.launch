@@ -25,41 +25,10 @@
         output="screen">
     <param name="subscriber" value="lidar_utility_points"/>
     <param name="publisher" value="forward_pts"/>
-    <param name="mode" value="forward"/>
-    <param name="msgSubscriber" value="none"/>
-  </node>
-<!--Launch outlierRemovalFilter to remove statistical outliers-->
-  <node pkg="nodelet" type="nodelet" 
-        name="outlierRemovalFilter1" 
-        args="load lu_nodelet/outlierRemovalFilter standalone_nodelet"
-        output="screen">
-    <param name="subscriber" value="/passThroughFilter1/forward_pts
-"/>
-    <param name="publisher" value="outliers_removed"/>
-    <param name="mode" value="statistical"/>
-    <param name="msgSubscriber" value="none"/>
-  </node>
-<!--Launch passThroughFilter-->
-  <node pkg="nodelet" type="nodelet" 
-        name="passThroughFilter2" 
-        args="load lu_nodelet/passThroughFilter standalone_nodelet"
-        output="screen">
-    <param name="subscriber" value="outlierRemovalFilter1/outliers_removed"/>
-    <param name="publisher" value="road_pts"/>
     <param name="mode" value="road"/>
     <param name="msgSubscriber" value="none"/>
   </node>
-<!--Launch outlierRemovalFilter-->
-  <node pkg="nodelet" type="nodelet" 
-        name="outlierRemovalFilter2" 
-        args="load lu_nodelet/outlierRemovalFilter standalone_nodelet"
-        output="screen">
-    <param name="subscriber" value="/passThroughFilter2/road_pts
-"/>
-    <param name="publisher" value="road_pts_filtered"/>
-    <param name="mode" value="radial"/>
-    <param name="msgSubscriber" value="none"/>
-  </node>
+
 
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find lu_nodelet)/rviz/pandar.rviz" />

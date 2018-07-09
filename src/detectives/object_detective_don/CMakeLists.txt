@@ -24,8 +24,8 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package()
 
 #PCL - niko
-add_executable(differenceOfNormals src/differenceOfNormals.cpp)
-target_link_libraries(differenceOfNormals ${catkin_LIBRARIES})
+add_executable(differenceOfNormalsOLD src/differenceOfNormals.cpp)
+target_link_libraries(differenceOfNormalsOLD ${catkin_LIBRARIES})
 
 
 ## System dependencies are found with CMake's conventions
